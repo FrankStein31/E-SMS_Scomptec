@@ -1,0 +1,197 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Models\EntrySuratIsi;
+use App\Models\EntrySuratScan;
+use App\Models\EntrySuratTujuan;
+use App\Models\MasterJenisSurat;
+use App\Models\MasterKlasifikasi;
+use App\Models\MasterSatker;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+
+class EntriSuratController extends Controller
+{
+
+    function saveBase64Image($base64Image, $folder = 'uploads_file_scan', $filename = null)
+    {
+        // Cek dan pecah base64 string
+        if (preg_match('/^data:image\/(\w+);base64,/', $base64Image, $type)) {
+            $base64Image = substr($base64Image, strpos($base64Image, ',') + 1);
+            $extension = strtolower($type[1]); // jpg, png, gif, etc.
+
+            // Validasi ekstensi
+            if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                throw new \Exception('Invalid image type');
+            }
+        } else {
+            throw new \Exception('Invalid base64 image');
+        }
+
+        // Decode base64
+        $base64Image = str_replace(' ', '+', $base64Image);
+        $imageData = base64_decode($base64Image);
+
+        if (!$imageData) {
+            throw new \Exception('Base64 decoding failed');
+        }
+
+        // Generate nama file
+        $filename = $filename ?? uniqid() . '.' . $extension;
+
+        // Simpan gambar (gunakan storage/app/public/uploads)
+        $path = $folder . '/' . $filename;
+        Storage::disk('public_uploads')->put($path, $imageData);
+
+        return $path; // return path relatif
+    }
+
+    /**
+     * undocumented function summary
+     *
+     * Undocumented function long description
+     *
+     * @param Type $var Description
+     * @return type
+     * @throws conditon
+     **/
+    public function scanfile(Request $request, $entri_surat_id)
+    {
+        DB::beginTransaction();
+        try {
+            $file = self::saveBase64Image($request->images_input, 'uploads_file_scan');
+            $entriScan = EntrySuratScan::create([
+                'entrysurat_id' => $entri_surat_id,
+                'nourut' => EntrySuratScan::where('entrysurat_id', $entri_surat_id)->count() + 1,
+                'nama_scan' => $file,
+                'nama_file' => $file,
+                'size' => 0,
+                'tgl_upload' => date('Y-m-d')
+            ]);
+            DB::commit();
+            return redirect()->back()->with('success', "Berhasil Menyimpan file scan");
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return redirect()->back()->with('danger', "Terjadi kesalahan saat menyimpan file scan");
+        }
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $data = EntrySuratIsi::with('FileScan')->orderBy('tgl_surat', 'desc')->get();
+        return view('entrisurat.index', compact('data'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $users = User::select([
+            'id',
+            'FullName',
+            'Jabatan as Jabatan2',
+            'UserName',
+            DB::raw("
+                CASE 
+                    WHEN (SELECT COUNT(b.userid) FROM master_satkers b WHERE b.userid = users.id) = 0 
+                    THEN users.FullName 
+                    ELSE users.Jabatan 
+                END AS Jabatan
+            ")
+        ])->get();
+        $klasifikasi = MasterKlasifikasi::all();
+        $jenisSurat = MasterJenisSurat::all();
+        return view('entrisurat.create', compact(
+            'users',
+            'klasifikasi',
+            'jenisSurat'
+        ));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $noagenda = EntrySuratIsi::whereYear('tgl_diarahkan', date('Y'))->max('noagenda') + 1;
+        DB::beginTransaction();
+        try {
+            $data = $request->all();
+
+            $kepada = "";
+            foreach ($data['kepada'] as $key => $value) {
+                $user = User::find($value);
+                $kepada .= $user->fullname . ",";
+            }
+            $data['nomor_surat'] = $request->no_surat;
+            $data['noagenda'] = $noagenda;
+            $data['tgl_diarahkan'] = date('Y-m-d');
+            $data['tgl_surat'] = date('Y-m-d');
+            $data['created_by'] = Auth::user()->id ?? 190;
+            $data['updated_by'] = Auth::user()->id ?? 190;
+            $data['kepada'] = $kepada;
+            $create = EntrySuratIsi::create($data);
+
+            foreach ($request->kepada as $key => $value) {
+                $user = User::find($value);
+                $satker = MasterSatker::where('userid', $user->id)->first();
+                $tujuan = EntrySuratTujuan::create([
+                    'satkerid_tujuan' => $satker->satkerid,
+                    'dibaca' => 0,
+                    'is_tembusan' => 0,
+                    'entrysurat_id' => $create->id,
+                    'userid_tujuan' => $user->id,
+                ]);
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'berhasil Membuat Entri Surat');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            dd($th);
+            return redirect()->back()->with('danger', 'Gagal Membuat Entri Surat');
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show($id)
+    {
+        $data = EntrySuratIsi::with('FileScan')->find($id);
+        return view('entrisurat.show', compact('data'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+}

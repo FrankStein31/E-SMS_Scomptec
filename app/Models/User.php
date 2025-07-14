@@ -18,8 +18,17 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'id',
+        'username',
+        'fullname',
+        'jabatan',
+        'satkerid',
+        'nip',
+        'usergroupid',
         'email',
+        'email_verified_at',
+        'last_notif',
+        'pangkat',
         'password',
     ];
 
@@ -44,5 +53,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function getAuthIdentifierName()
+    {
+        return 'username';
+    }
+
+    public function masterSatker()
+    {
+        return $this->hasOne(MasterSatker::class, 'userid', 'id');
     }
 }

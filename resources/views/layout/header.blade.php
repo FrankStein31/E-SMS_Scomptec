@@ -1,0 +1,52 @@
+<header class="header-main">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-6 col-sm-4 d-flex align-items-center header-left p-0">
+                <span class="header-toggle me-3">
+                    <i class="iconoir-view-grid"></i>
+                </span>
+            </div>
+
+            <div class="col-6 col-sm-8 d-flex align-items-center justify-content-end header-right p-0">
+
+                <ul class="d-flex align-items-center">
+
+                    <li class="header-profile">
+                        <a aria-controls="profilecanvasRight" class="d-block head-icon"
+                            data-bs-target="#profilecanvasRight" data-bs-toggle="offcanvas" href="#"
+                            role="button">
+                            <img alt="avtar" class="b-r-50 h-35 w-35 bg-dark" src="../assets/images/avtar/woman.jpg">
+                        </a>
+
+                        <div aria-labelledby="profilecanvasRight" class="offcanvas offcanvas-end header-profile-canvas"
+                            id="profilecanvasRight" tabindex="-1">
+                            <div class="offcanvas-body app-scroll">
+                                <ul class="">
+                                    <li class="d-flex gap-3 mb-3">
+                                        <div class="d-flex-center">
+                                            <span class="h-45 w-45 d-flex-center b-r-10 position-relative">
+                                                <img alt="" class="img-fluid b-r-10"
+                                                    src="../assets/images/avtar/woman.jpg">
+                                            </span>
+                                        </div>
+                                        <div class="text-center mt-2">
+                                            <h6 class="mb-0"> Laura Monaldo <img alt="instagram-check-mark"
+                                                    class="w-20 h-20" src="../assets/images/profile-app/01.png"></h6>
+                                            <p class="f-s-12 mb-0 text-secondary">lauradesign@gmail.com</p>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <a class="mb-0 btn btn-light-danger btn-sm justify-content-center "
+                                            href="sign_in.html" role="button">
+                                            <i class="ph-duotone  ph-sign-out pe-1 f-s-20"></i> Log Out
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
