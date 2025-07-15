@@ -1,67 +1,104 @@
-@extends('layouts.app', ['bodyClass' => 'bg-gray-100'])
+@extends('layouts.app', ['bodyClass' => 'bg-gray-100', 'sidebar' => true])
 
 @section('content')
-<style>
-    .sidebar-md {
-        min-height: 100vh;
-        background: #fff;
-        border-radius: 1rem;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.05);
-        padding: 2rem 1rem;
-    }
-    .sidebar-md .nav-link.active {
-        background: #e3e6f0;
-        color: #1976d2;
-        font-weight: bold;
-        border-radius: .5rem;
-    }
-    .sidebar-md .nav-link {
-        color: #333;
-        margin-bottom: .5rem;
-        transition: background .2s;
-    }
-    .sidebar-md .nav-link:hover {
-        background: #f5f5f5;
-        color: #1976d2;
-    }
-    .dashboard-header {
-        background: #fff;
-        border-radius: 1rem;
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.05);
-        padding: 1.5rem 2rem;
-        margin-bottom: 2rem;
-    }
-</style>
-<div class="container-fluid py-4">
-    <div class="row">
-        <div class="col-md-3 mb-4 mb-md-0">
-            <div class="sidebar-md">
-                <div class="mb-4 text-center">
-                    <img src="{{ asset('assets/img/logo-ct.png') }}" alt="Logo" style="width: 60px;">
-                    <h5 class="mt-2 mb-0">E-SMS Scomptec</h5>
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card card-header bg-gradient-primary shadow-primary mb-4">
+            <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 text-white">Dashboard</h4>
+                    <span class="text-white-50">Selamat datang, <b>{{ auth()->user()->fullname ?? auth()->user()->username }}</b></span>
                 </div>
-                <nav class="nav flex-column">
-                    <a class="nav-link active" href="#"><i class="material-icons me-2">dashboard</i> Dashboard</a>
-                    <a class="nav-link" href="#"><i class="material-icons me-2">mail</i> Surat Masuk</a>
-                    <a class="nav-link" href="#"><i class="material-icons me-2">send</i> Surat Keluar</a>
-                    <a class="nav-link" href="#"><i class="material-icons me-2">settings</i> Pengaturan</a>
-                </nav>
-                <form method="POST" action="{{ route('logout') }}" class="mt-4 text-center">
-                    @csrf
-                    <button type="submit" class="btn btn-danger w-100" style="border-radius: 0.75rem;">
-                        <i class="material-icons me-1">logout</i> Logout
-                    </button>
-                </form>
+                <div class="mt-3 mt-md-0">
+                    <i class="material-icons text-white" style="font-size: 48px;">dashboard</i>
+                </div>
             </div>
         </div>
-        <div class="col-md-9">
-            <div class="dashboard-header mb-4">
-                <h3 class="mb-0">Dashboard</h3>
-                <div class="text-muted">Selamat datang, <b>{{ auth()->user()->fullname ?? auth()->user()->username }}</b></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="icon icon-shape bg-gradient-info shadow text-center border-radius-md me-3">
+                    <i class="material-icons text-white">mail</i>
+                </div>
+                <div>
+                    <h6 class="mb-0">Surat Masuk</h6>
+                    <span class="text-sm text-muted">12 Surat</span>
+                </div>
             </div>
-            <div class="card p-4 shadow-sm">
-                <h5>Konten Utama</h5>
-                <p>Ini adalah halaman dashboard utama. Silakan custom sesuai kebutuhan aplikasi surat anda.</p>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="icon icon-shape bg-gradient-success shadow text-center border-radius-md me-3">
+                    <i class="material-icons text-white">send</i>
+                </div>
+                <div>
+                    <h6 class="mb-0">Surat Keluar</h6>
+                    <span class="text-sm text-muted">7 Surat</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="icon icon-shape bg-gradient-warning shadow text-center border-radius-md me-3">
+                    <i class="material-icons text-white">people</i>
+                </div>
+                <div>
+                    <h6 class="mb-0">User Terdaftar</h6>
+                    <span class="text-sm text-muted">5 User</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm border-0">
+            <div class="card-header pb-0">
+                <h6>Aktivitas Terbaru</h6>
+            </div>
+            <div class="card-body px-0 pt-0 pb-2">
+                <div class="table-responsive p-0">
+                    <table class="table align-items-center mb-0">
+                        <thead>
+                            <tr>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tanggal</th>
+                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Aktivitas</th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span class="text-xs font-weight-bold">12/06/2024</span>
+                                </td>
+                                <td>
+                                    <span class="text-xs">Login ke sistem</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="badge bg-gradient-success">Sukses</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="text-xs font-weight-bold">11/06/2024</span>
+                                </td>
+                                <td>
+                                    <span class="text-xs">Register user baru</span>
+                                </td>
+                                <td class="align-middle text-center">
+                                    <span class="badge bg-gradient-info">Info</span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

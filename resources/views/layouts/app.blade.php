@@ -12,7 +12,7 @@
 
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 -->
-@props(['bodyClass'])
+@props(['bodyClass' => '', 'sidebar' => false])
 <!DOCTYPE html>
 <html lang="en">
 
@@ -39,9 +39,20 @@
     <link id="pagestyle" href="{{ asset('assets/css/material-dashboard.css?v=3.0.0') }}" rel="stylesheet" />
 </head>
 <body class="{{ $bodyClass }}">
-
+@if($sidebar ?? false)
+    <div class="container-fluid py-4">
+        <div class="row">
+            <div class="col-md-3 mb-4 mb-md-0">
+                @include('layouts.sidebar')
+            </div>
+            <div class="col-md-9">
+                @yield('content')
+            </div>
+        </div>
+    </div>
+@else
     @yield('content')
-
+@endif
 <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
 <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
 <script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
