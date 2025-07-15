@@ -21,7 +21,7 @@ class BuatSuratController extends Controller
         $this->insertNotaDinas = $insertNotaDinas;
         $this->insertSuratKeluar = $insertSuratKeluar;
     }
-    
+
     /**
      * Display a listing of the resource.
      */
@@ -68,7 +68,7 @@ class BuatSuratController extends Controller
         try {
             if ($request->jenis_id == '2') {
                 $this->insertNotaDinas->insertNotadinas($request);
-            }else{
+            } else {
                 // $this->insertSuratKeluar->insertSuratKeluar($request);
             }
             DB::commit();
