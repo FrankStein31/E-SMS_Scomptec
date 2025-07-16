@@ -1,6 +1,6 @@
 @extends('layouts.app', ['bodyClass' => 'bg-gradient-primary'])
 
-@section('content')
+@section('contents')
 <style>
     .card-glass {
         backdrop-filter: saturate(200%) blur(30px);

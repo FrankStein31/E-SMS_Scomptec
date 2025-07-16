@@ -1,76 +1,69 @@
-<!--
-=========================================================
-* Material Dashboard 2 - v3.0.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard
-* Copyright 2021 Creative Tim (https://www.creative-tim.com) & UPDIVISION (https://www.updivision.com)
-* Licensed under MIT (https://www.creative-tim.com/license)
-* Coded by www.creative-tim.com & www.updivision.com
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
--->
-@props(['bodyClass' => '', 'sidebar' => false])
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ESMS V2</title>
+    <!-- base:css -->
+    <link rel="stylesheet" href="{{ asset('spica-1.0.0/vendors/mdi/css/materialdesignicons.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('spica-1.0.0/vendors/css/vendor.bundle.base.css') }}">
 
-    <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
-    <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
-    <title>
-        Material Dashboard 2 by Creative Tim & UPDIVISION
-    </title>
-    <!--     Fonts and icons     -->
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
-    <!-- Nucleo Icons -->
-    <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
-    <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
-    <!-- Font Awesome Icons -->
-    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-    <!-- CSS Files -->
-    <link id="pagestyle" href="{{ asset('assets/css/material-dashboard.css?v=3.0.0') }}" rel="stylesheet" />
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{{ asset('spica-1.0.0/css/style.css') }}">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="{{ asset('spica-1.0.0/images/favicon.png') }}" />
 </head>
-<body class="{{ $bodyClass }}">
-@if($sidebar ?? false)
-    <div class="container-fluid py-4">
-        <div class="row">
-            <div class="col-md-3 mb-4 mb-md-0">
-                @include('layouts.sidebar')
-            </div>
-            <div class="col-md-9">
-                @yield('content')
-            </div>
-        </div>
-    </div>
-@else
-    @yield('content')
-@endif
-<script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
-<script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
-<script src="{{ asset('assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
-@stack('js')
-<script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-        var options = {
-            damping: '0.5'
-        }
-        Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
 
-</script>
-<!-- Github buttons -->
-<script async defer src="https://buttons.github.io/buttons.js"></script>
-<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-<script src="{{ asset('assets/js/material-dashboard.min.js?v=3.0.0') }}"></script>
+<body>
+    <div class="container-scroller d-flex">
+        @include('layouts.sidebar')
+
+        <!-- PERBAIKAN DIMULAI DI SINI -->
+        <div class="container-fluid page-body-wrapper">
+            @include('layouts.navbar')
+
+            <!-- Pindahkan main-panel ke dalam page-body-wrapper -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    @yield('contents')
+                </div>
+
+                <footer class="footer">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                                <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">
+                                    Copyright © bootstrapdash.com 2020
+                                </span>
+                                <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">
+                                    Distributed By: <a href="https://www.themewagon.com/" target="_blank">ThemeWagon</a>
+                                </span>
+                                <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
+                                    Free <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap dashboard templates</a> from Bootstrapdash.com
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+            <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+        <!-- PERBAIKAN SELESAI -->
+    </div>
+    <!-- container-scroller -->
+
+    <!-- base:js -->
+    <script src="{{ asset('spica-1.0.0/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('spica-1.0.0/vendors/chart.js/Chart.min.js') }}"></script>
+    <script src="{{ asset('spica-1.0.0/js/off-canvas.js') }}"></script>
+    <script src="{{ asset('spica-1.0.0/js/hoverable-collapse.js') }}"></script>
+    <script src="{{ asset('spica-1.0.0/js/template.js') }}"></script>
+    <script src="{{ asset('spica-1.0.0/js/dashboard.js') }}"></script>
+    @stack('scripts')
 </body>
-</html> 
+
+
+</html>
