@@ -91,6 +91,10 @@
                     <i class="mdi mdi-view-dashboard menu-icon"></i> <span class="menu-title">Dashboard</span>
                 </a>
             </li>
+            <li class="nav-item sidebar-category">
+                <p>Menu Utama</p>
+                <span></span>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="">
                     <i class="mdi mdi-tag-multiple menu-icon"></i> <span class="menu-title">Klasifikasi</span>
@@ -129,6 +133,10 @@
                     <span class="menu-title">Dashboard</span>
                 </a>
             </li>
+            <li class="nav-item sidebar-category">
+                <p>Menu Surat</p>
+                <span></span>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" href="">
                     <i class="mdi mdi-email menu-icon"></i> <span class="menu-title">Kotak Masuk</span>
@@ -158,6 +166,10 @@
                 <a class="nav-link" href="">
                     <i class="mdi mdi-check-circle menu-icon"></i> <span class="menu-title">Surat Terkirim</span>
                 </a>
+            </li>
+            <li class="nav-item sidebar-category">
+                <p>Tambahan</p>
+                <span></span>
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="collapse" href="#pengendalian" aria-expanded="false"
