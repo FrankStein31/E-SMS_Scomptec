@@ -13,7 +13,7 @@
 
                     <div class="mt-3">
                         <a href="{{ route('draft-surat.edit', $draft->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="{{ route('draft-surat.index') }}" class="btn btn-secondary btn-sm">Kembali</a>
+                        <a href="{{ route('draft_surat.index') }}" class="btn btn-secondary btn-sm">Kembali</a>
                     </div>
                 </div>
             </div>

@@ -16,7 +16,11 @@
     <meta content="la-themes" name="author">
     <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="icon" type="image/x-icon">
     <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="shortcut icon" type="image/x-icon">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <!-- Summernote CSS -->
+    <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
 
     <title>axelit - Premium Admin Template</title>
 
@@ -45,7 +49,7 @@
 
 
         <div class="app-content">
-            
+
             <div class="">
                 <!-- Header Section starts -->
                 @include('layout.header')
@@ -95,6 +99,23 @@
     @include('layout.js')
 
     @stack('js')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+    <!-- Summernote -->
+    <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
+    @stack('scripts') {{-- PENTING! Untuk script dari child view, seperti TinyMCE --}}
+    <script>
+        $(function() {
+            // Summernote
+            $('#summernote').summernote()
+
+            // CodeMirror
+            CodeMirror.fromTextArea(document.getElementById("codeMirrorDemo"), {
+                mode: "htmlmixed",
+                theme: "monokai"
+            });
+        })
+    </script>
 
 </body>
 

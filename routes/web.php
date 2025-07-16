@@ -36,8 +36,9 @@ Route::resource('kotakmasuk', KotakMasukController::class);
 Route::resource('draft-surat', DraftSuratController::class);
 Route::get('draft-surat/create', [DraftSuratController::class, 'create'])->name('draft_surat.create');
 Route::post('draft-surat', [DraftSuratController::class, 'store'])->name('draft-surat.store');
+Route::get('/draft-surat', [DraftSuratController::class, 'index'])->name('draft_surat.index');
+
 Route::get('draft-surat/{id}', [DraftSuratController::class, 'show'])->name('draft_surat.show');
 Route::get('draft-surat/{id}/edit', [DraftSuratController::class, 'edit'])->name('draft_surat.edit');
 Route::put('draft-surat/{id}', [DraftSuratController::class, 'update'])->name('draft_surat.update');
 Route::delete('draft-surat/{id}', [DraftSuratController::class, 'destroy'])->name('draft_surat.destroy');
-Route::get('/draft-surat', [DraftSuratController::class, 'index'])->name('draftsurat.index');

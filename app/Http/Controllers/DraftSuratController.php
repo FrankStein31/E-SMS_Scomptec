@@ -29,29 +29,48 @@ class DraftSuratController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+
     public function store(Request $request)
     {
-        $request->validate([
-            'judul' => 'required|string',
-            'isi'   => 'required|string',
+        $validated = $request->validate([
+
+            'disposisi'        => 'nullable|string',
+            'entrisurat_id'    => 'nullable|uuid',
+            'parent_id'        => 'nullable|uuid',
+            'kepada'           => 'required|string|max:255',
+            'tgl_disposisi'    => 'required|date',
+            'tgl_remiten'      => 'nullable|date',
+            'isi'              => 'required|string',
+            'tindakan'         => 'nullable|string|max:255',
+            'userid_pembuat'   => 'required|integer|exists:users,id',
+            'userid_tujuan'     => 'required|integer|exists:users,id',
+            'file_original'    => 'nullable|string|max:255',
+            'file_rename'      => 'nullable|string|max:255',
+            'file_size'        => 'nullable|integer|min:0',
+            'judul'            => 'required|string|max:255',
+
         ]);
 
-        // Ambil data draft dari session (jika ada)
+        // Ambil draft dari session
         $drafts = session()->get('draft_surats', []);
 
-        // Tambahkan draft baru ke array
+        // Tambahkan entri draft baru
         $drafts[] = [
-            'id'    => Str::uuid(), // butuh `use Illuminate\Support\Str;`
-            'judul' => $request->judul,
-            'isi'   => $request->isi,
-            'waktu' => now()->format('Y-m-d H:i:s'),
+            'id'       => Str::uuid()->toString(),
+            'judul'    => $validated['judul'],
+            'isi'      => $validated['isi'],
+            'waktu'    => now()->toDateTimeString(),
+            'pengirim' => $validated['userid_pembuat'],
+            'kepada'   => $validated['kepada'],
         ];
 
         // Simpan kembali ke session
         session(['draft_surats' => $drafts]);
 
-        return redirect()->route('draftsurat.index')->with('success', 'Draft berhasil disimpan!');
+        return redirect()->route('draft_surat.index')->with('success', 'Draft berhasil disimpan!');
     }
+
 
 
     /**
@@ -88,7 +107,7 @@ class DraftSuratController extends Controller
         $draft = DraftSurat::findOrFail($id);
         $draft->update($request->only('judul', 'isi'));
 
-        return redirect()->route('draft-surat.index')->with('success', 'Draft berhasil diperbarui!');
+        return redirect()->route('draft_surat.index')->with('success', 'Draft berhasil diperbarui!');
     }
 
     /**
