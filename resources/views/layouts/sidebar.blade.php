@@ -122,20 +122,6 @@
                     <i class="mdi mdi-account-circle menu-icon"></i> <span class="menu-title">User</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="mdi mdi-settings menu-icon"></i> <span class="menu-title">Pengaturan</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="nav-link btn btn-block text-left text-danger">
-                        <i class="mdi mdi-logout menu-icon"></i>
-                        <span class="menu-title">Logout</span>
-                    </button>
-                </form>
-            </li>
         @else
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('dashboard') }}">
@@ -150,27 +136,27 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="">
-                    <i class="mdi mdi-file-plus-outline menu-icon"></i> <span class="menu-title">Buat Surat</span>
+                    <i class="mdi mdi-file-plus menu-icon"></i> <span class="menu-title">Buat Surat</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="">
-                    <i class="mdi mdi-file-edit-outline menu-icon"></i> <span class="menu-title">Entri Surat</span>
+                    <i class="mdi mdi-file-import menu-icon"></i> <span class="menu-title">Entri Surat</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="">
-                    <i class="mdi mdi-file-cloud-outline menu-icon"></i> <span class="menu-title">Draft Surat</span>
+                    <i class="mdi mdi-file-document menu-icon"></i> <span class="menu-title">Draft Surat</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="">
-                    <i class="mdi mdi-email-send-outline menu-icon"></i> <span class="menu-title">Surat Keluar</span>
+                    <i class="mdi mdi-send menu-icon"></i> <span class="menu-title">Surat Keluar</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="">
-                    <i class="mdi mdi-email-check-outline menu-icon"></i> <span class="menu-title">Surat Terkirim</span>
+                    <i class="mdi mdi-check-circle menu-icon"></i> <span class="menu-title">Surat Terkirim</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -191,23 +177,38 @@
                     </ul>
                 </div>
             </li>
-            <li class="nav-item sidebar-category">
-                <p>Lainnya</p>
-                <span></span>
-            </li>
             <li class="nav-item">
-                <a class="nav-link" href="">
-                    <i class="mdi mdi-settings-outline menu-icon"></i> <span class="menu-title">Pengaturan</span>
+                <a class="nav-link" data-toggle="collapse" href="#more" aria-expanded="false"
+                    aria-controls="more">
+                    <i class="mdi mdi-dots-horizontal menu-icon"></i> <span class="menu-title">Opsi Lain</span>
+                    <i class="menu-arrow"></i>
                 </a>
+                <div class="collapse" id="more">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"><a class="nav-link" href="#"></i> Laporan</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#"></i> Statistik</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#"></i> Pesan No.</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#"></i> Aktivitas</a></li>
+                    </ul>
+                </div>
             </li>
-            <li class="nav-item">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="nav-link btn btn-block text-left text-danger">
-                        <i class="mdi mdi-logout menu-icon"></i>
-                        <span class="menu-title">Logout</span>
-                    </button>
-                </form>
-            </li>
-        @endif
+            @endif
+        <li class="nav-item sidebar-category">
+            <p>Lainnya</p>
+            <span></span>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="mdi mdi-settings-outline menu-icon"></i> <span class="menu-title">Pengaturan</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="nav-link btn btn-block text-left text-danger">
+                    <i class="mdi mdi-logout menu-icon"></i>
+                    <span class="menu-title">Logout</span>
+                </button>
+            </form>
+        </li>
 </nav>
