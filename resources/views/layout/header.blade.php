@@ -37,7 +37,7 @@
                                     </li>
                                     <li>
                                         <a class="mb-0 btn btn-light-danger btn-sm justify-content-center "
-                                            href="sign_in.html" role="button">
+                                            href="/" role="button">
                                             <i class="ph-duotone  ph-sign-out pe-1 f-s-20"></i> Log Out
                                         </a>
                                     </li>

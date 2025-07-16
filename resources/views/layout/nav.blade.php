@@ -29,11 +29,11 @@
                     <li><a href="ecommerce_dashboard.html">Pengendalian</a></li>
                 </ul>
             </li>
-            {{-- <li class="no-sub">
+            <!-- <li class="no-sub">
                 <a href="widget.html">
                     <i class="iconoir-user"></i> Pegawai
                 </a>
-            </li> --}}
+            </li> -->
             <li class="no-sub">
                 <a href="{{ route('report.surat') }}">
                     <i class="iconoir-apple-wallet"></i> Laporan

@@ -143,14 +143,18 @@ class EntriSuratController extends Controller
 
             foreach ($request->kepada as $key => $value) {
                 $user = User::find($value);
-                $satker = MasterSatker::where('userid', $user->id)->first();
-                $tujuan = EntrySuratTujuan::create([
-                    'satkerid_tujuan' => $satker->satkerid,
-                    'dibaca' => 0,
-                    'is_tembusan' => 0,
-                    'entrysurat_id' => $create->id,
-                    'userid_tujuan' => $user->id,
-                ]);
+                if ($user) {
+                    $satker = MasterSatker::where('userid', $user->id)->first();
+                    if ($satker) {
+                        $tujuan = EntrySuratTujuan::create([
+                            'satkerid_tujuan' => $satker->satkerid,
+                            'dibaca' => 0,
+                            'is_tembusan' => 0,
+                            'entrysurat_id' => $create->id,
+                            'userid_tujuan' => $user->id,
+                        ]);
+                    }
+                }
             }
 
             DB::commit();
