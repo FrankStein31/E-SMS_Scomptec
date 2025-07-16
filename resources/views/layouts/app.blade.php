@@ -14,6 +14,10 @@
     <link rel="stylesheet" href="{{ asset('spica-1.0.0/css/style.css') }}">
     <!-- endinject -->
     <link rel="shortcut icon" href="{{ asset('spica-1.0.0/images/favicon.png') }}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+
 </head>
 
 <body>
@@ -41,7 +45,8 @@
                                     Distributed By: <a href="https://www.themewagon.com/" target="_blank">ThemeWagon</a>
                                 </span>
                                 <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
-                                    Free <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap dashboard templates</a> from Bootstrapdash.com
+                                    Free <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap dashboard
+                                        templates</a> from Bootstrapdash.com
                                 </span>
                             </div>
                         </div>
@@ -62,6 +67,7 @@
     <script src="{{ asset('spica-1.0.0/js/hoverable-collapse.js') }}"></script>
     <script src="{{ asset('spica-1.0.0/js/template.js') }}"></script>
     <script src="{{ asset('spica-1.0.0/js/dashboard.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>
 

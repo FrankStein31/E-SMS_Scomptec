@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\EntriSuratController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -20,3 +20,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+Route::post('entrisurat/post/file/scan/{entri_surat_id}', [EntriSuratController::class, "scanfile"])->name('entrisurat.post.file.scan');
+// Route::resource('entrisurat', EntriSuratController::class);
+Route::get('/entrisurat/create', [EntriSuratController::class, 'create'])->name('entrisurat.create');
+Route::get('/entrisurat', [EntriSuratController::class, 'index'])->name('entrisurat.index');

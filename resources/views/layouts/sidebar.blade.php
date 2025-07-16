@@ -11,78 +11,78 @@
         </li>
 
         <style>
-        /* Logo Container Styles */
-        .logo-container {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 8px;
-            padding: 12px;
-            margin: 8px 8px 16px 8px;
-            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .logo-container:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-
-        /* Minimize Sidebar Styles */
-        body.sidebar-icon-only .sidebar .logo-container {
-            padding: 8px !important;
-            margin: 8px 6px 16px 6px !important;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        body.sidebar-icon-only .sidebar .logo-text {
-            font-size: 16px !important;
-            letter-spacing: 1px !important;
-        }
-
-        .logo-link {
-            text-decoration: none !important;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-link:hover {
-            text-decoration: none !important;
-        }
-
-        .logo-text {
-            color: white !important;
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0;
-            text-align: center;
-            letter-spacing: 2px;
-            line-height: 1;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
+            /* Logo Container Styles */
             .logo-container {
-                margin: 6px 4px 12px 4px;
-                padding: 10px 8px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 8px;
+                padding: 12px;
+                margin: 8px 8px 16px 8px;
+                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+                transition: all 0.3s ease;
             }
-            
-            .logo-text {
-                font-size: 20px;
-            }
-        }
 
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            .logo-container {
-                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
-            }
-            
             .logo-container:hover {
-                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
             }
-        }
+
+            /* Minimize Sidebar Styles */
+            body.sidebar-icon-only .sidebar .logo-container {
+                padding: 8px !important;
+                margin: 8px 6px 16px 6px !important;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            body.sidebar-icon-only .sidebar .logo-text {
+                font-size: 16px !important;
+                letter-spacing: 1px !important;
+            }
+
+            .logo-link {
+                text-decoration: none !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .logo-link:hover {
+                text-decoration: none !important;
+            }
+
+            .logo-text {
+                color: white !important;
+                font-size: 24px;
+                font-weight: 700;
+                margin: 0;
+                text-align: center;
+                letter-spacing: 2px;
+                line-height: 1;
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                .logo-container {
+                    margin: 6px 4px 12px 4px;
+                    padding: 10px 8px;
+                }
+
+                .logo-text {
+                    font-size: 20px;
+                }
+            }
+
+            /* Dark mode support */
+            @media (prefers-color-scheme: dark) {
+                .logo-container {
+                    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+                }
+
+                .logo-container:hover {
+                    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
+                }
+            }
         </style>
 
         @if (auth()->user()->jabatan == 'Administrator')
@@ -148,7 +148,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="">
+                <a class="nav-link" href="{{ route('entrisurat.create') }}">
                     <i class="mdi mdi-file-import menu-icon"></i> <span class="menu-title">Entri Surat</span>
                 </a>
             </li>
@@ -204,7 +204,7 @@
                     </ul>
                 </div>
             </li>
-            @endif
+        @endif
         <li class="nav-item sidebar-category">
             <p>Lainnya</p>
             <span></span>
