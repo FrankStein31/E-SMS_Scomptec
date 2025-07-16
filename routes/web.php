@@ -5,7 +5,7 @@ use App\Http\Controllers\AuthController;
 
 Route::get('/', function () {
     return view('landing');
-});
+})->name('landing');
 
 // Jika belum ada auth, tambahkan route dummy agar halaman bisa diakses
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

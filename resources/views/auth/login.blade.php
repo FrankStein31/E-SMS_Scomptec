@@ -16,9 +16,33 @@
     <link rel="stylesheet" href="{{ asset('spica-1.0.0/css/style.css') }}">
     <!-- endinject -->
     <link rel="shortcut icon" href="{{ asset('spica-1.0.0/images/favicon.png') }}" />
+    <style>
+        .back-to-home {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 999;
+        }
+        .back-to-home a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .back-to-home a:hover {
+            color: #4f46e5;
+        }
+    </style>
 </head>
 
 <body>
+    <div class="back-to-home">
+        <a href="/">
+            <i class="mdi mdi-arrow-left"></i> Kembali ke Beranda
+        </a>
+    </div>
     <div class="container-scroller d-flex">
         <div class="container-fluid page-body-wrapper full-page-wrapper d-flex">
             <div class="content-wrapper d-flex align-items-stretch auth auth-img-bg">
