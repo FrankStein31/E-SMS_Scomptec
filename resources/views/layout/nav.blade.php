@@ -22,7 +22,7 @@
                 <ul class="collapse" id="dashboard">
                     <li><a href="{{ route('kotakmasuk.index') }}">Kotak Masuk</a></li>
                     <li><a href="{{ route('buatsurat.create') }}">Buat Surat</a></li>
-                    <li><a href="{{ route('entrisurat.create') }}">Entri Surat</a></li>
+                    <li><a href="{{ route('entrisurat.index') }}">Entri Surat</a></li>
                     <li><a href="{{ route('draft_surat.create') }}">Draft Surat</a></li>
                     <li><a href="ecommerce_dashboard.html">Surat Keluar</a></li>
                     <li><a href="ecommerce_dashboard.html">Surat Terkirim</a></li>

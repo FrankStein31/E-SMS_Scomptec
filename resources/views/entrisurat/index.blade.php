@@ -33,6 +33,11 @@
                                 <div class="col">
                                     <h5>Daftar Entri Surat</h5>
                                 </div>
+                                <div class="col text-end">
+                                    <a href="{{ route('entrisurat.create') }}" class="btn btn-primary btn-sm b-r-22">
+                                        <i class="iconoir-plus"></i> Tambah Entri Surat
+                                    </a>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">

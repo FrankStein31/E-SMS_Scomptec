@@ -125,20 +125,34 @@ class EntriSuratController extends Controller
         $noagenda = EntrySuratIsi::whereYear('tgl_diarahkan', date('Y'))->max('noagenda') + 1;
         DB::beginTransaction();
         try {
-            $data = $request->all();
+            $data = [
+                'nomor_surat' => $request->no_surat,
+                'noagenda' => $noagenda,
+                'tgl_diarahkan' => date('Y-m-d'),
+                'tgl_surat' => $request->tgl_surat,
+                'tgl_diterima' => $request->tgl_terima,
+                'created_by' => Auth::user()->id ?? 190,
+                'updated_by' => Auth::user()->id ?? 190,
+                'hal' => $request->hal,
+                'dari' => $request->dari,
+                'alamat' => $request->alamat,
+                'sifat' => $request->sifat,
+                'isi' => $request->ringkasan,
+                'tembusan' => $request->tembusan,
+                'jumlah_lampiran' => $request->lampiran,
+                'jenis_id' => $request->jenis_surat,
+                'kode_klasifikasi' => $request->klasifikasi,
+            ];
 
             $kepada = "";
-            foreach ($data['kepada'] as $key => $value) {
+            foreach ($request->kepada as $key => $value) {
                 $user = User::find($value);
-                $kepada .= $user->fullname . ",";
+                if ($user) {
+                    $kepada .= $user->fullname . ",";
+                }
             }
-            $data['nomor_surat'] = $request->no_surat;
-            $data['noagenda'] = $noagenda;
-            $data['tgl_diarahkan'] = date('Y-m-d');
-            $data['tgl_surat'] = date('Y-m-d');
-            $data['created_by'] = Auth::user()->id ?? 190;
-            $data['updated_by'] = Auth::user()->id ?? 190;
-            $data['kepada'] = $kepada;
+            $data['kepada'] = rtrim($kepada, ',');
+            
             $create = EntrySuratIsi::create($data);
 
             foreach ($request->kepada as $key => $value) {
@@ -161,8 +175,7 @@ class EntriSuratController extends Controller
             return redirect()->back()->with('success', 'berhasil Membuat Entri Surat');
         } catch (\Throwable $th) {
             DB::rollBack();
-            dd($th);
-            return redirect()->back()->with('danger', 'Gagal Membuat Entri Surat');
+            return redirect()->back()->with('danger', 'Gagal Membuat Entri Surat: ' . $th->getMessage());
         }
     }
 

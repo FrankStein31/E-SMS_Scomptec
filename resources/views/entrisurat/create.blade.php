@@ -144,7 +144,7 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default1"
-                                                        name="sifat_surat" checked value="penting" type="radio">
+                                                        name="sifat" checked value="1" type="radio">
                                                     <label class="form-check-label" for="radio_default1">
                                                         Penting
                                                     </label>
@@ -153,7 +153,7 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default2"
-                                                        name="sifat_surat" value="rahasia" type="radio">
+                                                        name="sifat" value="2" type="radio">
                                                     <label class="form-check-label" for="radio_default2">
                                                         Rahasia
                                                     </label>
@@ -162,7 +162,7 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default13"
-                                                        name="sifat_surat" value="biasa" type="radio">
+                                                        name="sifat" value="3" type="radio">
                                                     <label class="form-check-label" for="radio_default13">
                                                         Biasa
                                                     </label>
@@ -171,7 +171,7 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default14"
-                                                        name="sifat_surat" value="pribadi" type="radio">
+                                                        name="sifat" value="4" type="radio">
                                                     <label class="form-check-label" for="radio_default14">
                                                         Pribadi
                                                     </label>
