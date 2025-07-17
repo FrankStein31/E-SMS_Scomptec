@@ -34,6 +34,14 @@
                     <i class="iconoir-user"></i> Pegawai
                 </a>
             </li> -->
+            @if (auth()->user()->jabatan == 'Administrator')
+            <li class="no-sub">
+                <a href="">
+                    <i class="iconoir-user"></i> User
+                </a>
+                
+            </li>
+            @endif
             <li class="no-sub">
                 <a href="{{ route('report.surat') }}">
                     <i class="iconoir-apple-wallet"></i> Laporan
