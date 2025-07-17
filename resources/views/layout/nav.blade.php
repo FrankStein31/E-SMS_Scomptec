@@ -38,57 +38,80 @@
                     <li><a href="">User</a></li>
                 </ul>
             </li>
+                <li>
+                    <a href="">
+                        <i class="iconoir-home-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="menu-title">
+                    <span>Menu Utama</span>
+                </li>
+                <li>
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#master">
+                        <i class="iconoir-settings"></i>
+                        Data Master
+                    </a>
+                    <ul class="collapse" id="master">
+                        <li><a href="">Klasifikasi</a></li>
+                        <li><a href="">Unit Kerja</a></li>
+                        <li><a href="">No. Surat</a></li>
+                        <li><a href="">Daftar Alamat</a></li>
+                        <li><a href="">Tindakan Disposisi</a></li>
+                        <li><a href="">User</a></li>
+                    </ul>
+                </li>
             @else
-            <li>
-                <a href="{{ route('dashboard') }}">
-                    <i class="iconoir-home-alt"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="menu-title">
-                <span>Menu Surat</span>
-            </li>
-            <li>
-                <a aria-expanded="false" data-bs-toggle="collapse" href="#dashboard">
-                    <i class="iconoir-mail"></i>
-                    Manajemen Surat
-                </a>
-                <ul class="collapse" id="dashboard">
-                    <li><a href="{{ route('kotakmasuk.index') }}">Kotak Masuk</a></li>
-                    <li><a href="{{ route('buatsurat.index') }}">Buat Surat</a></li>
-                    <li><a href="{{ route('entrisurat.index') }}">Entri Surat</a></li>
-                    <li><a href="{{ route('draft_surat.index') }}">Draft Surat</a></li>
-                    <li><a href="">Surat Keluar</a></li>
-                    <li><a href="">Surat Terkirim</a></li>
-                </ul>
-            </li>
-            <li>
-                <a aria-expanded="false" data-bs-toggle="collapse" href="#pengendalian">
-                    <i class="iconoir-settings"></i>
-                    Pengendalian
-                </a>
-                <ul class="collapse" id="pengendalian">
-                    <li><a href="#">Disposisi</a></li>
-                    <li><a href="#">Nota Dinas</a></li>
-                    <li><a href="#">Surat Dinas</a></li>
-                    <li><a href="#">Memo Dinas</a></li>
-                    <li><a href="#">Pengumuman</a></li>
-                    <li><a href="#">Undangan</a></li>
-                    <li><a href="#">Edaran</a></li>
-                </ul>
-            </li>
-            <li>
-                <a aria-expanded="false" data-bs-toggle="collapse" href="#more">
-                    <i class="iconoir-more-horiz"></i>
-                    Opsi Lain
-                </a>
-                <ul class="collapse" id="more">
-                    <li><a href="{{ route('report.surat') }}">Laporan</a></li>
-                    <li><a href="{{ route('report.statistik') }}">Statistik</a></li>
-                    <li><a href="">Pesan No.</a></li>
-                    <li><a href="">Aktivitas</a></li>
-                </ul>
-            </li>
+                <li>
+                    <a href="{{ route('dashboard') }}">
+                        <i class="iconoir-home-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="menu-title">
+                    <span>Menu Surat</span>
+                </li>
+                <li>
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#dashboard">
+                        <i class="iconoir-mail"></i>
+                        Manajemen Surat
+                    </a>
+                    <ul class="collapse" id="dashboard">
+                        <li><a href="{{ route('kotakmasuk.index') }}">Kotak Masuk</a></li>
+                        <li><a href="{{ route('buatsurat.index') }}">Buat Surat</a></li>
+                        <li><a href="{{ route('entrisurat.index') }}">Entri Surat</a></li>
+                        <li><a href="{{ route('draft_surat.index') }}">Draft Surat</a></li>
+                        <li><a href="{{ route('suratkeluar.index') }}">Surat Keluar</a></li>
+                        <li><a href="{{ route('suratterkirim.index') }}">Surat Terkirim</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#pengendalian">
+                        <i class="iconoir-settings"></i>
+                        Pengendalian
+                    </a>
+                    <ul class="collapse" id="pengendalian">
+                        <li><a href="{{ route('disposisi.index') }}">Disposisi</a></li>
+                        <li><a href="#">Nota Dinas</a></li>
+                        <li><a href="#">Surat Dinas</a></li>
+                        <li><a href="#">Memo Dinas</a></li>
+                        <li><a href="#">Pengumuman</a></li>
+                        <li><a href="#">Undangan</a></li>
+                        <li><a href="#">Edaran</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#more">
+                        <i class="iconoir-more-horiz"></i>
+                        Opsi Lain
+                    </a>
+                    <ul class="collapse" id="more">
+                        <li><a href="{{ route('report.surat') }}">Laporan</a></li>
+                        <li><a href="{{ route('report.statistik') }}">Statistik</a></li>
+                        <li><a href="">Pesan No.</a></li>
+                        <li><a href="">Aktivitas</a></li>
+                    </ul>
+                </li>
             @endif
             <li class="menu-title">
                 <span>Lainnya</span>

@@ -8,6 +8,9 @@ use App\Http\Controllers\KotakMasukController;
 use App\Http\Controllers\ReportSuratController;
 use App\Http\Controllers\DraftSuratController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SuratKeluarController;
+use App\Http\Controllers\SuratTerkirimController;
+use App\Http\Controllers\DisposisiController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -51,3 +54,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
+
+
+Route::resource('/surat-keluar', SuratKeluarController::class);
+Route::get('/suratkeluar', [SuratKeluarController::class, 'index'])->name('suratkeluar.index');
+Route::get('/suratkeluar/create', [SuratKeluarController::class, 'create'])->name('suratkeluar.create');
+Route::post('/suratkeluar', [SuratKeluarController::class, 'store'])->name('suratkeluar.store');
+
+
+Route::get('/suratterkirim', [SuratTerkirimController::class, 'index'])->name('suratterkirim.index');
+Route::get('/surat-terkirim/{id}', [SuratTerkirimController::class, 'show'])->name('suratterkirim.show');
+Route::get('/surat-terkirim/{id}/cetak', [SuratTerkirimController::class, 'cetak'])->name('suratterkirim.cetak');
+Route::delete('/surat-terkirim/{id}', [SuratTerkirimController::class, 'destroy'])->name('suratterkirim.destroy');
+
+
+Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
+Route::get('/disposisi/{id}', [DisposisiController::class, 'show'])->name('disposisi.show');
