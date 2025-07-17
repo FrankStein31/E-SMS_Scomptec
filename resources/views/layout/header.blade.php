@@ -36,10 +36,12 @@
                                         </div>
                                     </li>
                                     <li>
-                                        <a class="mb-0 btn btn-light-danger btn-sm justify-content-center "
-                                            href="/" role="button">
-                                            <i class="ph-duotone  ph-sign-out pe-1 f-s-20"></i> Log Out
-                                        </a>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                            @csrf
+                                            <button type="submit" class="mb-0 btn btn-light-danger btn-sm justify-content-center w-100">
+                                                <i class="ph-duotone ph-sign-out pe-1 f-s-20"></i> Log Out
+                                            </button>
+                                        </form>
                                     </li>
                                 </ul>
                             </div>

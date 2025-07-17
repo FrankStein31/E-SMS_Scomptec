@@ -24,7 +24,7 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
-            return redirect()->intended('/kotakmasuk');
+            return redirect()->route('dashboard');
         }
 
         return back()->withErrors(['username' => 'Username atau password salah.'])->withInput($request->only('username', 'remember')); 
