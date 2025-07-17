@@ -11,6 +11,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\SuratTerkirimController;
 use App\Http\Controllers\DisposisiController;
+use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,10 @@ Route::resource('entrisurat', EntriSuratController::class);
 
 
 Route::resource('buatsurat', BuatSuratController::class);
+
+Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+Route::resource('user', UserController::class);
 
 Route::prefix('report')->name('report.')->group(function () {
     Route::get('surat', [ReportSuratController::class, "surat"])->name('surat');
