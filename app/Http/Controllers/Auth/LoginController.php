@@ -21,19 +21,22 @@ class LoginController extends Controller
         $credentials = $request->validate([
             'username' => 'required',
             'password' => 'required',
+        ], [
+            'username.required' => 'Username harus diisi',
+            'password.required' => 'Password harus diisi',
         ]);
 
         if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
             return redirect()->route('dashboard');
         }
 
-        return back()->withErrors(['username' => 'Username atau password salah.'])->withInput($request->only('username', 'remember')); 
+        return back()->with('error', 'Username atau password salah!'); 
     }
 
     // Logout
     public function logout()
     {
         Auth::logout();
-        return redirect('/')->with('success', 'Anda telah logout.');
+        return redirect('/')->with('success', 'Anda telah berhasil logout.');
     }
 }

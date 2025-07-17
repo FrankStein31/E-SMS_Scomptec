@@ -73,11 +73,35 @@
                                             <p>Sign in with your data that you enterd during your registration</p>
                                         </div>
                                     </div>
+
+                                    @if(session('error'))
+                                    <div class="col-12">
+                                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                            {{ session('error') }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    </div>
+                                    @endif
+
+                                    @if(session('success'))
+                                    <div class="col-12">
+                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                            {{ session('success') }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    </div>
+                                    @endif
+
                                     <div class="col-12">
                                         <div class="mb-3">
                                             <label class="form-label" for="username">Username</label>
-                                            <input class="form-control" id="username" name="username" placeholder="Enter Your Username"
-                                                type="text">
+                                            <input class="form-control @error('username') is-invalid @enderror" id="username" name="username" placeholder="Enter Your Username"
+                                                type="text" value="{{ old('username') }}">
+                                            @error('username')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-12">
@@ -85,8 +109,13 @@
                                             <label class="form-label" for="password">Password</label>
                                             {{-- <a class="link-primary-dark float-end" href="password_reset.html">Forgot Password
                                             ?</a> --}}
-                                            <input class="form-control" id="password" name="password" placeholder="Enter Your Password"
+                                            <input class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Enter Your Password"
                                                 type="password">
+                                            @error('password')
+                                            <div class="invalid-feedback">
+                                                {{ $message }}
+                                            </div>
+                                            @enderror
                                         </div>
                                     </div>
 
