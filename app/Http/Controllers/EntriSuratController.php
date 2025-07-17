@@ -148,7 +148,7 @@ class EntriSuratController extends Controller
             foreach ($request->kepada as $key => $value) {
                 $user = User::find($value);
                 if ($user) {
-                    $kepada .= $user->fullname . ",";
+                $kepada .= $user->fullname . ",";
                 }
             }
             $data['kepada'] = rtrim($kepada, ',');
@@ -158,15 +158,15 @@ class EntriSuratController extends Controller
             foreach ($request->kepada as $key => $value) {
                 $user = User::find($value);
                 if ($user) {
-                    $satker = MasterSatker::where('userid', $user->id)->first();
+                $satker = MasterSatker::where('userid', $user->id)->first();
                     if ($satker) {
-                        $tujuan = EntrySuratTujuan::create([
-                            'satkerid_tujuan' => $satker->satkerid,
-                            'dibaca' => 0,
-                            'is_tembusan' => 0,
-                            'entrysurat_id' => $create->id,
-                            'userid_tujuan' => $user->id,
-                        ]);
+                $tujuan = EntrySuratTujuan::create([
+                    'satkerid_tujuan' => $satker->satkerid,
+                    'dibaca' => 0,
+                    'is_tembusan' => 0,
+                    'entrysurat_id' => $create->id,
+                    'userid_tujuan' => $user->id,
+                ]);
                     }
                 }
             }
