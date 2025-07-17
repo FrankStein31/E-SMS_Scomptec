@@ -38,29 +38,6 @@
                     <li><a href="{{ route('user.index') }}">User</a></li>
                 </ul>
             </li>
-                <li>
-                    <a href="">
-                        <i class="iconoir-home-alt"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li class="menu-title">
-                    <span>Menu Utama</span>
-                </li>
-                <li>
-                    <a aria-expanded="false" data-bs-toggle="collapse" href="#master">
-                        <i class="iconoir-settings"></i>
-                        Data Master
-                    </a>
-                    <ul class="collapse" id="master">
-                        <li><a href="">Klasifikasi</a></li>
-                        <li><a href="">Unit Kerja</a></li>
-                        <li><a href="">No. Surat</a></li>
-                        <li><a href="">Daftar Alamat</a></li>
-                        <li><a href="">Tindakan Disposisi</a></li>
-                        <li><a href="">User</a></li>
-                    </ul>
-                </li>
             @else
                 <li>
                     <a href="{{ route('dashboard') }}">
