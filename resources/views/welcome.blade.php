@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
+
+<head>
+    <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>E-SMS Scomptec</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
-    
+
     <!-- Favicons -->
     <link href="assets/img/favicon.png" rel="icon">
-    
+
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-            <style>
+    <style>
         :root {
             --primary: #6366f1;
             --secondary: #8b5cf6;
@@ -30,8 +33,8 @@
             --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --shadow: 0 10px 25px rgba(0,0,0,0.1);
-            --shadow-lg: 0 20px 40px rgba(0,0,0,0.1);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
 
         * {
@@ -39,7 +42,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Inter', sans-serif;
             color: var(--dark);
@@ -70,7 +73,7 @@
             padding: 20px 0;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
 
@@ -146,8 +149,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         #hero .container {
@@ -161,7 +171,7 @@
             line-height: 1.2;
             margin-bottom: 20px;
             color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         #hero h2 {
@@ -190,7 +200,7 @@
         .hero-btn:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             color: white;
         }
 
@@ -199,8 +209,15 @@
         }
 
         @keyframes heroFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
         }
 
         /* Section styling */
@@ -414,6 +431,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -437,37 +455,39 @@
                 padding: 60px 0;
                 text-align: center;
             }
-            
+
             #hero h1 {
                 font-size: 2rem;
             }
-            
+
             #hero h2 {
                 font-size: 1rem;
                 margin-left: auto;
                 margin-right: auto;
             }
-            
+
             .section-title h2 {
                 font-size: 2rem;
             }
-            
+
             .icon-box {
                 margin-bottom: 30px;
             }
+
             .hero-image {
                 margin-top: 40px;
             }
         }
-            </style>
-    </head>
+    </style>
+</head>
 
 <body>
     <!-- Header -->
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="logo text-decoration-none" href="/">E-SMS</a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -498,10 +518,11 @@
             <div class="row align-items-center">
                 <div class="col-lg-7">
                     <h1 class="animate-on-scroll">Sistem Manajemen Surat Modern dengan E-SMS</h1>
-                    <h2 class="animate-on-scroll">Kelola surat masuk dan keluar dengan lebih efisien menggunakan teknologi digital terdepan</h2>
+                    <h2 class="animate-on-scroll">Kelola surat masuk dan keluar dengan lebih efisien menggunakan
+                        teknologi digital terdepan</h2>
                     @auth
                         <a href="{{ route('login') }}" class="hero-btn animate-on-scroll">
-                            <i class="bi bi-speedometer2 me-2"></i>Login
+                            <i class="me-2">Get Started</i>
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="hero-btn animate-on-scroll">
@@ -513,29 +534,35 @@
                     <div class="hero-image animate-on-scroll">
                         <svg width="100%" height="350" viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg">
                             <defs>
-                                <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%"
+                                    y2="100%">
                                     <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
                                     <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
                                 </linearGradient>
                                 <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-                                    <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="rgba(0,0,0,0.2)"/>
+                                    <feDropShadow dx="0" dy="10" stdDeviation="10"
+                                        flood-color="rgba(0,0,0,0.2)" />
                                 </filter>
                             </defs>
                             <!-- Document -->
-                            <rect x="150" y="80" width="200" height="240" rx="10" fill="white" filter="url(#shadow)"/>
-                            <rect x="170" y="100" width="160" height="8" rx="4" fill="#e2e8f0"/>
-                            <rect x="170" y="120" width="120" height="6" rx="3" fill="#cbd5e1"/>
-                            <rect x="170" y="140" width="140" height="6" rx="3" fill="#cbd5e1"/>
-                            <rect x="170" y="160" width="100" height="6" rx="3" fill="#cbd5e1"/>
+                            <rect x="150" y="80" width="200" height="240" rx="10" fill="white"
+                                filter="url(#shadow)" />
+                            <rect x="170" y="100" width="160" height="8" rx="4" fill="#e2e8f0" />
+                            <rect x="170" y="120" width="120" height="6" rx="3" fill="#cbd5e1" />
+                            <rect x="170" y="140" width="140" height="6" rx="3" fill="#cbd5e1" />
+                            <rect x="170" y="160" width="100" height="6" rx="3" fill="#cbd5e1" />
                             <!-- Envelope -->
-                            <polygon points="100,200 200,200 150,240" fill="url(#heroGrad)" filter="url(#shadow)"/>
-                            <rect x="80" y="200" width="140" height="80" rx="5" fill="white" stroke="url(#heroGrad)" stroke-width="2"/>
+                            <polygon points="100,200 200,200 150,240" fill="url(#heroGrad)" filter="url(#shadow)" />
+                            <rect x="80" y="200" width="140" height="80" rx="5" fill="white"
+                                stroke="url(#heroGrad)" stroke-width="2" />
                             <!-- Digital elements -->
-                            <circle cx="400" cy="120" r="30" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="2"/>
-                            <circle cx="400" cy="120" r="15" fill="white"/>
-                            <circle cx="380" cy="280" r="20" fill="rgba(255,255,255,0.2)" stroke="white" stroke-width="2"/>
-                            <circle cx="380" cy="280" r="10" fill="white"/>
-                                    </svg>
+                            <circle cx="400" cy="120" r="30" fill="rgba(255,255,255,0.2)" stroke="white"
+                                stroke-width="2" />
+                            <circle cx="400" cy="120" r="15" fill="white" />
+                            <circle cx="380" cy="280" r="20" fill="rgba(255,255,255,0.2)" stroke="white"
+                                stroke-width="2" />
+                            <circle cx="380" cy="280" r="10" fill="white" />
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -554,21 +581,24 @@
                     <div class="icon-box animate-on-scroll">
                         <i class="bi bi-shield-check"></i>
                         <h4>Keamanan Terjamin</h4>
-                        <p>Sistem dilengkapi dengan enkripsi end-to-end dan fitur keamanan berlapis untuk melindungi data surat Anda dari ancaman cyber</p>
+                        <p>Sistem dilengkapi dengan enkripsi end-to-end dan fitur keamanan berlapis untuk melindungi
+                            data surat Anda dari ancaman cyber</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="icon-box animate-on-scroll">
                         <i class="bi bi-laptop"></i>
                         <h4>Mudah Digunakan</h4>
-                        <p>Interface yang intuitif dan user-friendly dengan desain modern memudahkan pengguna dari berbagai tingkat keahlian teknologi</p>
+                        <p>Interface yang intuitif dan user-friendly dengan desain modern memudahkan pengguna dari
+                            berbagai tingkat keahlian teknologi</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="icon-box animate-on-scroll">
                         <i class="bi bi-gear"></i>
                         <h4>Terintegrasi</h4>
-                        <p>Terintegrasi seamlessly dengan sistem manajemen dokumen lain untuk workflow yang lebih efisien dan produktif</p>
+                        <p>Terintegrasi seamlessly dengan sistem manajemen dokumen lain untuk workflow yang lebih
+                            efisien dan produktif</p>
                     </div>
                 </div>
             </div>
@@ -587,28 +617,32 @@
                     <div class="icon-box animate-on-scroll">
                         <i class="bi bi-envelope-fill"></i>
                         <h4>Manajemen Surat Masuk</h4>
-                        <p>Kelola surat masuk dengan sistem kategorisasi otomatis, filter advanced, dan dashboard yang informatif</p>
+                        <p>Kelola surat masuk dengan sistem kategorisasi otomatis, filter advanced, dan dashboard yang
+                            informatif</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="icon-box animate-on-scroll">
                         <i class="bi bi-arrow-left-right"></i>
                         <h4>Disposisi Digital</h4>
-                        <p>Proses disposisi surat secara digital dengan approval workflow, tracking status, dan notifikasi real-time</p>
+                        <p>Proses disposisi surat secara digital dengan approval workflow, tracking status, dan
+                            notifikasi real-time</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="icon-box animate-on-scroll">
                         <i class="bi bi-search"></i>
                         <h4>Tracking Surat</h4>
-                        <p>Lacak perjalanan surat dengan detail timeline, status update, dan laporan komprehensif untuk audit trail</p>
+                        <p>Lacak perjalanan surat dengan detail timeline, status update, dan laporan komprehensif untuk
+                            audit trail</p>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="icon-box animate-on-scroll">
                         <i class="bi bi-bell-fill"></i>
                         <h4>Notifikasi Real-time</h4>
-                        <p>Dapatkan notifikasi push instant untuk setiap aktivitas penting dengan prioritas yang dapat dikustomisasi</p>
+                        <p>Dapatkan notifikasi push instant untuk setiap aktivitas penting dengan prioritas yang dapat
+                            dikustomisasi</p>
                     </div>
                 </div>
             </div>
@@ -678,13 +712,14 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2024 <strong>E-SMS Scomptec</strong>. All Rights Reserved. Designed with ❤️ for better document management.</p>
+            <p>&copy; 2024 <strong>E-SMS Scomptec</strong>. All Rights Reserved. Designed with ❤️ for better document
+                management.</p>
         </div>
     </footer>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
@@ -698,7 +733,7 @@
 
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
+            anchor.addEventListener('click', function(e) {
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
@@ -716,7 +751,7 @@
             elements.forEach(element => {
                 const elementTop = element.getBoundingClientRect().top;
                 const windowHeight = window.innerHeight;
-                
+
                 if (elementTop < windowHeight - 100) {
                     element.classList.add('animated');
                 }
@@ -733,7 +768,7 @@
         window.addEventListener('scroll', function() {
             const sections = document.querySelectorAll('section');
             const navLinks = document.querySelectorAll('.nav-link');
-            
+
             let current = '';
             sections.forEach(section => {
                 const sectionTop = section.getBoundingClientRect().top;
@@ -742,7 +777,7 @@
                     current = section.getAttribute('id');
                 }
             });
-            
+
             navLinks.forEach(link => {
                 link.classList.remove('active');
                 if (link.getAttribute('href') === '#' + current) {
@@ -754,14 +789,14 @@
         // Form submission handler
         document.querySelector('form').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             // Simple form validation and submission feedback
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            
+
             submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Sending...';
             submitBtn.disabled = true;
-            
+
             // Simulate form submission
             setTimeout(() => {
                 submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Sent!';
@@ -773,5 +808,6 @@
             }, 2000);
         });
     </script>
-    </body>
+</body>
+
 </html>
