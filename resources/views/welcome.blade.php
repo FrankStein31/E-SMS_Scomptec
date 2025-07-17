@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="utf-8">
+    <head>
+        <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>E-SMS Scomptec</title>
     <meta content="" name="description">
@@ -23,7 +23,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <style>
+            <style>
         :root {
             --primary: #6366f1;
             --secondary: #8b5cf6;
@@ -478,8 +478,8 @@
                 margin-top: 40px;
             }
         }
-    </style>
-</head>
+            </style>
+    </head>
 
 <body>
     <!-- Header -->
@@ -562,7 +562,7 @@
                             <circle cx="380" cy="280" r="20" fill="rgba(255,255,255,0.2)" stroke="white"
                                 stroke-width="2" />
                             <circle cx="380" cy="280" r="10" fill="white" />
-                        </svg>
+                                    </svg>
                     </div>
                 </div>
             </div>
@@ -808,6 +808,6 @@
             }, 2000);
         });
     </script>
-</body>
+    </body>
 
 </html>

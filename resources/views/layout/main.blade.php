@@ -21,10 +21,8 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <!-- Summernote CSS -->
     <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
-<<<<<<< HEAD
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
-=======
     <!-- DataTables -->
     <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
@@ -33,7 +31,6 @@
     <link rel="stylesheet" href="{{ asset('dist/dist/css/adminlte.min.css') }}">
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
->>>>>>> origin/feature/user
 
     <title>axelit - Premium Admin Template</title>
 

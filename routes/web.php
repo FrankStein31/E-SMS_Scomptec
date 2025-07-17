@@ -12,6 +12,7 @@ use App\Http\Controllers\SuratKeluarController;
 use App\Http\Controllers\SuratTerkirimController;
 use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MasterKlasifikasiController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,8 @@ Route::prefix('report')->name('report.')->group(function () {
     Route::get('surat', [ReportSuratController::class, "surat"])->name('surat');
     Route::get('statistik', [ReportSuratController::class, "statistik"])->name('statistik');
 });
+
+Route::resource('klasifikasi', MasterKlasifikasiController::class);
 
 Route::get('kotakmasuk/disposisi/{id}', [KotakMasukController::class, "disposisi"])->name('kotakmasuk.disposisi');
 Route::post('kotakmasuk/disposisi', [KotakMasukController::class, "storeDisposisi"])->name('kotakmasuk.post.disposisi');

@@ -94,7 +94,7 @@ class BuatSuratController extends Controller
 
             Log::info('Validasi data berhasil', ['validated' => $validated]);
 
-            DB::beginTransaction();
+        DB::beginTransaction();
 
             // Generate unique ID
             $id = (string) Str::ulid();
@@ -153,7 +153,7 @@ class BuatSuratController extends Controller
                     // Save lampiran to database
                     // ... code untuk simpan lampiran
                     Log::info('File lampiran disimpan', ['path' => $path]);
-                }
+            }
             }
 
             DB::commit();

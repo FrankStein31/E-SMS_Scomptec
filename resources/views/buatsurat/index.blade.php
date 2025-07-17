@@ -133,6 +133,6 @@
             <!-- Default Card end -->
         </div>
         <!-- Blank end -->
-    </div>
+</div>
 </main>
 @endsection
