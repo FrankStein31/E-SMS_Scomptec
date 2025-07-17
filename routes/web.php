@@ -7,6 +7,7 @@ use App\Http\Controllers\EntriSuratController;
 use App\Http\Controllers\KotakMasukController;
 use App\Http\Controllers\ReportSuratController;
 use App\Http\Controllers\DraftSuratController;
+use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -45,3 +46,8 @@ Route::get('draft-surat/{id}', [DraftSuratController::class, 'show'])->name('dra
 Route::get('draft-surat/{id}/edit', [DraftSuratController::class, 'edit'])->name('draft_surat.edit');
 Route::put('draft-surat/{id}', [DraftSuratController::class, 'update'])->name('draft_surat.update');
 Route::delete('draft-surat/{id}', [DraftSuratController::class, 'destroy'])->name('draft_surat.destroy');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});

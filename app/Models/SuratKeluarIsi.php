@@ -45,4 +45,9 @@ class SuratKeluarIsi extends Model
         'user_id_final',
         'satkerid_final',
     ];
+
+    public function jenis()
+    {
+        return $this->belongsTo(MasterJenisSurat::class, 'jenis_id', 'last_id');
+    }
 }

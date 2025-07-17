@@ -8,42 +8,37 @@
             </div>
 
             <div class="col-6 col-sm-8 d-flex align-items-center justify-content-end header-right p-0">
-
                 <ul class="d-flex align-items-center">
-
                     <li class="header-profile">
-                        <a aria-controls="profilecanvasRight" class="d-block head-icon"
-                            data-bs-target="#profilecanvasRight" data-bs-toggle="offcanvas" href="#"
+                        <a aria-controls="profilecanvasRight" class="d-block head-icon" 
+                            data-bs-target="#profilecanvasRight" data-bs-toggle="offcanvas" href="#" 
                             role="button">
-                            <img alt="avtar" class="b-r-50 h-35 w-35 bg-dark" src="../assets/images/avtar/woman.jpg">
+                            <div class="d-flex align-items-center">
+                                <span class="ms-2 d-none d-sm-block text-dark small">{{ Auth::user()->fullname }}</span>
+                            </div>
                         </a>
 
                         <div aria-labelledby="profilecanvasRight" class="offcanvas offcanvas-end header-profile-canvas"
-                            id="profilecanvasRight" tabindex="-1">
-                            <div class="offcanvas-body app-scroll">
-                                <ul class="">
-                                    <li class="d-flex gap-3 mb-3">
-                                        <div class="d-flex-center">
-                                            <span class="h-45 w-45 d-flex-center b-r-10 position-relative">
-                                                <img alt="" class="img-fluid b-r-10"
-                                                    src="../assets/images/avtar/woman.jpg">
-                                            </span>
-                                        </div>
-                                        <div class="text-center mt-2">
-                                            <h6 class="mb-0"> Laura Monaldo <img alt="instagram-check-mark"
-                                                    class="w-20 h-20" src="../assets/images/profile-app/01.png"></h6>
-                                            <p class="f-s-12 mb-0 text-secondary">lauradesign@gmail.com</p>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <form method="POST" action="{{ route('logout') }}">
-                                            @csrf
-                                            <button type="submit" class="mb-0 btn btn-light-danger btn-sm justify-content-center w-100">
-                                                <i class="ph-duotone ph-sign-out pe-1 f-s-20"></i> Log Out
-                                            </button>
-                                        </form>
-                                    </li>
-                                </ul>
+                            id="profilecanvasRight" tabindex="-1" style="width: 300px;">
+                            <div class="offcanvas-body p-0">
+                                <div class="bg-primary p-4 text-center text-white">
+                                    <img alt="" class="img-fluid rounded-circle mb-3" width="100"
+                                        src="{{ asset('assets/images/avatar.png') }}">
+                                    <h5 class="mb-1">{{ Auth::user()->fullname }}</h5>
+                                    <p class="mb-0">{{ Auth::user()->jabatan }}</p>
+                                    <small>{{ Auth::user()->username }}</small>
+                                </div>
+                                <div class="p-4">
+                                    <a href="{{ route('profile.edit') }}" class="btn btn-light-primary btn-sm d-block mb-2">
+                                        <i class="ph-duotone ph-user-circle pe-1"></i> Edit Profile
+                                    </a>
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-light-danger btn-sm d-block w-100">
+                                            <i class="ph-duotone ph-sign-out pe-1"></i> Log Out
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </li>

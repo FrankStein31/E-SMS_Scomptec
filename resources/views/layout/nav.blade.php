@@ -16,7 +16,7 @@
             </li>
             @if (auth()->user()->jabatan == 'Administrator')
             <li>
-                <a href="">
+                <a href="{{ route('dashboard') }}">
                     <i class="iconoir-home-alt"></i>
                     Dashboard
                 </a>
@@ -40,7 +40,7 @@
             </li>
             @else
             <li>
-                <a href="">
+                <a href="{{ route('dashboard') }}">
                     <i class="iconoir-home-alt"></i>
                     Dashboard
                 </a>
@@ -55,7 +55,7 @@
                 </a>
                 <ul class="collapse" id="dashboard">
                     <li><a href="{{ route('kotakmasuk.index') }}">Kotak Masuk</a></li>
-                    <li><a href="{{ route('buatsurat.create') }}">Buat Surat</a></li>
+                    <li><a href="{{ route('buatsurat.index') }}">Buat Surat</a></li>
                     <li><a href="{{ route('entrisurat.index') }}">Entri Surat</a></li>
                     <li><a href="{{ route('draft_surat.index') }}">Draft Surat</a></li>
                     <li><a href="">Surat Keluar</a></li>
