@@ -35,7 +35,7 @@
                     <li><a href="">No. Surat</a></li>
                     <li><a href="">Daftar Alamat</a></li>
                     <li><a href="">Tindakan Disposisi</a></li>
-                    <li><a href="">User</a></li>
+                    <li><a href="{{ route('user.index') }}">User</a></li>
                 </ul>
             </li>
             @else
