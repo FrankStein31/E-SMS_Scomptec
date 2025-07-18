@@ -1,11 +1,9 @@
-@extends('layouts.app')
+@extends('layout.main') {{-- Use layout.main or your actual main layout --}}
 
 @section('content')
-
-<main>
-    <div class="container-fluid">
-        <!-- Breadcrumb start -->
-        <div class="row m-1"></div>
+    <main>
+        <div class="container-fluid">
+            <div class="row m-1"></div>
             <div class="col-12 ">
                 <h4 class="main-title">Detail Surat Terkirim</h4>
                 <ul class="app-line-breadcrumbs mb-3">
@@ -20,9 +18,7 @@
                 </ul>
             </div>
         </div>
-        <!-- Breadcrumb end -->
         @include('layout.alert') {{-- Include your alert messages --}}
-        <!-- Detail Surat Terkirim start -->
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -32,12 +28,12 @@
                     <div class="card-body">
                         <table class="table table-bordered table-striped">
                             <tr>
-                                <th>No. Surat</th>
-                                <td>{{ $suratTerkirim->no_surat }}</td>
+                                <th>No. Surat</th> {{-- Changed from 'No' to 'No. Surat' --}}
+                                <td>{{ $suratTerkirim->nosurat ?? '-' }}</td> {{-- Adjusted to nosurat --}}
                             </tr>
                             <tr>
                                 <th>Sifat</th>
-                                <td>{{ $suratTerkirim->sifat }}</td>
+                                <td>{{ $suratTerkirim->sifat ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Jenis</th>
@@ -45,43 +41,84 @@
                             </tr>
                             <tr>
                                 <th>Hal</th>
-                                <td>{{ $suratTerkirim->hal }}</td>
+                                <td>{{ $suratTerkirim->hal ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Tanggal Surat</th>
-                                <td>{{ $suratTerkirim->tgl_surat }}</td>
+                                <td>{{ $suratTerkirim->tgl_surat ? \Carbon\Carbon::parse($suratTerkirim->tgl_surat)->format('d F Y') : '-' }}
+                                </td>
                             </tr>
                             <tr>
                                 <th>Klasifikasi</th>
-                                <td>{{ $suratTerkirim->klasifikasi }}</td>
+                                <td>{{ $suratTerkirim->klasifikasi ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Kepada</th>
-                                <td>{{ $suratTerkirim->kepada }}</td>
+                            <tr>
+                                <th>Kepada</th>
+                                <td>{!! $suratTerkirim->kepada_detail !!}</td> {{-- Use accessor, which handles formatting --}}
+                            </tr>
                             </tr>
                             <tr>
                                 <th>U.P</th>
-                                <td>{{ $suratTerkirim->up }}</td>
+                                <td>{{ $suratTerkirim->up ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nama</th>
+                                <td>{{ $suratTerkirim->nama ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Jabatan</th>
+                                <td>{{ $suratTerkirim->jabatan ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Satker</th>
+                                <td>{{ $suratTerkirim->satker ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Tembusan</th>
+                                <td>{{ $suratTerkirim->tembusan ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Referensi</th>
+                                <td>{{ $suratTerkirim->referensi ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Penandatangan</th>
+                                <td>{{ $suratTerkirim->penandatangan ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>File Lampiran</th>
+                                <td>
+                                    @if ($suratTerkirim->file_lampiran)
+                                        <a href="{{ asset('storage/' . $suratTerkirim->file_lampiran) }}"
+                                            target="_blank">Lihat File</a>
+                                    @else
+                                        -
+                                    @endif
+                                </td>
                             </tr>
                         </table>
 
-                        <!-- Actions -->
                         <div class="mt-3">
-                            <a href="{{ route('suratterkirim.cetak', $suratTerkirim->id) }}" class="btn btn-primary btn-sm">Cetak Surat</a>
+                            <a href="{{ route('suratterkirim.edit', $suratTerkirim->id) }}"
+                                class="btn btn-warning btn-sm me-1">Edit Surat</a> {{-- Added Edit button --}}
+                            <a href="{{ route('suratterkirim.cetak', $suratTerkirim->id) }}" target="_blank"
+                                class="btn btn-primary btn-sm me-1">Cetak Surat</a>
 
-                            <!-- Delete Form -->
-                            <form action="{{ route('suratterkirim.destroy', $suratTerkirim->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat ini?');">
+                            <form action="{{ route('suratterkirim.destroy', $suratTerkirim->id) }}" method="POST"
+                                class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat ini?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm">Hapus Surat</button>
                             </form>
-
+                            <a href="{{ route('suratterkirim.index') }}" class="btn btn-secondary btn-sm ms-1">Kembali</a>
+                            {{-- Back button --}}
                         </div>
-
-                    </div> <!-- End of card body -->
-                </div> <!-- End of card -->
-            </div> <!-- End of col-md-12 -->
-        </div> <!-- End of row -->
-    </div> <!-- End of container-fluid -->
-</main>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>
 @endsection
