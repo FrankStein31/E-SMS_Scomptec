@@ -223,13 +223,13 @@
                                                 class="form-select select2">
                                                 <option value="">Pilih Unit
                                                     Kerja</option>
-                                                {{-- @foreach ($masterSatkers as $item)
+                                                @foreach ($masterSatkers as $item)
                                                     <option value="{{ $item->id }}">
                                                         {{ $item->satker }}
                                                     </option>
-                                                @endforeach --}}
+                                                @endforeach
                                             </select>
-                                            <input type="text" class="form-control" name="" id="satkertest">
+                                            {{-- <input type="text" class="form-control" name="" id="satkertest"> --}}
                                         </div>
                                     </div>
 
@@ -286,5 +286,38 @@
                 $('#exampleModal2').modal('show');
             });
         }
+    </script>
+@endpush
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            // Inisialisasi semua select2 di luar modal (misal: di halaman Buat Surat)
+            $('.select2, .select-example, .select-basic, .select-1').select2({
+                width: '100%',
+                dropdownAutoWidth: true,
+                placeholder: 'Pilih opsi',
+                allowClear: true
+            });
+
+            // Inisialisasi Select2 khusus saat modal Tambah User muncul
+            $('#exampleModal').on('shown.bs.modal', function() {
+                $(this).find('.select2').select2({
+                    dropdownParent: $('#exampleModal'),
+                    width: '100%',
+                    placeholder: 'Pilih Unit Kerja',
+                    allowClear: true
+                });
+            });
+
+            // Inisialisasi Select2 khusus untuk semua modal edit user
+            $('div[id^="editUserModal"]').on('shown.bs.modal', function() {
+                $(this).find('.select2').select2({
+                    dropdownParent: $(this),
+                    width: '100%',
+                    placeholder: 'Pilih Unit Kerja',
+                    allowClear: true
+                });
+            });
+        });
     </script>
 @endpush
