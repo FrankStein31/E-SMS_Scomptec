@@ -192,7 +192,7 @@
 
         {{-- Date and Recipient Block (Right Aligned) --}}
         <p style="text-align: right; margin-bottom: 10px;">Surabaya,
-            {{ $suratTerkirim->tgl_surat ? $suratTerkirim->tgl_surat->format('d F Y') : '-' }}</p>
+            {{ $suratTerkirim->tgl_surat ? \Carbon\Carbon::parse($suratTerkirim->tgl_surat)->format('d F Y') : '-' }}</p>
 
         {{-- Letter Metadata Table --}}
         <table class="letter-meta">
@@ -201,8 +201,20 @@
                 <td>: {{ $suratTerkirim->nosurat ?? '-' }}</td>
             </tr>
             <tr>
+                <td class="label-col">Jenis</td>
+                <td>: {{ $suratTerkirim->jenis->name ?? '-' }}</td>
+            </tr>
+            <tr>
                 <td class="label-col">Sifat</td>
-                <td>: {{ $suratTerkirim->sifat ?? '-' }}</td>
+                <td>:
+                    @if($suratTerkirim->sifat == 1)
+                        Penting
+                    @elseif($suratTerkirim->sifat == 2)
+                        Rahasia
+                    @else
+                        Biasa
+                    @endif
+                </td>
             </tr>
             <tr>
                 <td class="label-col">Lampiran</td>
@@ -218,44 +230,57 @@
         {{-- Recipient Address Block --}}
         <div class="recipient-address">
             <p>Kepada Yth.</p>
-            @if ($suratTerkirim->kepada_detail)
-                {{-- kepda_detail accessor should output names and jabatan with <br> for new lines --}}
-                {!! $suratTerkirim->kepada_detail !!}
-            @else
-                <p>- Tidak ada penerima -</p>
-            @endif
+            @php
+                $kepada = $suratTerkirim->kepada;
+                $names = [];
+                if($kepada) {
+                    $arr = is_array($kepada) ? $kepada : json_decode($kepada);
+                    if($arr) {
+                        foreach($arr as $k) {
+                            $data = is_string($k) ? json_decode($k) : $k;
+                            if(isset($data->name)) $names[] = $data->name;
+                        }
+                    }
+                }
+                echo implode('<br>', $names);
+            @endphp
             <p>di -</p>
             <p class="indent">Tempat</p>
         </div>
 
         {{-- Letter Main Content (Isi Surat) --}}
+        <div style="text-align:center; font-weight:bold; text-transform:uppercase; margin: 30px 0 10px 0; font-size: 14pt;">SURAT EDARAN</div>
         <div class="letter-content">
-            {{-- This should be the main body of the letter. Assuming 'isi' holds HTML content. --}}
             {!! $suratTerkirim->isi ?? '<p>Isi surat belum tersedia.</p>' !!}
         </div>
 
         {{-- Signature Block --}}
         <div class="signature-block">
-            {{-- Assuming 'ttd_nama' or a derived accessor holds the signatory's name --}}
             <p>a.n. GUBERNUR JAWA TIMUR</p>
             <p>SEKRETARIS DAERAH</p>
-            <br><br><br><br> {{-- Space for physical signature --}}
+            <br><br><br><br>
             <p class="signature-name">{{ $suratTerkirim->ttd_nama ?? 'NAMA PENANDATANGAN' }}</p>
             <p>NIP. -</p>
         </div>
 
         {{-- Tembusan Section --}}
-        @if ($suratTerkirim->tembusan_nama && $suratTerkirim->tembusan_nama != '-')
+        @if ($suratTerkirim->tembusan)
             <div class="tembusan-section">
                 <p>Tembusan Yth.:</p>
                 <ol>
-                    {{-- If tembusan is a simple string from tembusan_nama accessor --}}
-                    <li>{{ $suratTerkirim->tembusan_nama }}</li>
-                    {{-- If you need to list multiple tembusan entries from the original array:
-                    @foreach ($suratTerkirim->tembusan as $t)
-                        @if (isset($t['name'])) <li>{{ $t['name'] }}</li> @endif
-                    @endforeach
-                    --}}
+                    @php
+                        $tembusan = $suratTerkirim->tembusan;
+                        $arr = is_array($tembusan) ? $tembusan : json_decode($tembusan);
+                        if($arr) {
+                            foreach($arr as $t) {
+                                $data = is_string($t) ? json_decode($t) : $t;
+                                if(isset($data->name)) echo '<li>' . $data->name . '</li>';
+                                elseif(is_string($t)) echo '<li>' . $t . '</li>';
+                            }
+                        } else {
+                            echo '<li>' . $tembusan . '</li>';
+                        }
+                    @endphp
                 </ol>
             </div>
         @endif

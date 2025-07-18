@@ -1,4 +1,4 @@
-@extends('layout.main') {{-- Use layout.main or your actual main layout --}}
+@extends('layout.main')
 
 @section('content')
     <main>
@@ -18,7 +18,7 @@
                 </ul>
             </div>
         </div>
-        @include('layout.alert') {{-- Include your alert messages --}}
+        @include('layout.alert')
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -28,97 +28,96 @@
                     <div class="card-body">
                         <table class="table table-bordered table-striped">
                             <tr>
-                                <th>No. Surat</th> {{-- Changed from 'No' to 'No. Surat' --}}
-                                <td>{{ $suratTerkirim->nosurat ?? '-' }}</td> {{-- Adjusted to nosurat --}}
+                                <th>No. Surat</th>
+                                <td>{{ $suratTerkirim->nosurat ?? '-' }}</td>
                             </tr>
                             <tr>
-                                <th>Sifat</th>
-                                <td>{{ $suratTerkirim->sifat ?? '-' }}</td>
+                                <th>Jenis Surat</th>
+                                <td>{{ $suratTerkirim->jenis->name ?? '-' }}</td>
                             </tr>
                             <tr>
-                                <th>Jenis</th>
-                                <td>{{ $suratTerkirim->jenis }}</td>
+                                <th>Tanggal Surat</th>
+                                <td>{{ $suratTerkirim->tgl_surat ? \Carbon\Carbon::parse($suratTerkirim->tgl_surat)->format('d F Y') : '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Hal</th>
                                 <td>{{ $suratTerkirim->hal ?? '-' }}</td>
                             </tr>
                             <tr>
-                                <th>Tanggal Surat</th>
-                                <td>{{ $suratTerkirim->tgl_surat ? \Carbon\Carbon::parse($suratTerkirim->tgl_surat)->format('d F Y') : '-' }}
+                                <th>Sifat</th>
+                                <td>
+                                    @if($suratTerkirim->sifat == 1)
+                                        <span class="badge bg-danger">Penting</span>
+                                    @elseif($suratTerkirim->sifat == 2)
+                                        <span class="badge bg-warning">Rahasia</span>
+                                    @else
+                                        <span class="badge bg-info">Biasa</span>
+                                    @endif
                                 </td>
                             </tr>
                             <tr>
                                 <th>Klasifikasi</th>
-                                <td>{{ $suratTerkirim->klasifikasi ?? '-' }}</td>
+                                <td>{{ $suratTerkirim->kodeklasifikasi ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Kepada</th>
-                            <tr>
-                                <th>Kepada</th>
-                                <td>{!! $suratTerkirim->kepada_detail !!}</td> {{-- Use accessor, which handles formatting --}}
+                                <td>
+                                    @php
+                                        $kepada = $suratTerkirim->kepada;
+                                        $names = [];
+                                        if($kepada) {
+                                            $arr = is_array($kepada) ? $kepada : json_decode($kepada);
+                                            if($arr) {
+                                                foreach($arr as $k) {
+                                                    $data = is_string($k) ? json_decode($k) : $k;
+                                                    if(isset($data->name)) $names[] = $data->name;
+                                                }
+                                            }
+                                        }
+                                        echo implode(', ', $names);
+                                    @endphp
+                                </td>
                             </tr>
+                            <tr>
+                                <th>Penandatangan</th>
+                                <td>{{ $suratTerkirim->ttd_nama ?? '-' }}</td>
                             </tr>
                             <tr>
-                                <th>U.P</th>
-                                <td>{{ $suratTerkirim->up ?? '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Nama</th>
-                                <td>{{ $suratTerkirim->nama ?? '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Jabatan</th>
-                                <td>{{ $suratTerkirim->jabatan ?? '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Satker</th>
-                                <td>{{ $suratTerkirim->satker ?? '-' }}</td>
+                                <th>Status</th>
+                                <td>
+                                    @if($suratTerkirim->status == 1)
+                                        <span class="badge bg-warning">Draft</span>
+                                    @elseif($suratTerkirim->status == 2)
+                                        <span class="badge bg-info">Diproses</span>
+                                    @elseif($suratTerkirim->status == 3)
+                                        <span class="badge bg-success">Selesai</span>
+                                    @else
+                                        <span class="badge bg-danger">Ditolak</span>
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
                                 <th>Tembusan</th>
                                 <td>{{ $suratTerkirim->tembusan ?? '-' }}</td>
                             </tr>
                             <tr>
-                                <th>Referensi</th>
-                                <td>{{ $suratTerkirim->referensi ?? '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Penandatangan</th>
-                                <td>{{ $suratTerkirim->penandatangan ?? '-' }}</td>
-                            </tr>
-                            <tr>
-                                <th>File Lampiran</th>
-                                <td>
-                                    @if ($suratTerkirim->file_lampiran)
-                                        <a href="{{ asset('storage/' . $suratTerkirim->file_lampiran) }}"
-                                            target="_blank">Lihat File</a>
-                                    @else
-                                        -
-                                    @endif
-                                </td>
+                                <th>Isi Surat</th>
+                                <td>{!! $suratTerkirim->isi ?? '-' !!}</td>
                             </tr>
                         </table>
 
                         <div class="mt-3">
-                            <a href="{{ route('suratterkirim.edit', $suratTerkirim->id) }}"
-                                class="btn btn-warning btn-sm me-1">Edit Surat</a> {{-- Added Edit button --}}
-                            <a href="{{ route('suratterkirim.cetak', $suratTerkirim->id) }}" target="_blank"
-                                class="btn btn-primary btn-sm me-1">Cetak Surat</a>
-
-                            <form action="{{ route('suratterkirim.destroy', $suratTerkirim->id) }}" method="POST"
-                                class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat ini?');">
+                            <a href="{{ route('suratterkirim.cetak', $suratTerkirim->id) }}" target="_blank" class="btn btn-primary btn-sm me-1">Cetak Surat</a>
+                            <form action="{{ route('suratterkirim.destroy', $suratTerkirim->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat ini?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm">Hapus Surat</button>
                             </form>
                             <a href="{{ route('suratterkirim.index') }}" class="btn btn-secondary btn-sm ms-1">Kembali</a>
-                            {{-- Back button --}}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     </main>
 @endsection
