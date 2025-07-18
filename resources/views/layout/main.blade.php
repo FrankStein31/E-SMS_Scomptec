@@ -169,7 +169,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- Select2 ==================================================================================== -->
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             // Inisialisasi semua select2 di luar modal (misal: di halaman Buat Surat)
             $('.select2, .select-example, .select-basic, .select-1').select2({
@@ -199,7 +199,7 @@
                 });
             });
         });
-    </script>
+    </script> --}}
     <!-- Select2 ==================================================================================== -->
 
 </body>
