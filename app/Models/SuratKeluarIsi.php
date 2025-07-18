@@ -61,4 +61,9 @@ class SuratKeluarIsi extends Model
         }
         return null;
     }
+
+    public function klasifikasi()
+    {
+        return $this->belongsTo(\App\Models\MasterKlasifikasi::class, 'kodeklasifikasi', 'kodeklasifikasi');
+    }
 }

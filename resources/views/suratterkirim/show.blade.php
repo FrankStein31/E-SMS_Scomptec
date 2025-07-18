@@ -57,7 +57,7 @@
                             </tr>
                             <tr>
                                 <th>Klasifikasi</th>
-                                <td>{{ $suratTerkirim->kodeklasifikasi ?? '-' }}</td>
+                                <td>{{ $suratTerkirim->klasifikasi->klasifikasi ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Kepada</th>

@@ -10,7 +10,7 @@ class SuratTerkirimController extends Controller
     public function index(Request $request)
     {
         $q = $request->q;
-        $suratTerkirim = SuratKeluarIsi::query();
+        $suratTerkirim = SuratKeluarIsi::with(['jenis', 'klasifikasi']);
         if ($q) {
             $suratTerkirim->where(function ($query) use ($q) {
                 $query->where('nosurat', 'like', "%$q%")
@@ -30,7 +30,7 @@ class SuratTerkirimController extends Controller
 
     public function show($id)
     {
-        $suratTerkirim = SuratKeluarIsi::findOrFail($id);
+        $suratTerkirim = SuratKeluarIsi::with(['jenis', 'klasifikasi'])->findOrFail($id);
         return view('suratterkirim.show', compact('suratTerkirim'));
     }
 

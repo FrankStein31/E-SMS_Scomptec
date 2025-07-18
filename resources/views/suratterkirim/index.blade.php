@@ -37,13 +37,15 @@
                                         <tr>
                                             <th>No</th>
                                             <th>Jenis Surat</th>
-                                            <th>No. Surat</th>
+                                            <!-- <th>No. Surat</th> -->
                                             <th>Tgl Surat</th>
                                             <th>Hal</th>
                                             <th>Sifat</th>
+                                            <th>Klasifikasi</th>
                                             <th>Kepada</th>
                                             <th>Penandatangan</th>
                                             <th>Status</th>
+                                            <th>U.P.</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -52,7 +54,7 @@
                                         <tr>
                                             <td>{{ ($suratTerkirim->firstItem() ?? 1) + $loop->index }}</td>
                                             <td>{{ $item->jenis->name ?? '-' }}</td>
-                                            <td>{{ $item->nosurat }}</td>
+                                            <!-- <td>{{ $item->nosurat }}</td> -->
                                             <td>{{ $item->tgl_surat }}</td>
                                             <td>{{ $item->hal }}</td>
                                             <td>
@@ -64,6 +66,7 @@
                                                     <span class="badge bg-info">Biasa</span>
                                                 @endif
                                             </td>
+                                            <td>{{ $item->klasifikasi->klasifikasi ?? '-' }}</td>
                                             <td>
                                                 @php
                                                     $kepada = $item->kepada;
@@ -92,6 +95,7 @@
                                                     <span class="badge bg-danger">Ditolak</span>
                                                 @endif
                                             </td>
+                                            <td>{{ $item->up ?? '-' }}</td>
                                             <td>
                                                 <div class="d-flex gap-1">
                                                     <a href="{{ route('suratterkirim.show', $item->id) }}" class="btn btn-info btn-sm b-r-22" title="Detail"><i class="iconoir-eye"></i></a>
@@ -108,7 +112,7 @@
                                         <tr>
                                             <td colspan="10" class="text-center">Tidak ada data</td>
                                         </tr>
-                                        @endforelse
+                                        @endforelse 
                                     </tbody>
                                 </table>
                             </div>
