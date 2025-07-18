@@ -1,20 +1,23 @@
 @extends('layout.main')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid klasifikasi-container">
     <div class="card mt-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
             <h5 class="mb-0">Data Klasifikasi</h5>
-            <div class="d-flex gap-2">
-                <form class="d-flex" method="get" action="" id="formSearch">
-                    <input type="text" name="q" class="form-control form-control-sm me-2" placeholder="Cari kode/klasifikasi..." value="{{ request('q') }}" id="inputSearch">
-                </form>
+            <div class="d-flex gap-2 align-items-center">
+                <select id="filterKodeUtama" class="form-select form-select-sm" style="min-width:220px;max-width:320px;">
+                    <option value="">Semua Kode</option>
+                    @foreach($kodeUtama as $kode => $row)
+                        <option value="{{ $kode }}">{{ $kode }} - {{ $row->klasifikasi }}</option>
+                    @endforeach
+                </select>
                 <button class="btn btn-primary btn-sm" id="btnTambah">Tambah Klasifikasi</button>
             </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered mb-0">
+                <table class="table table-bordered mb-0" id="tabelKlasifikasi">
                     <thead class="table-light">
                         <tr>
                             <th>Kode</th>
@@ -51,33 +54,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-    </div>
-    <div class="d-flex justify-content-between align-items-center flex-wrap p-2">
-        <div class="small text-muted">
-            Menampilkan {{ $data->firstItem() }} - {{ $data->lastItem() }} dari {{ $data->total() }} data
-        </div>
-        <div>
-            @php $links = $data->appends(['q'=>request('q')])->onEachSide(1)->links('pagination::bootstrap-5'); @endphp
-            @if(trim($links) != '')
-                {!! $links !!}
-            @elseif($data->lastPage() > 1)
-                <nav>
-                    <ul class="pagination">
-                        <li class="page-item {{ $data->onFirstPage() ? 'disabled' : '' }}">
-                            <a class="page-link" href="{{ $data->previousPageUrl() }}">&laquo;</a>
-                        </li>
-                        @for($i = 1; $i <= $data->lastPage(); $i++)
-                            <li class="page-item {{ $i == $data->currentPage() ? 'active' : '' }}">
-                                <a class="page-link" href="{{ $data->url($i) }}">{{ $i }}</a>
-                            </li>
-                        @endfor
-                        <li class="page-item {{ !$data->hasMorePages() ? 'disabled' : '' }}">
-                            <a class="page-link" href="{{ $data->nextPageUrl() }}">&raquo;</a>
-                        </li>
-                    </ul>
-                </nav>
-            @endif
         </div>
     </div>
 </div>
@@ -141,13 +117,45 @@
 @push('scripts')
 <script>
 $(function(){
-    // Auto search
-    $('#inputSearch').on('input', function(){
-        clearTimeout(window.searchTimeout);
-        window.searchTimeout = setTimeout(function(){
-            $('#formSearch').submit();
-        }, 400);
+    // Inisialisasi select2 untuk dropdown filter
+    $('#filterKodeUtama').select2({
+        width: 'resolve',
+        placeholder: 'Pilih Kode',
+        allowClear: true,
+        dropdownParent: $('.card-header')
     });
+
+    var table = $('#tabelKlasifikasi').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        lengthChange: true,
+        pageLength: 10,
+        language: {
+            search: 'Cari:',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            info: 'Menampilkan _START_ - _END_ dari _TOTAL_ data',
+            paginate: {
+                previous: 'Sebelumnya',
+                next: 'Selanjutnya'
+            },
+            zeroRecords: 'Data tidak ditemukan',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ total data)'
+        },
+        autoWidth: false
+    });
+
+    // Filter kode utama
+    $('#filterKodeUtama').on('change', function(){
+        var val = $(this).val();
+        if(val) {
+            table.column(0).search('^'+val, true, false).draw();
+        } else {
+            table.column(0).search('').draw();
+        }
+    });
+
     // Tambah
     $('#btnTambah').click(function(){
         $('#formKlasifikasi')[0].reset();
@@ -155,8 +163,8 @@ $(function(){
         $('#klasifikasi_id').val('');
         $('#modalKlasifikasi').modal('show');
     });
-    // Edit
-    $('.btnEdit').click(function(){
+    // Edit pakai event delegation
+    $(document).on('click', '.btnEdit', function(){
         let id = $(this).data('id');
         $.get('/klasifikasi/'+id, function(res){
             if(res.success){
@@ -174,33 +182,8 @@ $(function(){
             }
         });
     });
-    // Simpan
-    $('#formKlasifikasi').submit(function(e){
-        e.preventDefault();
-        let id = $('#klasifikasi_id').val();
-        let url = '/klasifikasi'+(id ? '/' + id : '');
-        let method = id ? 'PUT' : 'POST';
-        let formData = $(this).serializeArray();
-        formData.push({name: '_token', value: '{{ csrf_token() }}'});
-        if(id) formData.push({name: '_method', value: 'PUT'});
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: $.param(formData),
-            success: function(res){
-                if(res.success){
-                    $('#modalKlasifikasi').modal('hide');
-                    // reload data table tanpa reload full page
-                    location.reload();
-                }
-            },
-            error: function(xhr){
-                alert('Gagal simpan data!');
-            }
-        });
-    });
-    // Hapus
-    $('.btnHapus').click(function(){
+    // Hapus pakai event delegation
+    $(document).on('click', '.btnHapus', function(){
         if(confirm('Yakin hapus data?')){
             let id = $(this).data('id');
             $.ajax({
@@ -218,14 +201,99 @@ $(function(){
             });
         }
     });
+    // Simpan
+    $('#formKlasifikasi').submit(function(e){
+        e.preventDefault();
+        let id = $('#klasifikasi_id').val();
+        let url = '/klasifikasi'+(id ? '/' + id : '');
+        let method = id ? 'PUT' : 'POST';
+        let formData = $(this).serializeArray();
+        formData.push({name: '_token', value: '{{ csrf_token() }}'});
+        if(id) formData.push({name: '_method', value: 'PUT'});
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: $.param(formData),
+            success: function(res){
+                if(res.success){
+                    $('#modalKlasifikasi').modal('hide');
+                    location.reload();
+                }
+            },
+            error: function(xhr){
+                alert('Gagal simpan data!');
+            }
+        });
+    });
 });
 </script>
 @endpush
 
 @push('css')
 <style>
-.pagination { display: flex !important; }
-.page-link, .pagination { color: #0d6efd !important; background: #fff !important; border: 1px solid #dee2e6 !important; }
-.page-item.active .page-link { background: #0d6efd !important; color: #fff !important; border-color: #0d6efd !important; }
+.select2-container--default .select2-selection--single {
+    height: 32px;
+    padding: 2px 8px;
+    font-size: 1rem;
+    border-radius: 0.375rem;
+    border: 1px solid #ced4da;
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 28px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 28px;
+}
+.klasifikasi-container {
+    padding-left: 24px;
+    padding-right: 24px;
+}
+.dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+.dataTables_wrapper .dataTables_length label, .dataTables_wrapper .dataTables_filter label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1rem;
+    font-weight: 400;
+}
+.dataTables_wrapper .dataTables_length select {
+    margin: 0 4px;
+    height: 32px;
+    font-size: 1rem;
+}
+.dataTables_wrapper .dataTables_filter input[type="search"] {
+    margin-left: 4px;
+    height: 32px;
+    font-size: 1rem;
+    width: 160px;
+}
+.dataTables_wrapper .dataTables_length {
+    float: left;
+}
+.dataTables_wrapper .dataTables_filter {
+    float: right;
+}
+@media (max-width: 768px) {
+    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter {
+        float: none;
+        text-align: left;
+        margin-bottom: 8px;
+    }
+    .dataTables_wrapper .dataTables_filter input[type="search"] {
+        width: 100%;
+    }
+}
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.dataTables_wrapper .dataTables_info {
+    margin-top: 10px;
+    color: #6c757d;
+    margin-left: 0;
+}
 </style>
 @endpush 
