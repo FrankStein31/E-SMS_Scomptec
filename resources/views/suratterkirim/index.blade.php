@@ -55,39 +55,42 @@
                                     <tbody>
                                         @forelse($suratTerkirim as $surat)
                                             <tr>
-                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ is_a($suratTerkirim, \Illuminate\Pagination\LengthAwarePaginator::class) ? $suratTerkirim->firstItem() + $loop->index : $loop->iteration }}
+                                                </td>
+                                                <td>{{ $surat->nosurat ?? '-' }}</td> {{-- Added nosurat based on typical table structure --}}
                                                 <td>{{ $surat->sifat ?? '-' }}</td>
-                                                <td>{{ $surat->jenis ?? '-' }}</td>
+                                                {{-- Display 'jenis' name from the relationship. Assumes 'jenis' is eager loaded in the controller. --}}
+                                                <td>{{ $surat->jenis->name ?? '-' }}</td>
                                                 <td>{{ $surat->hal ?? '-' }}</td>
-                                                <td>{{ $surat->tgl_surat ?? '-' }}</td>
-                                                <td>{{ $surat->klasifikasi ?? '-' }}</td>
-                                                <td>{{ $surat->kepada ?? '-' }}</td>
+                                                {{-- Format 'tgl_surat' using Carbon, since it's cast as 'date' in the model. --}}
+                                                <td>{{ $surat->tgl_surat ? $surat->tgl_surat->format('d F Y') : '-' }}</td>
+                                                <td>{{ $surat->kodeklasifikasi ?? '-' }}</td> {{-- Changed from klasifikasi to kodeklasifikasi based on model --}}
+                                                {{-- Display 'kepada' names using the accessor 'kepada_nama' defined in the model. --}}
+                                                <td>{{ $surat->kepada_nama ?? '-' }}</td>
                                                 <td>{{ $surat->up ?? '-' }}</td>
+                                                {{-- Add your action buttons here as per your original index.blade.php --}}
                                                 <td>
                                                     @if (isset($surat->id))
                                                         <a href="{{ route('suratterkirim.show', $surat->id) }}"
-                                                            class="btn btn-info btn-sm me-1" title="Detail Surat">
-                                                            Detail
-                                                        </a>
+                                                            class="btn btn-info btn-sm me-1" title="Detail Surat">Detail</a>
                                                         <a href="{{ route('suratterkirim.cetak', $surat->id) }}"
                                                             target="_blank" class="btn btn-warning text-dark btn-sm me-1"
-                                                            title="Cetak Surat">
-                                                            Cetak
-                                                        </a>
+                                                            title="Cetak Surat">Cetak</a>
                                                         <form action="{{ route('suratterkirim.destroy', $surat->id) }}"
                                                             method="POST" class="d-inline"
                                                             onsubmit="return confirm('Apakah yakin ingin menghapus surat ini?')"
                                                             title="Hapus Surat">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                                Hapus
-                                                            </button>
+                                                            <button type="submit"
+                                                                class="btn btn-danger btn-sm">Hapus</button>
                                                         </form>
                                                     @else
-                                                        <span class="text-muted">Aksi tidak tersedia</span>
+                                                        <span class="text-muted">ID Tidak Ada</span>
                                                     @endif
                                                 </td>
+                                            </tr>
+                                            </td>
                                             </tr>
                                         @empty
                                             <tr>
@@ -103,9 +106,6 @@
                             {{-- Pagination area --}}
                             @if ($suratTerkirim instanceof \Illuminate\Pagination\LengthAwarePaginator)
                                 <div class="d-flex justify-content-between align-items-center pt-3 mt-3">
-                                    <nav aria-label="Page navigation">
-                                        {{ $suratTerkirim->links('pagination::bootstrap-5') }}
-                                    </nav>
                                     <div class="text-muted small fw-bold">
                                         Menampilkan {{ $suratTerkirim->firstItem() }} - {{ $suratTerkirim->lastItem() }}
                                         dari {{ $suratTerkirim->total() }} Data

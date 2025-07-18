@@ -70,10 +70,15 @@ Route::get('/suratkeluar/create', [SuratKeluarController::class, 'create'])->nam
 Route::post('/suratkeluar', [SuratKeluarController::class, 'store'])->name('suratkeluar.store');
 
 
+
+Route::resource('suratterkirim', SuratTerkirimController::class);
 Route::get('/suratterkirim', [SuratTerkirimController::class, 'index'])->name('suratterkirim.index');
 Route::get('/surat-terkirim/{id}', [SuratTerkirimController::class, 'show'])->name('suratterkirim.show');
 Route::get('/surat-terkirim/{id}/cetak', [SuratTerkirimController::class, 'cetak'])->name('suratterkirim.cetak');
+Route::get('suratterkirim/{id}/cetak', [SuratTerkirimController::class, 'cetak'])->name('suratterkirim.cetak');
 Route::delete('/surat-terkirim/{id}', [SuratTerkirimController::class, 'destroy'])->name('suratterkirim.destroy');
+Route::get('/surat-terkirim/data', [SuratTerkirimController::class, 'getData'])->name('suratterkirim.getdata');
+
 
 
 Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
