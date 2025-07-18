@@ -296,7 +296,8 @@
                 width: '100%',
                 dropdownAutoWidth: true,
                 placeholder: 'Pilih opsi',
-                allowClear: true
+                allowClear: true,
+                dropdownParent: $('#exampleModal2')
             });
 
             // Inisialisasi Select2 khusus saat modal Tambah User muncul
