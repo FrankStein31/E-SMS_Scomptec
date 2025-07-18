@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\MasterJenisSurat;
+use App\Models\User;
 
 class SuratKeluarIsi extends Model
 {
     use HasUlids, SoftDeletes;
+
     protected $fillable = [
         'suratkeluar_id',
         'revisi_id',
@@ -48,6 +51,19 @@ class SuratKeluarIsi extends Model
 
     public function jenis()
     {
-        return $this->belongsTo(MasterJenisSurat::class, 'jenis_id', 'last_id');
+        return $this->belongsTo(MasterJenisSurat::class,  'jenis_id', 'last_id');
+    }
+    // relasi kepada: jika field berupa json/array, return null
+    public function kepadaUser()
+    {
+        if (is_numeric($this->kepada)) {
+            return $this->belongsTo(User::class, 'kepada');
+        }
+        return null;
+    }
+
+    public function klasifikasi()
+    {
+        return $this->belongsTo(\App\Models\MasterKlasifikasi::class, 'kodeklasifikasi', 'kodeklasifikasi');
     }
 }

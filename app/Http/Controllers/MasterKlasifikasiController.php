@@ -14,8 +14,20 @@ class MasterKlasifikasiController extends Controller
         $data = MasterKlasifikasi::when($q, function($query) use ($q) {
             $query->where('kodeklasifikasi', 'like', "%$q%")
                   ->orWhere('klasifikasi', 'like', "%$q%");
-        })->orderBy('kodeklasifikasi')->paginate(10);
-        return view('klasifikasi.index', compact('data', 'q'));
+        })->orderBy('kodeklasifikasi')->get();
+
+        // Ambil kode utama unik dan label pertama sesuai urutan data
+        $kodeUtama = MasterKlasifikasi::select('kodeklasifikasi', 'klasifikasi')
+            ->orderBy('kodeklasifikasi')
+            ->get()
+            ->groupBy(function($item) {
+                return substr($item->kodeklasifikasi, 0, 3);
+            })
+            ->map(function($group) {
+                return $group->first();
+            });
+
+        return view('klasifikasi.index', compact('data', 'q', 'kodeUtama'));
     }
 
     public function store(Request $request)

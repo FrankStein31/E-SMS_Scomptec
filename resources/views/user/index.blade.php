@@ -26,7 +26,6 @@
                 </div>
             </div>
             <!-- Breadcrumb end -->
-
             <!-- Blank start -->
             <div class="row">
                 <!-- Default Card start -->
@@ -97,8 +96,8 @@
                                                         <div class="row mb-2 align-items-center">
                                                             <label class="col-sm-3 col-form-label">Unit Kerja:</label>
                                                             <div class="col-sm-9">
-                                                                <select id="satkerSelect" name="satkerid"
-                                                                    class="form-select select2">
+                                                                <select name="satkerid" class="form-select select2"
+                                                                    style="width: 100%;">
                                                                     <option value="">Pilih Unit Kerja</option>
                                                                     @foreach ($masterSatkers as $item)
                                                                         <option value="{{ $item->id }}">
@@ -125,8 +124,6 @@
                                         </div> <!-- /.modal-dialog -->
                                     </div> <!-- /.modal -->
                                 </div>
-
-
                             </div>
                         </div>
                         <div class="card-body">
@@ -135,8 +132,9 @@
                                     <form action="{{ route('user.index') }}" method="GET">
                                         <div class="input-group">
                                             <label class="input-group-text" for="group">User Group</label>
-                                            <select class="form-select" name="group" id="group"
-                                                onchange="this.form.submit()">
+                                            <select class="form-select select2" name="group" id="group"
+                                                onchange="this.form.submit()" style="width: 100%;">
+
                                                 <option value="">-- Semua --</option>
                                                 @foreach ($userGroups as $ug)
                                                     <option value="{{ $ug }}"
@@ -225,13 +223,13 @@
                                                 class="form-select select2">
                                                 <option value="">Pilih Unit
                                                     Kerja</option>
-                                                {{-- @foreach ($masterSatkers as $item)
+                                                @foreach ($masterSatkers as $item)
                                                     <option value="{{ $item->id }}">
                                                         {{ $item->satker }}
                                                     </option>
-                                                @endforeach --}}
+                                                @endforeach
                                             </select>
-                                            <input type="text" class="form-control" name="" id="satkertest">
+                                            {{-- <input type="text" class="form-control" name="" id="satkertest"> --}}
                                         </div>
                                     </div>
 
@@ -290,3 +288,37 @@
         }
     </script>
 @endpush
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            // Inisialisasi semua select2 di luar modal (misal: di halaman Buat Surat)
+            $('.select2, .select-example, .select-basic, .select-1').select2({
+                width: '100%',
+                dropdownAutoWidth: true,
+                placeholder: 'Pilih opsi',
+                allowClear: true
+            });
+
+            // Inisialisasi Select2 khusus saat modal Tambah User muncul
+            $('#exampleModal').on('shown.bs.modal', function() {
+                $(this).find('.select2').select2({
+                    dropdownParent: $('#exampleModal'),
+                    width: '100%',
+                    placeholder: 'Pilih Unit Kerja',
+                    allowClear: true
+                });
+            });
+
+            // Inisialisasi Select2 khusus untuk semua modal edit user
+            $('div[id^="editUserModal"]').on('shown.bs.modal', function() {
+                $(this).find('.select2').select2({
+                    dropdownParent: $(this),
+                    width: '100%',
+                    placeholder: 'Pilih Unit Kerja',
+                    allowClear: true
+                });
+            });
+        });
+    </script>
+@endpush
+

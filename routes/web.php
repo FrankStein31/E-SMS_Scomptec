@@ -13,6 +13,9 @@ use App\Http\Controllers\SuratTerkirimController;
 use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MasterKlasifikasiController;
+use App\Http\Controllers\DaftarAlamatController;
+use App\Http\Controllers\TindakanDisposisiController;
+use App\Http\Controllers\UnitKerjaController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -34,8 +37,11 @@ Route::resource('entrisurat', EntriSuratController::class);
 Route::resource('buatsurat', BuatSuratController::class);
 
 Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+Route::get('user/search', [UserController::class, 'search'])->name('user.search');
 Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
 Route::resource('user', UserController::class);
+
+Route::resource('unitkerja', UnitKerjaController::class);
 
 Route::prefix('report')->name('report.')->group(function () {
     Route::get('surat', [ReportSuratController::class, "surat"])->name('surat');
@@ -43,6 +49,10 @@ Route::prefix('report')->name('report.')->group(function () {
 });
 
 Route::resource('klasifikasi', MasterKlasifikasiController::class);
+
+Route::resource('daftar-alamat', DaftarAlamatController::class);
+
+Route::resource('tindakan-disposisi', TindakanDisposisiController::class);
 
 Route::get('kotakmasuk/disposisi/{id}', [KotakMasukController::class, "disposisi"])->name('kotakmasuk.disposisi');
 Route::post('kotakmasuk/disposisi', [KotakMasukController::class, "storeDisposisi"])->name('kotakmasuk.post.disposisi');
@@ -70,10 +80,15 @@ Route::get('/suratkeluar/create', [SuratKeluarController::class, 'create'])->nam
 Route::post('/suratkeluar', [SuratKeluarController::class, 'store'])->name('suratkeluar.store');
 
 
+
+Route::resource('suratterkirim', SuratTerkirimController::class);
 Route::get('/suratterkirim', [SuratTerkirimController::class, 'index'])->name('suratterkirim.index');
 Route::get('/surat-terkirim/{id}', [SuratTerkirimController::class, 'show'])->name('suratterkirim.show');
 Route::get('/surat-terkirim/{id}/cetak', [SuratTerkirimController::class, 'cetak'])->name('suratterkirim.cetak');
+Route::get('suratterkirim/{id}/cetak', [SuratTerkirimController::class, 'cetak'])->name('suratterkirim.cetak');
 Route::delete('/surat-terkirim/{id}', [SuratTerkirimController::class, 'destroy'])->name('suratterkirim.destroy');
+Route::get('/surat-terkirim/data', [SuratTerkirimController::class, 'getData'])->name('suratterkirim.getdata');
+
 
 
 Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');

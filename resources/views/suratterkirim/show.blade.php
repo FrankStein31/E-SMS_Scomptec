@@ -1,11 +1,9 @@
-@extends('layouts.app')
+@extends('layout.main')
 
 @section('content')
-
-<main>
-    <div class="container-fluid">
-        <!-- Breadcrumb start -->
-        <div class="row m-1"></div>
+    <main>
+        <div class="container-fluid">
+            <div class="row m-1"></div>
             <div class="col-12 ">
                 <h4 class="main-title">Detail Surat Terkirim</h4>
                 <ul class="app-line-breadcrumbs mb-3">
@@ -20,9 +18,7 @@
                 </ul>
             </div>
         </div>
-        <!-- Breadcrumb end -->
-        @include('layout.alert') {{-- Include your alert messages --}}
-        <!-- Detail Surat Terkirim start -->
+        @include('layout.alert')
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
@@ -33,55 +29,95 @@
                         <table class="table table-bordered table-striped">
                             <tr>
                                 <th>No. Surat</th>
-                                <td>{{ $suratTerkirim->no_surat }}</td>
+                                <td>{{ $suratTerkirim->nosurat ?? '-' }}</td>
                             </tr>
                             <tr>
-                                <th>Sifat</th>
-                                <td>{{ $suratTerkirim->sifat }}</td>
-                            </tr>
-                            <tr>
-                                <th>Jenis</th>
-                                <td>{{ $suratTerkirim->jenis }}</td>
-                            </tr>
-                            <tr>
-                                <th>Hal</th>
-                                <td>{{ $suratTerkirim->hal }}</td>
+                                <th>Jenis Surat</th>
+                                <td>{{ $suratTerkirim->jenis->name ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Tanggal Surat</th>
-                                <td>{{ $suratTerkirim->tgl_surat }}</td>
+                                <td>{{ $suratTerkirim->tgl_surat ? \Carbon\Carbon::parse($suratTerkirim->tgl_surat)->format('d F Y') : '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Hal</th>
+                                <td>{{ $suratTerkirim->hal ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Sifat</th>
+                                <td>
+                                    @if($suratTerkirim->sifat == 1)
+                                        <span class="badge bg-danger">Penting</span>
+                                    @elseif($suratTerkirim->sifat == 2)
+                                        <span class="badge bg-warning">Rahasia</span>
+                                    @else
+                                        <span class="badge bg-info">Biasa</span>
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
                                 <th>Klasifikasi</th>
-                                <td>{{ $suratTerkirim->klasifikasi }}</td>
+                                <td>{{ $suratTerkirim->klasifikasi->klasifikasi ?? '-' }}</td>
                             </tr>
                             <tr>
                                 <th>Kepada</th>
-                                <td>{{ $suratTerkirim->kepada }}</td>
+                                <td>
+                                    @php
+                                        $kepada = $suratTerkirim->kepada;
+                                        $names = [];
+                                        if($kepada) {
+                                            $arr = is_array($kepada) ? $kepada : json_decode($kepada);
+                                            if($arr) {
+                                                foreach($arr as $k) {
+                                                    $data = is_string($k) ? json_decode($k) : $k;
+                                                    if(isset($data->name)) $names[] = $data->name;
+                                                }
+                                            }
+                                        }
+                                        echo implode(', ', $names);
+                                    @endphp
+                                </td>
                             </tr>
                             <tr>
-                                <th>U.P</th>
-                                <td>{{ $suratTerkirim->up }}</td>
+                                <th>Penandatangan</th>
+                                <td>{{ $suratTerkirim->ttd_nama ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    @if($suratTerkirim->status == 1)
+                                        <span class="badge bg-warning">Draft</span>
+                                    @elseif($suratTerkirim->status == 2)
+                                        <span class="badge bg-info">Diproses</span>
+                                    @elseif($suratTerkirim->status == 3)
+                                        <span class="badge bg-success">Selesai</span>
+                                    @else
+                                        <span class="badge bg-danger">Ditolak</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Tembusan</th>
+                                <td>{{ $suratTerkirim->tembusan ?? '-' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Isi Surat</th>
+                                <td>{!! $suratTerkirim->isi ?? '-' !!}</td>
                             </tr>
                         </table>
 
-                        <!-- Actions -->
                         <div class="mt-3">
-                            <a href="{{ route('suratterkirim.cetak', $suratTerkirim->id) }}" class="btn btn-primary btn-sm">Cetak Surat</a>
-
-                            <!-- Delete Form -->
+                            <a href="{{ route('suratterkirim.cetak', $suratTerkirim->id) }}" target="_blank" class="btn btn-primary btn-sm me-1">Cetak Surat</a>
                             <form action="{{ route('suratterkirim.destroy', $suratTerkirim->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus surat ini?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm">Hapus Surat</button>
                             </form>
-
+                            <a href="{{ route('suratterkirim.index') }}" class="btn btn-secondary btn-sm ms-1">Kembali</a>
                         </div>
-
-                    </div> <!-- End of card body -->
-                </div> <!-- End of card -->
-            </div> <!-- End of col-md-12 -->
-        </div> <!-- End of row -->
-    </div> <!-- End of container-fluid -->
-</main>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 @endsection
