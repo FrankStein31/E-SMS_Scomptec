@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\UsersDataTable;
 use App\Models\MasterSatker;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,19 +13,27 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, UsersDataTable $dataTable)
     {
+        if ($request->ajax()) {
+            if ($request->id != null) {
+                $userById = User::with('masterSatker')->findOrFail($request->id);
+                return response()->json($userById);
+            }
+        }
+
         $group = $request->input('group');
 
         $userGroups = ['Administrator', 'Pribadi', 'Eksekutif', 'TU Persuratan', 'TU Satker'];
 
-        $user = User::when($group, function ($query, $group) {
-            return $query->where('jabatan', $group);
-        })->get();
+        // $user = User::when($group, function ($query, $group) {
+        //     return $query->where('jabatan', $group);
+        // })->get();
 
-        $masterSatkers = MasterSatker::all(); // ambil semua satker
+        $masterSatkers = MasterSatker::get(); // ambil semua satker
 
-        return view('user.index', compact('user', 'userGroups', 'group', 'masterSatkers'));
+        return $dataTable->render('user.index', compact('userGroups', 'group', 'masterSatkers'));
+        // return view('user.index', compact('user', 'userGroups', 'group', 'masterSatkers'));
     }
 
 

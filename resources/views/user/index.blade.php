@@ -150,171 +150,7 @@
                             <div class="card">
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    <table id="example1" class="table table-bordered table-hover">
-                                        <thead>
-                                            <tr>
-                                                <th>No</th>
-                                                <th>Username</th>
-                                                <th>Nama</th>
-                                                <th>NIP</th>
-                                                <th>Satuan Kerja</th>
-                                                <th>Email</th>
-                                                <th>Aksi</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse($user as $index => $us)
-                                                <tr>
-                                                    <td>{{ $index + 1 }}</td>
-                                                    <td>{{ $us->username }}</td>
-                                                    <td>{{ $us->fullname }}</td>
-                                                    <td>{{ $us->nip }}</td>
-                                                    <td>{{ $us->jabatan }}</td>
-                                                    <td>{{ $us->email }}</td>
-                                                    <td>
-                                                        <button type="button" class="btn btn-warning btn-sm"
-                                                            data-bs-toggle="modal" data-bs-target="#exampleModal2">
-                                                            Edit
-                                                        </button>
-                                                        <!-- Modal -->
-                                                        <div class="modal fade" id="exampleModal2" tabindex="-1"
-                                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                                            <div class="modal-dialog modal-lg">
-                                                                <!-- Form di luar modal-content agar tombol submit terdeteksi -->
-                                                                <form action="{{ route('user.update', $us->id) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <div class="modal-content">
-                                                                        <div class="modal-header">
-                                                                            <h1 class="modal-title fs-5"
-                                                                                id="exampleModalLabel">Edit User</h1>
-                                                                            <button type="button" class="btn-close"
-                                                                                data-bs-dismiss="modal"
-                                                                                aria-label="Close"></button>
-                                                                        </div>
-                                                                        <div class="modal-body">
-                                                                            <div class="row mb-2 align-items-center">
-                                                                                <label
-                                                                                    class="col-sm-3 col-form-label">Username:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <input type="text" name="username"
-                                                                                        class="form-control"
-                                                                                        value="{{ $us->username }}"
-                                                                                        required>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row mb-2 align-items-center">
-                                                                                <label
-                                                                                    class="col-sm-3 col-form-label">Password:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <input type="password" name="password"
-                                                                                        class="form-control">
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row mb-2 align-items-center">
-                                                                                <label class="col-sm-3 col-form-label">Nama
-                                                                                    Lengkap:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <input type="text" name="fullname"
-                                                                                        class="form-control"
-                                                                                        value="{{ $us->fullname }}"
-                                                                                        required>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row mb-2 align-items-center">
-                                                                                <label
-                                                                                    class="col-sm-3 col-form-label">NIP:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <input type="text" name="nip"
-                                                                                        class="form-control"
-                                                                                        value="{{ $us->nip }}"
-                                                                                        required>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row mb-2 align-items-center">
-                                                                                <label
-                                                                                    class="col-sm-3 col-form-label">Pangkat:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <input type="text" name="pangkat"
-                                                                                        class="form-control"
-                                                                                        value="{{ $us->pangkat }}"
-                                                                                        required>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row mb-2 align-items-center">
-                                                                                <label
-                                                                                    class="col-sm-3 col-form-label">Jabatan:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <input type="text" name="jabatan"
-                                                                                        class="form-control"
-                                                                                        value="{{ $us->jabatan }}"
-                                                                                        required>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="row mb-2 align-items-center">
-                                                                                <label class="col-sm-3 col-form-label">Unit
-                                                                                    Kerja:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <select id="satkerSelect"
-                                                                                        name="satkerid"
-                                                                                        class="form-select select2">
-                                                                                        <option value="">Pilih Unit
-                                                                                            Kerja</option>
-                                                                                        @foreach ($masterSatkers as $item)
-                                                                                            <option
-                                                                                                value="{{ $item->id }}"
-                                                                                                {{ $us->satkerid == $item->id ? 'selected' : '' }}>
-                                                                                                {{ $item->satker }}
-                                                                                            </option>
-                                                                                        @endforeach
-                                                                                    </select>
-                                                                                </div>
-                                                                            </div>
-
-                                                                            <div class="row mb-2 align-items-center">
-                                                                                <label
-                                                                                    class="col-sm-3 col-form-label">Email:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <input type="email" name="email"
-                                                                                        class="form-control"
-                                                                                        value="{{ $us->email }}"
-                                                                                        required>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="modal-footer">
-                                                                            <button type="button"
-                                                                                class="btn btn-secondary"
-                                                                                data-bs-dismiss="modal">Batal</button>
-                                                                            <button type="submit"
-                                                                                class="btn btn-primary">Simpan</button>
-                                                                        </div>
-                                                                    </div> <!-- /.modal-content -->
-                                                                </form>
-                                                            </div> <!-- /.modal-dialog -->
-                                                        </div> <!-- /.modal -->
-                                                        <form action="{{ route('user.destroy', $us->id) }}"
-                                                            method="POST"
-                                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                                <i class="fas fa-trash"></i> Hapus
-                                                            </button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="7" class="text-center text-muted py-3">
-                                                        <i class="fas fa-inbox"></i> Tidak ada data user.
-                                                    </td>
-                                                </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
+                                    {{ $dataTable->table() }}
                                 </div>
                                 <!-- /.card-body -->
                             </div>
@@ -324,7 +160,133 @@
                     </div>
                     <!-- Default Card end -->
                 </div>
+
+                <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <!-- Form di luar modal-content agar tombol submit terdeteksi -->
+                        <form action="" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit User</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Username:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="username" class="form-control" value=""
+                                                id="username" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Password:</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" id="password" name="password" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Nama
+                                            Lengkap:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="fullname" class="form-control" id="fullname"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">NIP:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="nip" id="nip" class="form-control"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Pangkat:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="pangkat" id="pangkat" class="form-control"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Jabatan:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="jabatan" id="jabatan" class="form-control"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Unit
+                                            Kerja:</label>
+                                        <div class="col-sm-9">
+                                            <select id="satkerSelect" name="satkerid" id="satkerid2"
+                                                class="form-select select2">
+                                                <option value="">Pilih Unit
+                                                    Kerja</option>
+                                                {{-- @foreach ($masterSatkers as $item)
+                                                    <option value="{{ $item->id }}">
+                                                        {{ $item->satker }}
+                                                    </option>
+                                                @endforeach --}}
+                                            </select>
+                                            <input type="text" class="form-control" name="" id="satkertest">
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Email:</label>
+                                        <div class="col-sm-9">
+                                            <input type="email" name="email" id="email" class="form-control"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                </div>
+                            </div> <!-- /.modal-content -->
+                        </form>
+                    </div> <!-- /.modal-dialog -->
+                </div>
                 <!-- Blank end -->
             </div>
     </main>
 @endsection
+
+@push('scripts')
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+
+    <script>
+        function editModel(btn) {
+            var id = $(btn).data('id');
+            const masterSatker = @json($masterSatkers);
+            $.get("{{ route('user.index') }}?id=" + id, function(data) {
+
+                $('#username').val(data.username);
+                $('#password').val(data.password);
+                $('#fullname').val(data.fullname);
+                $('#nip').val(data.nip);
+                $('#pangkat').val(data.pangkat);
+                $('#jabatan').val(data.jabatan);
+                $('#satkertest').val(data.satkerid);
+                $('#email').val(data.email);
+
+                $('#satkerid2').empty().append('<option value="">-- Pilih Satker --</option>');
+
+                // Tambahkan opsi dari masterSatker
+                masterSatker.forEach(function(item) {
+                    const isSelected = item.id === data.satkerid ? 'selected' : '';
+                    $('#satkerid2').append(`<option value="${item.id}" ${isSelected}>${item.satker}</option>`);
+                });
+
+                $('#exampleModal2').find('form').attr('action', "{{ url('user') }}/" + data.id);
+                $('#exampleModal2').modal('show');
+            });
+        }
+    </script>
+@endpush
