@@ -13,6 +13,7 @@ use App\Http\Controllers\SuratTerkirimController;
 use App\Http\Controllers\DisposisiController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MasterKlasifikasiController;
+use App\Http\Controllers\UnitKerjaController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -34,8 +35,11 @@ Route::resource('entrisurat', EntriSuratController::class);
 Route::resource('buatsurat', BuatSuratController::class);
 
 Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+Route::get('user/search', [UserController::class, 'search'])->name('user.search');
 Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
 Route::resource('user', UserController::class);
+
+Route::resource('unitkerja', UnitKerjaController::class);
 
 Route::prefix('report')->name('report.')->group(function () {
     Route::get('surat', [ReportSuratController::class, "surat"])->name('surat');
