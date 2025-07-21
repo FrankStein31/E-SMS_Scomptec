@@ -197,6 +197,19 @@ $(function(){
                     if(res.success){
                         window.location = window.location.href;
                     }
+                    else if(res.message){
+                        alert(res.message);
+                    }
+                },
+                error: function(xhr){
+                    let msg = 'Gagal hapus data!';
+                    if(xhr.responseJSON && xhr.responseJSON.message){
+                        msg = xhr.responseJSON.message;
+                    } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                        let errors = xhr.responseJSON.errors;
+                        msg = Object.values(errors).flat()[0];
+                    }
+                    alert(msg);
                 }
             });
         }
@@ -221,7 +234,15 @@ $(function(){
                 }
             },
             error: function(xhr){
-                alert('Gagal simpan data!');
+                let msg = 'Gagal simpan data!';
+                if(xhr.responseJSON && xhr.responseJSON.message){
+                    msg = xhr.responseJSON.message;
+                } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                    // Ambil error pertama dari validasi
+                    let errors = xhr.responseJSON.errors;
+                    msg = Object.values(errors).flat()[0];
+                }
+                alert(msg);
             }
         });
     });
