@@ -2,21 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\MasterKlasifikasiDataTable;
 use App\Models\MasterKlasifikasi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class MasterKlasifikasiController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, MasterKlasifikasiDataTable $dataTable)
     {
-        $q = $request->q;
-        $data = MasterKlasifikasi::when($q, function($query) use ($q) {
-            $query->where('kodeklasifikasi', 'like', "%$q%")
-                  ->orWhere('klasifikasi', 'like', "%$q%");
-        })->orderBy('kodeklasifikasi')->get();
-
-        // Ambil kode utama unik dan label pertama sesuai urutan data
+        if ($request->ajax()) {
+            return $dataTable->ajax();
+        }
         $kodeUtama = MasterKlasifikasi::select('kodeklasifikasi', 'klasifikasi')
             ->orderBy('kodeklasifikasi')
             ->get()
@@ -26,8 +23,7 @@ class MasterKlasifikasiController extends Controller
             ->map(function($group) {
                 return $group->first();
             });
-
-        return view('klasifikasi.index', compact('data', 'q', 'kodeUtama'));
+        return $dataTable->render('klasifikasi.index', compact('kodeUtama'));
     }
 
     public function store(Request $request)
