@@ -17,7 +17,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                {{ $dataTable->table() }}
+                {{ $dataTable->table(['id' => 'table-id']) }}
             </div>
         </div>
     </div>
@@ -81,6 +81,15 @@
 
 @push('scripts')
 {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+<script>
+    $(document).ready(function() {
+        var table = window.LaravelDataTables['table-id'];
+        $('#filterKodeUtama').on('change', function(){
+            var value = $(this).val();
+            table.column('kodeklasifikasi:name').search(value).draw();
+        });
+    });
+</script>
 <script>
 $(function(){
     // Inisialisasi select2 untuk dropdown filter
