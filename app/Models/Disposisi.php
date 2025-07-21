@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Disposisi extends Model
 {
-    protected $table = 'disposisi_isis'; // sesuai nama tabel
+    protected $table = 'disposisi_isis'; 
 
-    protected $keyType = 'string'; // karena menggunakan ULID
+    protected $keyType = 'string'; 
     public $incrementing = false;
 
     protected $fillable = [
@@ -61,6 +61,6 @@ class Disposisi extends Model
 
     protected $casts = [
         'tgl_disposisi' => 'date',
-        'tgl_remitten' => 'date',
+        'tgl_remitten' => 'date'
     ];
 }

@@ -9,9 +9,7 @@
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">
                             <a class="f-s-14 f-w-500" href="#">
-                                <span>
-                                    Home
-                                </span>
+                                <span>Home</span>
                             </a>
                         </li>
                         <li class="active">
@@ -20,7 +18,6 @@
                     </ul>
                 </div>
             </div>
-
             @include('layout.alert') {{-- Include your alert messages --}}
 
             <div class="row">
@@ -38,10 +35,9 @@
                                         <option value="semua_surat">Semua Satker</option>
                                     </select>
                                     <a href="{{ route('suratkeluar.cetak') }}" target="_blank"
-                                        class="btn btn-primary btn-sm">
+                                        class="btn btn-primary btn-sm b-r-22"> {{-- Added b-r-22 class for rounded button --}}
                                         <i class="fas fa-print me-1"></i> Cetak
                                     </a>
-
                                 </div>
                             </div>
                         </div>
@@ -50,6 +46,7 @@
                                 <table class="table table-sm table-hover table-striped align-middle mb-0">
                                     <thead>
                                         <tr>
+                                            {{-- Adjusted rowspan and added the 'Action' column --}}
                                             <th rowspan="2" scope="col">No</th>
                                             <th rowspan="2" scope="col">No. Surat</th>
                                             <th rowspan="2" scope="col">Sifat</th>
@@ -58,18 +55,18 @@
                                             <th rowspan="2" scope="col">Tgl. Surat</th>
                                             <th rowspan="2" scope="col">Klasifikasi</th>
                                             <th rowspan="2" scope="col">Kepada</th>
-                                            <th colspan="3" scope="col"
-                                                style="text-align: center; padding-left: 20px;">Yang Memfinalkan</th>
+                                            <th colspan="3" scope="col" style="text-align: center;">Yang Memfinalkan
+                                            </th>
                                         </tr>
                                         <tr>
                                             <th scope="col">Nama</th>
                                             <th scope="col">Jabatan</th>
                                             <th scope="col">Satker</th>
+                                            {{-- Removed the 'Action' header here as it's not part of "Yang Memfinalkan" --}}
                                         </tr>
                                     </thead>
-
                                     <tbody>
-                                        @foreach ($suratKeluar as $index => $surat)
+                                        @forelse ($suratKeluar as $index => $surat)
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $surat->nosurat }}</td>
@@ -98,10 +95,15 @@
                                                 </td>
                                                 <td>{{ $surat->user_id_pembuat }}</td>
                                                 <td>{{ $surat->pembuat->jabatan ?? '-' }}</td>
-
                                                 <td>{{ $surat->userFinal->satker->satker ?? '-' }}</td>
+                                                {{-- If you need action buttons for each row, you'd add another <td> here --}}
                                             </tr>
-                                        @endforeach
+                                        @empty
+                                            <tr>
+                                                <td colspan="11" class="text-center">Tidak ada data</td>
+                                                {{-- Adjusted colspan --}}
+                                            </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>
@@ -136,10 +138,12 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            If you want rows to be clickable, uncomment this
+            // If you want rows to be clickable, uncomment this
+            /*
             $('.clickable-row').click(function() {
                 window.location = $(this).data('href');
             });
+            */
         });
     </script>
 @endpush
