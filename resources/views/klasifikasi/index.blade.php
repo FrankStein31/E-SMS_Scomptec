@@ -17,42 +17,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered mb-0" id="tabelKlasifikasi">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Kode</th>
-                            <th>Klasifikasi</th>
-                            <th>Retensi Aktif</th>
-                            <th>Retensi Inaktif</th>
-                            <th>Keterangan</th>
-                            <th>Retensi</th>
-                            <th>Parent</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($data as $row)
-                        <tr>
-                            <td>{{ $row->kodeklasifikasi }}</td>
-                            <td>{{ $row->klasifikasi }}</td>
-                            <td>{{ $row->retensi_aktif }}</td>
-                            <td>{{ $row->retensi_inaktif }}</td>
-                            <td>
-                                @if($row->keterangan==1) Dinilai Kembali
-                                @elseif($row->keterangan==2) Musnah
-                                @else Permanen
-                                @endif
-                            </td>
-                            <td>{{ $row->retensi }}</td>
-                            <td>{{ $row->parent }}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm btnEdit" data-id="{{ $row->id }}">Edit</button>
-                                <button class="btn btn-danger btn-sm btnHapus" data-id="{{ $row->id }}">Hapus</button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                {{ $dataTable->table() }}
             </div>
         </div>
     </div>
@@ -115,6 +80,7 @@
 @endsection
 
 @push('scripts')
+{{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 <script>
 $(function(){
     // Inisialisasi select2 untuk dropdown filter
@@ -125,34 +91,16 @@ $(function(){
         dropdownParent: $('.card-header')
     });
 
-    var table = $('#tabelKlasifikasi').DataTable({
-        paging: true,
-        searching: true,
-        ordering: true,
-        lengthChange: true,
-        pageLength: 10,
-        language: {
-            search: 'Cari:',
-            lengthMenu: 'Tampilkan _MENU_ data',
-            info: 'Menampilkan _START_ - _END_ dari _TOTAL_ data',
-            paginate: {
-                previous: 'Sebelumnya',
-                next: 'Selanjutnya'
-            },
-            zeroRecords: 'Data tidak ditemukan',
-            infoEmpty: 'Tidak ada data',
-            infoFiltered: '(difilter dari _MAX_ total data)'
-        },
-        autoWidth: false
-    });
+    var table = $('#tabelKlasifikasi').DataTable();
 
-    // Filter kode utama
+    // Filter kode utama (kolom ke-0 = kodeklasifikasi)
     $('#filterKodeUtama').on('change', function(){
         var val = $(this).val();
+        var colIdx = 0; // kodeklasifikasi kolom ke-0
         if(val) {
-            table.column(0).search('^'+val, true, false).draw();
+            table.column(colIdx).search(val).draw();
         } else {
-            table.column(0).search('').draw();
+            table.column(colIdx).search('').draw();
         }
     });
 
@@ -179,6 +127,8 @@ $(function(){
                 $('[name=retensi]').val(d.retensi);
                 $('[name=parent]').val(d.parent);
                 $('#modalKlasifikasi').modal('show');
+            } else {
+                alert('Data tidak ditemukan!');
             }
         });
     });
@@ -195,7 +145,9 @@ $(function(){
                 },
                 success: function(res){
                     if(res.success){
-                        window.location = window.location.href;
+                        $('#modalKlasifikasi').modal('hide');
+                        table.ajax.reload(null, false);
+                        alert('Data berhasil dihapus!');
                     }
                     else if(res.message){
                         alert(res.message);
@@ -214,7 +166,7 @@ $(function(){
             });
         }
     });
-    // Simpan
+    // Simpan (tambah/edit)
     $('#formKlasifikasi').submit(function(e){
         e.preventDefault();
         let id = $('#klasifikasi_id').val();
@@ -230,7 +182,8 @@ $(function(){
             success: function(res){
                 if(res.success){
                     $('#modalKlasifikasi').modal('hide');
-                    location.reload();
+                    table.ajax.reload(null, false);
+                    alert('Data berhasil disimpan!');
                 }
             },
             error: function(xhr){
@@ -238,7 +191,6 @@ $(function(){
                 if(xhr.responseJSON && xhr.responseJSON.message){
                     msg = xhr.responseJSON.message;
                 } else if(xhr.responseJSON && xhr.responseJSON.errors){
-                    // Ambil error pertama dari validasi
                     let errors = xhr.responseJSON.errors;
                     msg = Object.values(errors).flat()[0];
                 }
