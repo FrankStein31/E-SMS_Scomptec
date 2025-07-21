@@ -118,7 +118,8 @@
                             <div class="card">
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    <table id="example1" class="table table-bordered table-hover">
+                                    {{ $dataTable->table() }}
+                                    {{-- <table id="example1" class="table table-bordered table-hover">
                                         <thead>
                                             <tr>
                                                 <th>No</th>
@@ -134,6 +135,11 @@
                                                     <td>{{ $un->satker }}</td>
                                                     <td>{{ $un->kodesatker }}</td>
                                                     <td class="d-flex gap-1">
+                                                        @php
+                                                            $childCount = $unitkerja->where('kodesatker', '!=', $un->kodesatker)
+                                                                ->filter(fn($item) => str_starts_with($item->kodesatker, $un->kodesatker) && strlen($item->kodesatker) > strlen($un->kodesatker))
+                                                                ->count();
+                                                        @endphp
                                                         @if ($index < 5)
                                                             <!-- Tombol Edit Disabled -->
                                                             <button type="button" class="btn btn-warning btn-sm" disabled>
@@ -141,6 +147,18 @@
                                                             </button>
                                                             <!-- Tombol Hapus Disabled -->
                                                             <button type="button" class="btn btn-danger btn-sm" disabled>
+                                                                <i class="fas fa-trash"></i> Hapus
+                                                            </button>
+                                                        @elseif ($childCount > 0)
+                                                            <!-- Tombol Edit -->
+                                                            <button type="button" class="btn btn-warning btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#editModal-{{ $un->id }}">
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </button>
+                                                            <!-- Tombol Hapus Disabled dengan tooltip -->
+                                                            <button type="button" class="btn btn-danger btn-sm" disabled
+                                                                title="Hapus child-nya dulu">
                                                                 <i class="fas fa-trash"></i> Hapus
                                                             </button>
                                                         @else
@@ -224,7 +242,7 @@
                                                 </tr>
                                             @endforelse
                                         </tbody>
-                                    </table>
+                                    </table> --}}
                                 </div>
                                 <!-- /.card-body -->
                             </div>
@@ -237,3 +255,6 @@
             </div>
     </main>
 @endsection
+@push('scripts')
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+@endpush
