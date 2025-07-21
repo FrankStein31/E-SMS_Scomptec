@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\MasterSatkerDataTable;
 use Illuminate\Http\Request;
 use App\Models\MasterSatker;
 use Illuminate\Support\Str;
 
+use function Termwind\render;
 
 class UnitKerjaController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, MasterSatkerDataTable $dataTable)
+    
     {
         $eselon = $request->input('eselon');
 
@@ -26,7 +29,7 @@ class UnitKerjaController extends Controller
             ->distinct()
             ->get();
 
-        return view('unitkerja.index', compact('unitkerja', 'userGroups', 'eselon'));
+        return $dataTable->render('unitkerja.index', compact('unitkerja', 'userGroups', 'eselon'));
     }
 
 
@@ -58,11 +61,21 @@ class UnitKerjaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Ambil 5 id pertama (induk)
-        $parentIds = MasterSatker::orderBy('created_at')->take(5)->pluck('id')->toArray();
+        $unit = MasterSatker::findOrFail($id);
 
+        // Cek apakah ada child (kodesatker yang diawali parent dan lebih panjang)
+        $childCount = MasterSatker::where('kodesatker', 'like', $unit->kodesatker . '%')
+            ->whereRaw('LENGTH(kodesatker) > ?', [strlen($unit->kodesatker)])
+            ->count();
+
+        if ($childCount > 0) {
+            return redirect()->route('unitkerja.index')->with('error', 'Tidak bisa mengubah unit kerja induk yang masih punya anak. Ubah anaknya dulu.');
+        }
+
+        // Cek 5 data induk pertama (opsional)
+        $parentIds = MasterSatker::orderBy('created_at')->take(5)->pluck('id')->toArray();
         if (in_array($id, $parentIds)) {
-            return redirect()->route('unitkerja.index')->with('error', 'Data induk tidak boleh diubah.');
+            return redirect()->route('unitkerja.index')->with('error', 'Data induk utama tidak boleh diubah.');
         }
 
         $request->validate([
@@ -70,8 +83,7 @@ class UnitKerjaController extends Controller
             'kodesatker' => 'required|string|max:100|unique:master_satkers,kodesatker,' . $id,
         ]);
 
-        $data = MasterSatker::findOrFail($id);
-        $data->update([
+        $unit->update([
             'satker' => $request->satker,
             'kodesatker' => $request->kodesatker,
         ]);
@@ -85,15 +97,24 @@ class UnitKerjaController extends Controller
      */
     public function destroy($id)
     {
-        // Daftar id parent (induk) yang tidak boleh dihapus
-        $parentIds = MasterSatker::orderBy('created_at')->take(5)->pluck('id')->toArray();
+        $unit = MasterSatker::findOrFail($id);
 
-        if (in_array($id, $parentIds)) {
-            return redirect()->route('unitkerja.index')->with('error', 'Data induk tidak boleh dihapus.');
+        // Cek apakah ada child (kodesatker yang diawali parent dan lebih panjang)
+        $childCount = MasterSatker::where('kodesatker', 'like', $unit->kodesatker . '%')
+            ->whereRaw('LENGTH(kodesatker) > ?', [strlen($unit->kodesatker)])
+            ->count();
+
+        if ($childCount > 0) {
+            return redirect()->route('unitkerja.index')->with('error', 'Tidak bisa menghapus unit kerja induk yang masih punya anak. Hapus anaknya dulu.');
         }
 
-        $unit = MasterSatker::findOrFail($id);
-        $unit->forceDelete(); // Menghapus secara permanen dari database
+        // Cek 5 data induk pertama (opsional, jika tetap ingin proteksi)
+        $parentIds = MasterSatker::orderBy('created_at')->take(5)->pluck('id')->toArray();
+        if (in_array($id, $parentIds)) {
+            return redirect()->route('unitkerja.index')->with('error', 'Data induk utama tidak boleh dihapus.');
+        }
+
+        $unit->forceDelete();
 
         return redirect()->route('unitkerja.index')->with('success', 'Unit kerja berhasil dihapus.');
     }
