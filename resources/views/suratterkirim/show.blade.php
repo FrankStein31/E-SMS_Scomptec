@@ -114,10 +114,10 @@
                                 <button type="submit" class="btn btn-danger btn-sm">Hapus Surat</button>
                             </form>
                             <a href="{{ route('suratterkirim.index') }}" class="btn btn-secondary btn-sm ms-1">Kembali</a>
-                        </div>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     </main>
 @endsection
