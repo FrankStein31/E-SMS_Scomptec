@@ -33,7 +33,7 @@
                         <li><a href="{{ route('klasifikasi.index') }}"
                                 class="{{ request()->is('klasifikasi*') ? 'active' : '' }}">Klasifikasi</a></li>
                         <li><a href="{{ route('unitkerja.index') }}">Unit Kerja</a></li>
-                        <li><a href="">No. Surat</a></li>
+                        <!-- <li><a href="">No. Surat</a></li> -->
                         <li><a href="{{ route('daftar-alamat.index') }}">Daftar Alamat</a></li>
                         <li><a href="{{ route('tindakan-disposisi.index') }}">Tindakan Disposisi</a></li>
                         <li><a href="{{ route('user.index') }}">User</a></li>
@@ -64,6 +64,15 @@
                     </ul>
                 </li>
                 <li>
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#disposisi">
+                        <i class="iconoir-settings"></i>
+                        Disposisi
+                    </a>
+                    <ul class="collapse" id="disposisi">
+                        <li><a href="{{ route('disposisi.index') }}">Daftar Disposisi</a></li>
+                    </ul>
+                </li>
+                <!-- <li>
                     <a aria-expanded="false" data-bs-toggle="collapse" href="#pengendalian">
                         <i class="iconoir-settings"></i>
                         Pengendalian
@@ -77,7 +86,7 @@
                         <li><a href="#">Undangan</a></li>
                         <li><a href="#">Edaran</a></li>
                     </ul>
-                </li>
+                </li> -->
                 <li>
                     <a aria-expanded="false" data-bs-toggle="collapse" href="#more">
                         <i class="iconoir-more-horiz"></i>
@@ -91,14 +100,14 @@
                     </ul>
                 </li>
             @endif
-            <li class="menu-title">
+            <!-- <li class="menu-title">
                 <span>Lainnya</span>
             </li>
             <li class="no-sub">
                 <a href="">
                     <i class="iconoir-settings"></i> Pengaturan
                 </a>
-            </li>
+            </li> -->
             <!-- <li class="no-sub">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
