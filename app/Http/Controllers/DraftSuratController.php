@@ -13,8 +13,8 @@ class DraftSuratController extends Controller
      */
     public function index()
     {
-        $drafts = session('draft_surats', []);
-        return view('draft_surat.index', compact('drafts'));
+        $drafts = DraftSurat::all();
+        return view('draft_surat.index', compact('drafts'));    
     }
 
 

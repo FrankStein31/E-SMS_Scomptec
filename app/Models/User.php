@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -63,5 +64,15 @@ class User extends Authenticatable
     public function masterSatker()
     {
         return $this->hasOne(MasterSatker::class, 'userid', 'id');
+    }
+
+    public function satker()
+    {
+        return $this->belongsTo(\App\Models\MasterSatker::class, 'satkerid', 'satkerid');
+    }
+
+    public function disposisiDibuat(): HasMany
+    {
+        return $this->hasMany(Disposisi::class, 'userid_pembuat');
     }
 }

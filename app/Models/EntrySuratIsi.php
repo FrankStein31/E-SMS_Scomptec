@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\MasterJenisSurat;
 
+
+// protected $table = 'entry_surat_isis'; // atau nama tabelnya
 class EntrySuratIsi extends Model
 {
     use HasUlids;
@@ -34,6 +37,7 @@ class EntrySuratIsi extends Model
         'updated_by',
         'satkerid_update',
         'terdisposisi',
+
     ];
 
     /**
