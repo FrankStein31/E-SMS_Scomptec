@@ -9,6 +9,31 @@
     </style>
     <main>
         <div class="container-fluid">
+            <!-- Pesan Error dan Success -->
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             <!-- Breadcrumb start -->
             <div class="row m-1">
                 <div class="col-12">
@@ -88,29 +113,6 @@
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-md-4">
-                                    {{-- <form action="{{ route('unitkerja.index') }}" method="GET" class="mb-3">
-                                        <div class="row g-2 align-items-center">
-                                            <div class="col-auto">
-                                                <label for="eselon" class="col-form-label fw-semibold">Filter Unit
-                                                    Kerja:</label>
-                                            </div>
-                                            <div class="col-auto" style="min-width: 300px;">
-                                                <select name="eselon" id="eselon"
-                                                    class="form-select form-select-sm select2"
-                                                    onchange="this.form.submit()">
-                                                    <option value="">-- Semua --</option>
-                                                    @foreach ($userGroups as $ug)
-                                                        @if (!empty($ug->id) && !empty($ug->satker))
-                                                            <option value="{{ $ug->id }}"
-                                                                {{ $eselon == $ug->id ? 'selected' : '' }}>
-                                                                {{ $ug->satker }}
-                                                            </option>
-                                                        @endif
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </form> --}}
                                 </div>
                             </div>
                             <div class="card">
@@ -132,75 +134,86 @@
                                                     <td>{{ $un->satker }}</td>
                                                     <td>{{ $un->kodesatker }}</td>
                                                     <td class="d-flex gap-1">
-                                                        <!-- Tombol Edit -->
-                                                        <button type="button" class="btn btn-warning btn-sm"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#editModal-{{ $un->id }}">
-                                                            <i class="fas fa-edit"></i> Edit
-                                                        </button>
-                                                        <!-- Modal Edit -->
-                                                        <div class="modal fade" id="editModal-{{ $un->id }}"
-                                                            tabindex="-1"
-                                                            aria-labelledby="editModalLabel-{{ $un->id }}"
-                                                            aria-hidden="true">
-                                                            <div class="modal-dialog modal-lg">
-                                                                <form action="{{ route('unitkerja.update', $un->id) }}"
-                                                                    method="POST">
-                                                                    @csrf
-                                                                    @method('PUT')
-                                                                    <div class="modal-content">
-                                                                        <div class="modal-header">
-                                                                            <h5 class="modal-title"
-                                                                                id="editModalLabel-{{ $un->id }}">
-                                                                                Edit Unit Kerja</h5>
-                                                                            <button type="button" class="btn-close"
-                                                                                data-bs-dismiss="modal"
-                                                                                aria-label="Tutup"></button>
-                                                                        </div>
-                                                                        <div class="modal-body">
-                                                                            <div class="mb-3 row">
-                                                                                <label class="col-sm-3 col-form-label">Unit
-                                                                                    Kerja:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <input type="text" name="satker"
-                                                                                        class="form-control"
-                                                                                        value="{{ $un->satker }}"
-                                                                                        required>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="mb-3 row">
-                                                                                <label class="col-sm-3 col-form-label">Kode
-                                                                                    Satker:</label>
-                                                                                <div class="col-sm-9">
-                                                                                    <input type="text"
-                                                                                        name="kodesatker"
-                                                                                        class="form-control"
-                                                                                        value="{{ $un->kodesatker }}">
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="modal-footer">
-                                                                            <button type="button"
-                                                                                class="btn btn-secondary"
-                                                                                data-bs-dismiss="modal">Batal</button>
-                                                                            <button type="submit"
-                                                                                class="btn btn-primary">Simpan
-                                                                                Perubahan</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                        <!-- Tombol Hapus -->
-                                                        <form action="{{ route('unitkerja.destroy', $un->id) }}"
-                                                            method="POST"
-                                                            onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                        @if ($index < 5)
+                                                            <!-- Tombol Edit Disabled -->
+                                                            <button type="button" class="btn btn-warning btn-sm" disabled>
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </button>
+                                                            <!-- Tombol Hapus Disabled -->
+                                                            <button type="button" class="btn btn-danger btn-sm" disabled>
                                                                 <i class="fas fa-trash"></i> Hapus
                                                             </button>
-                                                        </form>
+                                                        @else
+                                                            <!-- Tombol Edit -->
+                                                            <button type="button" class="btn btn-warning btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#editModal-{{ $un->id }}">
+                                                                <i class="fas fa-edit"></i> Edit
+                                                            </button>
+                                                            <!-- Modal Edit -->
+                                                            <div class="modal fade" id="editModal-{{ $un->id }}"
+                                                                tabindex="-1"
+                                                                aria-labelledby="editModalLabel-{{ $un->id }}"
+                                                                aria-hidden="true">
+                                                                <div class="modal-dialog modal-lg">
+                                                                    <form action="{{ route('unitkerja.update', $un->id) }}"
+                                                                        method="POST">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <div class="modal-content">
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title"
+                                                                                    id="editModalLabel-{{ $un->id }}">
+                                                                                    Edit Unit Kerja</h5>
+                                                                                <button type="button" class="btn-close"
+                                                                                    data-bs-dismiss="modal"
+                                                                                    aria-label="Tutup"></button>
+                                                                            </div>
+                                                                            <div class="modal-body">
+                                                                                <div class="mb-3 row">
+                                                                                    <label class="col-sm-3 col-form-label">Unit
+                                                                                        Kerja:</label>
+                                                                                    <div class="col-sm-9">
+                                                                                        <input type="text" name="satker"
+                                                                                            class="form-control"
+                                                                                            value="{{ $un->satker }}"
+                                                                                            required>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="mb-3 row">
+                                                                                    <label class="col-sm-3 col-form-label">Kode
+                                                                                        Satker:</label>
+                                                                                    <div class="col-sm-9">
+                                                                                        <input type="text"
+                                                                                            name="kodesatker"
+                                                                                            class="form-control"
+                                                                                            value="{{ $un->kodesatker }}">
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="modal-footer">
+                                                                                <button type="button"
+                                                                                    class="btn btn-secondary"
+                                                                                    data-bs-dismiss="modal">Batal</button>
+                                                                                <button type="submit"
+                                                                                    class="btn btn-primary">Simpan
+                                                                                    Perubahan</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                            <!-- Tombol Hapus -->
+                                                            <form action="{{ route('unitkerja.destroy', $un->id) }}"
+                                                                method="POST"
+                                                                onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                                    <i class="fas fa-trash"></i> Hapus
+                                                                </button>
+                                                            </form>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @empty

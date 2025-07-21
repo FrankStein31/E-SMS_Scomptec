@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class MasterSatker extends Model
 {
     use HasUlids, SoftDeletes;
+    protected $table = 'master_satkers'; // Pastikan ini sesuai dengan nama tabel di database
     protected $fillable = [
         'satkerid',
         'kodesatker',

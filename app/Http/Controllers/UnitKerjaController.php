@@ -39,14 +39,14 @@ class UnitKerjaController extends Controller
     {
         $request->validate([
             'satker' => 'required|string|max:255',
-            'kodesatker' => 'nullable|string|max:100',
+            'kodesatker' => 'required|string|max:100|unique:master_satkers,kodesatker', // ganti nama tabel
         ]);
 
         MasterSatker::create([
-            'satkerid' => Str::uuid(), // atau pakai custom logic numerik
+            'satkerid' => \Illuminate\Support\Str::uuid(),
             'kodesatker' => $request->kodesatker,
             'satker' => $request->satker,
-            'eselon' => 0, // default
+            'eselon' => 0,
             'userid' => auth()->user()->id,
         ]);
 
@@ -58,16 +58,22 @@ class UnitKerjaController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Ambil 5 id pertama (induk)
+        $parentIds = MasterSatker::orderBy('created_at')->take(5)->pluck('id')->toArray();
+
+        if (in_array($id, $parentIds)) {
+            return redirect()->route('unitkerja.index')->with('error', 'Data induk tidak boleh diubah.');
+        }
+
         $request->validate([
             'satker' => 'required|string|max:255',
-            'kodesatker' => 'nullable|string|max:100',
+            'kodesatker' => 'required|string|max:100|unique:master_satkers,kodesatker,' . $id,
         ]);
 
         $data = MasterSatker::findOrFail($id);
         $data->update([
             'satker' => $request->satker,
             'kodesatker' => $request->kodesatker,
-            // Tidak update 'satkerid', 'userid', atau 'eselon' kecuali memang perlu
         ]);
 
         return redirect()->route('unitkerja.index')->with('success', 'Unit kerja berhasil diperbarui.');
@@ -79,6 +85,13 @@ class UnitKerjaController extends Controller
      */
     public function destroy($id)
     {
+        // Daftar id parent (induk) yang tidak boleh dihapus
+        $parentIds = MasterSatker::orderBy('created_at')->take(5)->pluck('id')->toArray();
+
+        if (in_array($id, $parentIds)) {
+            return redirect()->route('unitkerja.index')->with('error', 'Data induk tidak boleh dihapus.');
+        }
+
         $unit = MasterSatker::findOrFail($id);
         $unit->forceDelete(); // Menghapus secara permanen dari database
 
