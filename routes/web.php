@@ -78,6 +78,8 @@ Route::resource('/surat-keluar', SuratKeluarController::class);
 Route::get('/suratkeluar', [SuratKeluarController::class, 'index'])->name('suratkeluar.index');
 Route::get('/suratkeluar/create', [SuratKeluarController::class, 'create'])->name('suratkeluar.create');
 Route::post('/suratkeluar', [SuratKeluarController::class, 'store'])->name('suratkeluar.store');
+Route::get('/suratkeluar/cetak', [SuratKeluarController::class, 'cetak'])->name('suratkeluar.cetak');
+
 
 
 

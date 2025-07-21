@@ -1,6 +1,6 @@
 <nav>
     <div class="app-logo">
-        <a class="logo d-inline-block" href="index.html">
+        <a class="logo d-inline-block" href="/dashboard">
             <img alt="#" src="../assets/images/logo/1.png">
         </a>
 
@@ -15,29 +15,30 @@
                 <span>Dashboard</span>
             </li>
             @if (auth()->user()->jabatan == 'Administrator')
-            <li>
-                <a href="{{ route('dashboard') }}">
-                    <i class="iconoir-home-alt"></i>
-                    Dashboard
-                </a>
-            </li>
-            <li class="menu-title">
-                <span>Menu Utama</span>
-            </li>
-            <li>
-                <a aria-expanded="false" data-bs-toggle="collapse" href="#master">
-                    <i class="iconoir-settings"></i>
-                    Data Master
-                </a>
-                <ul class="collapse" id="master">
-                    <li><a href="{{ route('klasifikasi.index') }}" class="{{ request()->is('klasifikasi*') ? 'active' : '' }}">Klasifikasi</a></li>
-                    <li><a href="{{ route('unitkerja.index') }}">Unit Kerja</a></li>
-                    <li><a href="">No. Surat</a></li>
-                    <li><a href="{{ route('daftar-alamat.index') }}">Daftar Alamat</a></li>
-                    <li><a href="{{ route('tindakan-disposisi.index') }}">Tindakan Disposisi</a></li>
-                    <li><a href="{{ route('user.index') }}">User</a></li>
-                </ul>
-            </li>
+                <li>
+                    <a href="{{ route('dashboard') }}">
+                        <i class="iconoir-home-alt"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="menu-title">
+                    <span>Menu Utama</span>
+                </li>
+                <li>
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#master">
+                        <i class="iconoir-settings"></i>
+                        Data Master
+                    </a>
+                    <ul class="collapse" id="master">
+                        <li><a href="{{ route('klasifikasi.index') }}"
+                                class="{{ request()->is('klasifikasi*') ? 'active' : '' }}">Klasifikasi</a></li>
+                        <li><a href="{{ route('unitkerja.index') }}">Unit Kerja</a></li>
+                        <li><a href="">No. Surat</a></li>
+                        <li><a href="{{ route('daftar-alamat.index') }}">Daftar Alamat</a></li>
+                        <li><a href="{{ route('tindakan-disposisi.index') }}">Tindakan Disposisi</a></li>
+                        <li><a href="{{ route('user.index') }}">User</a></li>
+                    </ul>
+                </li>
             @else
                 <li>
                     <a href="{{ route('dashboard') }}">

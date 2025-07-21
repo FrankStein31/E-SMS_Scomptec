@@ -35,9 +35,13 @@
                                     <label for="filter" class="form-label mb-0 me-2">Tampilkan Surat:</label>
                                     <select id="filter" class="form-select form-select-sm w-auto me-2">
                                         <option value="surat_saya">Surat Saya</option>
-                                        <option value="semua_surat">Semua Surat</option>
+                                        <option value="semua_surat">Semua Satker</option>
                                     </select>
-                                    <button class="btn btn-primary btn-sm"><i class="fas fa-print me-1"></i> Cetak</button>
+                                    <a href="{{ route('suratkeluar.cetak') }}" target="_blank"
+                                        class="btn btn-primary btn-sm">
+                                        <i class="fas fa-print me-1"></i> Cetak
+                                    </a>
+
                                 </div>
                             </div>
                         </div>
@@ -65,26 +69,39 @@
                                     </thead>
 
                                     <tbody>
-                                        @forelse($suratKeluar as $index => $surat)
-                                            <tr class="clickable-row" data-id="{{ $surat['id'] ?? '' }}">
-                                                <td class="text-center">{{ $index + 1 }}</td>
-                                                <td>{{ $surat['no_surat'] ?? '-' }}</td>
-                                                <td>{{ $surat['sifat'] ?? '-' }}</td> {{-- Removed badge for simplicity --}}
-                                                <td>{{ $surat['jenis'] ?? '-' }}</td>
-                                                <td>{{ $surat['hal'] ?? '-' }}</td>
-                                                <td>{{ $surat['tgl_surat'] ?? '-' }}</td>
-                                                <td>{{ $surat['klasifikasi'] ?? '-' }}</td>
-                                                <td>{{ $surat['kepada'] ?? '-' }}</td>
-                                                <td>{{ $surat['nama_final'] ?? '-' }}</td>
-                                                <td>{{ $surat['jabatan_final'] ?? '-' }}</td>
-                                                <td>{{ $surat['satker_final'] ?? '-' }}</td>
-                                            </tr>
-                                        @empty
+                                        @foreach ($suratKeluar as $index => $surat)
                                             <tr>
-                                                <td colspan="11" class="text-center py-4 text-muted">Data surat keluar
-                                                    tidak ditemukan.</td>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $surat->nosurat }}</td>
+                                                <td>{{ $surat->sifat }}</td>
+                                                <td>{{ $surat->jenisSurat->name ?? '-' }}</td>
+                                                <td>{{ $surat->hal }}</td>
+                                                <td>{{ $surat->tgl_surat }}</td>
+                                                <td>{{ $surat->klasifikasi['klasifikasi'] ?? '-' }}</td>
+                                                <td>
+                                                    @php
+                                                        $kepada = $surat->kepada;
+                                                        $names = [];
+                                                        if ($kepada) {
+                                                            $arr = is_array($kepada) ? $kepada : json_decode($kepada);
+                                                            if ($arr) {
+                                                                foreach ($arr as $k) {
+                                                                    $data = is_string($k) ? json_decode($k) : $k;
+                                                                    if (isset($data->name)) {
+                                                                        $names[] = $data->name;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        echo implode(', ', $names);
+                                                    @endphp
+                                                </td>
+                                                <td>{{ $surat->user_id_pembuat }}</td>
+                                                <td>{{ $surat->pembuat->jabatan ?? '-' }}</td>
+
+                                                <td>{{ $surat->userFinal->satker->satker ?? '-' }}</td>
                                             </tr>
-                                        @endforelse
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>

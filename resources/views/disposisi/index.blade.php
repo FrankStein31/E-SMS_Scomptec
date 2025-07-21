@@ -64,12 +64,7 @@
                                                 <td>{{ $loop->iteration }}</td>
                                                 <td>{{ $disposisi->no_agenda ?? '-' }}</td>
                                                 <td>{{ $disposisi->no_surat ?? '-' }}</td>
-                                                <td>
-                                                    <span
-                                                        class="badge {{ $disposisi->sifat == 'Penting' ? 'bg-danger' : ($disposisi->sifat == 'Biasa' ? 'bg-primary' : 'bg-secondary') }}">
-                                                        {{ $disposisi->sifat ?? '-' }}
-                                                    </span>
-                                                </td>
+                                                <td>{{ $disposisi->sifat ?? '-' }}</td>
                                                 <td>{{ $disposisi->jenis ?? '-' }}</td>
                                                 <td>{{ $disposisi->dari ?? '-' }}</td>
                                                 <td>{{ $disposisi->tujuan ?? '-' }}</td>

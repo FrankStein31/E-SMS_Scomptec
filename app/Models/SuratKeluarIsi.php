@@ -21,6 +21,7 @@ class SuratKeluarIsi extends Model
         'no_generate',
         'nosurat',
         'kodeklasifikasi',
+        'klasifikasi',
         'tgl_surat',
         'hal',
         'jml_lampiran',
@@ -60,6 +61,16 @@ class SuratKeluarIsi extends Model
             return $this->belongsTo(User::class, 'kepada');
         }
         return null;
+    }
+
+    public function pembuat()
+    {
+        return $this->belongsTo(User::class, 'userid_final', 'id');
+    }
+
+    public function userFinal()
+    {
+        return $this->belongsTo(User::class, 'user_id_final');
     }
 
     public function klasifikasi()

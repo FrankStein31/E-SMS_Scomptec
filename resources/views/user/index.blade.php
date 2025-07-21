@@ -279,7 +279,8 @@
                 // Tambahkan opsi dari masterSatker
                 masterSatker.forEach(function(item) {
                     const isSelected = item.id === data.satkerid ? 'selected' : '';
-                    $('#satkerid2').append(`<option value="${item.id}" ${isSelected}>${item.satker}</option>`);
+                    $('#satkerid2').append(
+                        `<option value="${item.id}" ${isSelected}>${item.satker}</option>`);
                 });
 
                 $('#exampleModal2').find('form').attr('action', "{{ url('user') }}/" + data.id);
