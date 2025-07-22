@@ -16,8 +16,6 @@ use App\Http\Controllers\MasterKlasifikasiController;
 use App\Http\Controllers\DaftarAlamatController;
 use App\Http\Controllers\TindakanDisposisiController;
 use App\Http\Controllers\UnitKerjaController;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {

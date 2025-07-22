@@ -31,8 +31,12 @@
                                 <div class="col text-end d-flex justify-content-end align-items-center">
                                     <label for="filter" class="form-label mb-0 me-2">Tampilkan Surat:</label>
                                     <select id="filter" class="form-select form-select-sm w-auto me-2">
-                                        <option value="surat_saya">Surat Saya</option>
-                                        <option value="semua_surat">Semua Satker</option>
+                                        <option value="surat_saya"
+                                            {{ ($filter ?? 'surat_saya') == 'surat_saya' ? 'selected' : '' }}>Surat Saya
+                                        </option>
+                                        <option value="semua_surat"
+                                            {{ ($filter ?? 'surat_saya') == 'semua_surat' ? 'selected' : '' }}>Semua Satker
+                                        </option>
                                     </select>
                                     <a href="{{ route('suratkeluar.cetak') }}" target="_blank"
                                         class="btn btn-primary btn-sm b-r-22"> {{-- Added b-r-22 class for rounded button --}}
@@ -44,9 +48,8 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-sm table-hover table-striped align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            {{-- Adjusted rowspan and added the 'Action' column --}}
+                                    <thead class="text-align-center">
+                                        <tr class="text-align-center">
                                             <th rowspan="2" scope="col">No</th>
                                             <th rowspan="2" scope="col">No. Surat</th>
                                             <th rowspan="2" scope="col">Sifat</th>
@@ -55,8 +58,8 @@
                                             <th rowspan="2" scope="col">Tgl. Surat</th>
                                             <th rowspan="2" scope="col">Klasifikasi</th>
                                             <th rowspan="2" scope="col">Kepada</th>
-                                            <th colspan="3" scope="col" style="text-align: center;">Yang Memfinalkan
-                                            </th>
+                                            <th colspan="3" style="text-align: center;">Yang
+                                                Memfinalkan</th>
                                         </tr>
                                         <tr>
                                             <th scope="col">Nama</th>
@@ -70,8 +73,16 @@
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $surat->nosurat }}</td>
-                                                <td>{{ $surat->sifat }}</td>
-                                                <td>{{ $surat->jenisSurat->name ?? '-' }}</td>
+                                                <td>
+                                                    @if ($surat->sifat == 1)
+                                                        <span class="badge bg-danger">Penting</span>
+                                                    @elseif($surat->sifat == 2)
+                                                        <span class="badge bg-warning">Rahasia</span>
+                                                    @else
+                                                        <span class="badge bg-info">Biasa</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $surat->jenis->name }}</td>
                                                 <td>{{ $surat->hal }}</td>
                                                 <td>{{ $surat->tgl_surat }}</td>
                                                 <td>{{ $surat->klasifikasi['klasifikasi'] ?? '-' }}</td>
@@ -97,7 +108,7 @@
                                                 <td>{{ $surat->pembuat->jabatan ?? '-' }}</td>
                                                 <td>{{ $surat->userFinal->satker->satker ?? '-' }}</td>
                                                 {{-- If you need action buttons for each row, you'd add another <td> here --}}
-                                            </tr>   
+                                            </tr>
                                         @empty
                                             <tr>
                                                 <td colspan="11" class="text-center">Tidak ada data</td>
