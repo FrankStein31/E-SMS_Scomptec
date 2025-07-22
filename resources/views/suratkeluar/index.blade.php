@@ -97,7 +97,7 @@
                                                 <td>{{ $surat->pembuat->jabatan ?? '-' }}</td>
                                                 <td>{{ $surat->userFinal->satker->satker ?? '-' }}</td>
                                                 {{-- If you need action buttons for each row, you'd add another <td> here --}}
-                                            </tr>
+                                            </tr>   
                                         @empty
                                             <tr>
                                                 <td colspan="11" class="text-center">Tidak ada data</td>

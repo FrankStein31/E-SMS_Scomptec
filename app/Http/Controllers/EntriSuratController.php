@@ -83,7 +83,7 @@ class EntriSuratController extends Controller
 
     /**
      * Display a listing of the resource.
-     */ 
+     */
     public function index()
     {
         $data = EntrySuratIsi::with('FileScan')->orderBy('tgl_surat', 'desc')->get();
@@ -175,7 +175,8 @@ class EntriSuratController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'berhasil Membuat Entri Surat');
+            return redirect()->route('entrisurat.show', $create->id)
+                ->with('success', 'Berhasil membuat entri surat.');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('danger', 'Gagal Membuat Entri Surat: ' . $th->getMessage());

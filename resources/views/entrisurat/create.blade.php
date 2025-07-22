@@ -128,13 +128,17 @@
                                     <div class="col-md-9">
                                         <select class="select-example form-select form-select-sm select-basic"
                                             name="jenis_surat">
-                                            <option selected>Pilih Jenis Surat</option>
+                                            <option disabled>Pilih Jenis Surat</option>
                                             @foreach ($jenisSurat as $item)
-                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                <option value="{{ $item->id }}"
+                                                    {{ $item->name == 'Surat Masuk' ? 'selected' : '' }}>
+                                                    {{ $item->name }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
+
                                 <div class="row mb-2">
                                     <div class="col-md-2">
                                         <label class="form-label">Sifat Surat</label>
