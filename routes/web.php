@@ -81,8 +81,6 @@ Route::post('/suratkeluar', [SuratKeluarController::class, 'store'])->name('sura
 Route::get('/suratkeluar/cetak', [SuratKeluarController::class, 'cetak'])->name('suratkeluar.cetak');
 
 
-
-
 Route::resource('suratterkirim', SuratTerkirimController::class);
 Route::get('/suratterkirim', [SuratTerkirimController::class, 'index'])->name('suratterkirim.index');
 Route::get('/surat-terkirim/{id}', [SuratTerkirimController::class, 'show'])->name('suratterkirim.show');
