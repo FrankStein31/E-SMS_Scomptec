@@ -127,28 +127,21 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="row mb-3">
-                                <div class="col-md-4">
-                                    <form action="{{ route('user.index') }}" method="GET">
-                                        <div class="input-group">
-                                            <label class="input-group-text" for="group">User Group</label>
-                                            <select class="form-select select2" name="group" id="group"
-                                                onchange="this.form.submit()" style="width: 100%;">
-
-                                                <option value="">-- Semua --</option>
-                                                @foreach ($userGroups as $ug)
-                                                    <option value="{{ $ug }}"
-                                                        {{ $group == $ug ? 'selected' : '' }}>{{ $ug }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
                             <div class="card">
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    {{ $dataTable->table() }}
+                                    <div class="row mb-2">
+                                        <div class="col-md-4">
+                                        <label class="input-group-text" for="group">User Group</label>
+                                            <select id="filterJabatan" class="form-select">
+                                                <option value="">-- Semua Jabatan --</option>
+                                                @foreach($userGroups as $ug)
+                                                    <option value="{{ $ug }}">{{ $ug }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    {{ $dataTable->table(['id' => 'tabelUser']) }}
                                 </div>
                                 <!-- /.card-body -->
                             </div>
@@ -258,35 +251,122 @@
 
 @push('scripts')
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
-
     <script>
-        function editModel(btn) {
-            var id = $(btn).data('id');
-            const masterSatker = @json($masterSatkers);
-            $.get("{{ route('user.index') }}?id=" + id, function(data) {
-
-                $('#username').val(data.username);
-                $('#password').val(data.password);
-                $('#fullname').val(data.fullname);
-                $('#nip').val(data.nip);
-                $('#pangkat').val(data.pangkat);
-                $('#jabatan').val(data.jabatan);
-                $('#satkertest').val(data.satkerid);
-                $('#email').val(data.email);
-
-                $('#satkerid2').empty().append('<option value="">-- Pilih Satker --</option>');
-
-                // Tambahkan opsi dari masterSatker
-                masterSatker.forEach(function(item) {
-                    const isSelected = item.id === data.satkerid ? 'selected' : '';
-                    $('#satkerid2').append(
-                        `<option value="${item.id}" ${isSelected}>${item.satker}</option>`);
-                });
-
-                $('#exampleModal2').find('form').attr('action', "{{ url('user') }}/" + data.id);
+    $(function(){
+        // Filter jabatan
+        $('#filterJabatan').on('change', function(){
+            let val = $(this).val();
+            window.LaravelDataTables['tabelUser'].column('jabatan:name').search(val).draw();
+        });
+        // Tambah User AJAX
+        $('#exampleModal form').submit(function(e){
+            e.preventDefault();
+            let form = $(this);
+            $.ajax({
+                url: form.attr('action'),
+                type: 'POST',
+                data: form.serialize(),
+                success: function(res){
+                    if(res.success){
+                        $('#exampleModal').modal('hide');
+                        $('#exampleModal form')[0].reset();
+                        $('body').removeClass('modal-open');
+                        $('.modal-backdrop').remove();
+                        window.LaravelDataTables['tabelUser'].ajax.reload(null, false);
+                        alert('User berhasil ditambahkan!');
+                    } else if(res.message){
+                        alert(res.message);
+                    }
+                },
+                error: function(xhr){
+                    let msg = 'Gagal simpan data!';
+                    if(xhr.responseJSON && xhr.responseJSON.message){
+                        msg = xhr.responseJSON.message;
+                    } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                        let errors = xhr.responseJSON.errors;
+                        msg = Object.values(errors).flat()[0];
+                    }
+                    alert(msg);
+                }
+            });
+        });
+        // Edit User AJAX
+        $(document).on('click', '.btnEdit', function(){
+            let id = $(this).data('id');
+            $.get('/user?id='+id, function(data){
+                $('#exampleModal2 #username').val(data.username);
+                $('#exampleModal2 #fullname').val(data.fullname);
+                $('#exampleModal2 #nip').val(data.nip);
+                $('#exampleModal2 #pangkat').val(data.pangkat);
+                $('#exampleModal2 #jabatan').val(data.jabatan);
+                $('#exampleModal2 #satkerid2').val(data.satkerid).trigger('change');
+                $('#exampleModal2 #email').val(data.email);
+                $('#exampleModal2 form').attr('action', '/user/'+data.id);
                 $('#exampleModal2').modal('show');
             });
-        }
+        });
+        // Update User AJAX
+        $('#exampleModal2 form').submit(function(e){
+            e.preventDefault();
+            let form = $(this);
+            let url = form.attr('action');
+            let data = form.serialize();
+            data += '&_method=PUT';
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                success: function(res){
+                    if(res.success){
+                        $('#exampleModal2').modal('hide');
+                        window.LaravelDataTables['tabelUser'].ajax.reload(null, false);
+                        alert('User berhasil diupdate!');
+                    } else if(res.message){
+                        alert(res.message);
+                    }
+                },
+                error: function(xhr){
+                    let msg = 'Gagal update data!';
+                    if(xhr.responseJSON && xhr.responseJSON.message){
+                        msg = xhr.responseJSON.message;
+                    } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                        let errors = xhr.responseJSON.errors;
+                        msg = Object.values(errors).flat()[0];
+                    }
+                    alert(msg);
+                }
+            });
+        });
+        // Hapus User AJAX
+        $(document).on('click', '.btnHapus', function(){
+            if(confirm('Yakin hapus user ini?')){
+                let id = $(this).data('id');
+                $.ajax({
+                    url: '/user/'+id,
+                    type: 'POST',
+                    data: {_method: 'DELETE', _token: '{{ csrf_token() }}'},
+                    success: function(res){
+                        if(res.success){
+                            window.LaravelDataTables['tabelUser'].ajax.reload(null, false);
+                            alert('User berhasil dihapus!');
+                        } else if(res.message){
+                            alert(res.message);
+                        }
+                    },
+                    error: function(xhr){
+                        let msg = 'Gagal hapus data!';
+                        if(xhr.responseJSON && xhr.responseJSON.message){
+                            msg = xhr.responseJSON.message;
+                        } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                            let errors = xhr.responseJSON.errors;
+                            msg = Object.values(errors).flat()[0];
+                        }
+                        alert(msg);
+                    }
+                });
+            }
+        });
+    });
     </script>
 @endpush
 @push('scripts')

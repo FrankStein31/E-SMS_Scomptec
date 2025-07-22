@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\MasterInstansi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-
+use App\DataTables\MasterInstansiDataTable;
 class DaftarAlamatController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, MasterInstansiDataTable $dataTable)
     {
-        $data = MasterInstansi::orderBy('instansi')->get();
-        return view('daftar_alamat.index', compact('data'));
+        if ($request->ajax()) {
+            return $dataTable->ajax();
+        }
+        return $dataTable->render('daftar_alamat.index');
     }
 
     public function store(Request $request)
@@ -23,6 +25,10 @@ class DaftarAlamatController extends Controller
             'kota' => 'required|string|max:255',
             'telp' => 'required|string|max:255',
         ]);
+        // Cek duplikat manual
+        if (\App\Models\MasterInstansi::where('instansi', $request->instansi)->exists()) {
+            return response()->json(['success' => false, 'message' => 'Nama instansi sudah ada, tidak boleh duplikat.'], 422);
+        }
         $data = $request->only(['instansi','kepala','alamat','kota','telp']);
         $data['id'] = (string) Str::ulid();
         $alamat = MasterInstansi::create($data);
@@ -38,6 +44,10 @@ class DaftarAlamatController extends Controller
             'kota' => 'required|string|max:255',
             'telp' => 'required|string|max:255',
         ]);
+        // Cek duplikat manual kecuali dirinya sendiri
+        if (\App\Models\MasterInstansi::where('instansi', $request->instansi)->where('id', '!=', $id)->exists()) {
+            return response()->json(['success' => false, 'message' => 'Nama instansi sudah ada, tidak boleh duplikat.'], 422);
+        }
         $alamat = MasterInstansi::findOrFail($id);
         $alamat->update($request->only(['instansi','kepala','alamat','kota','telp']));
         return response()->json(['success' => true, 'data' => $alamat]);

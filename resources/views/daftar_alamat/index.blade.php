@@ -9,33 +9,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered mb-0" id="tabelAlamat">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Instansi</th>
-                            <th>Kepala</th>
-                            <th>Alamat</th>
-                            <th>Kota</th>
-                            <th>Telp</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($data as $row)
-                        <tr>
-                            <td>{{ $row->instansi }}</td>
-                            <td>{{ $row->kepala }}</td>
-                            <td>{{ $row->alamat }}</td>
-                            <td>{{ $row->kota }}</td>
-                            <td>{{ $row->telp }}</td>
-                            <td>
-                                <button class="btn btn-warning btn-sm btnEdit" data-id="{{ $row->id }}">Edit</button>
-                                <button class="btn btn-danger btn-sm btnHapus" data-id="{{ $row->id }}">Hapus</button>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                {{ $dataTable->table(['id' => 'tabelAlamat']) }}
             </div>
         </div>
     </div>
@@ -84,30 +58,9 @@
 @endsection
 
 @push('scripts')
+{{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 <script>
 $(function(){
-    // Inisialisasi DataTables
-    $('#tabelAlamat').DataTable({
-        paging: true,
-        searching: true,
-        ordering: true,
-        lengthChange: true,
-        pageLength: 10,
-        language: {
-            search: 'Cari:',
-            lengthMenu: 'Tampilkan _MENU_ data',
-            info: 'Menampilkan _START_ - _END_ dari _TOTAL_ data',
-            paginate: {
-                previous: 'Sebelumnya',
-                next: 'Selanjutnya'
-            },
-            zeroRecords: 'Data tidak ditemukan',
-            infoEmpty: 'Tidak ada data',
-            infoFiltered: '(difilter dari _MAX_ total data)'
-        },
-        autoWidth: false
-    });
-
     // Tambah
     $('#btnTambah').click(function(){
         $('#formAlamat')[0].reset();
@@ -145,8 +98,23 @@ $(function(){
                 },
                 success: function(res){
                     if(res.success){
-                        window.location = window.location.href;
+                        $('#modalAlamat').modal('hide');
+                        window.LaravelDataTables['tabelAlamat'].ajax.reload(null, false);
+                        alert('Data berhasil dihapus!');
                     }
+                    else if(res.message){
+                        alert(res.message);
+                    }
+                },
+                error: function(xhr){
+                    let msg = 'Gagal hapus data!';
+                    if(xhr.responseJSON && xhr.responseJSON.message){
+                        msg = xhr.responseJSON.message;
+                    } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                        let errors = xhr.responseJSON.errors;
+                        msg = Object.values(errors).flat()[0];
+                    }
+                    alert(msg);
                 }
             });
         }
@@ -167,11 +135,22 @@ $(function(){
             success: function(res){
                 if(res.success){
                     $('#modalAlamat').modal('hide');
-                    location.reload();
+                    window.LaravelDataTables['tabelAlamat'].ajax.reload(null, false);
+                    alert('Data berhasil disimpan!');
+                }
+                else if(res.message){
+                    alert(res.message);
                 }
             },
             error: function(xhr){
-                alert('Gagal simpan data!');
+                let msg = 'Gagal simpan data!';
+                if(xhr.responseJSON && xhr.responseJSON.message){
+                    msg = xhr.responseJSON.message;
+                } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                    let errors = xhr.responseJSON.errors;
+                    msg = Object.values(errors).flat()[0];
+                }
+                alert(msg);
             }
         });
     });
