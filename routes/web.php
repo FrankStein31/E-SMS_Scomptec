@@ -29,6 +29,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::post('entrisurat/post/file/scan/{entri_surat_id}', [EntriSuratController::class, "scanfile"])->name('entrisurat.post.file.scan');
+Route::delete('/entrisurat/scan/{id}/delete', [EntriSuratController::class, 'deleteScan'])->name('entrisurat.scan.delete');
 Route::resource('entrisurat', EntriSuratController::class);
 
 
@@ -44,6 +45,7 @@ Route::resource('unitkerja', UnitKerjaController::class);
 Route::prefix('report')->name('report.')->group(function () {
     Route::get('surat', [ReportSuratController::class, "surat"])->name('surat');
     Route::get('statistik', [ReportSuratController::class, "statistik"])->name('statistik');
+    Route::get('laporan/cetak', [ReportSuratController::class, "cetak"])->name('laporan.cetak');
 });
 
 Route::resource('klasifikasi', MasterKlasifikasiController::class);
@@ -92,3 +94,5 @@ Route::get('/surat-terkirim/data', [SuratTerkirimController::class, 'getData'])-
 Route::resource('disposisi', DisposisiController::class);
 Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
 Route::get('/disposisi/{id}', [DisposisiController::class, 'show'])->name('disposisi.show');
+
+Route::get('aktivitas', [ReportSuratController::class, 'aktivitas'])->name('aktivitas');

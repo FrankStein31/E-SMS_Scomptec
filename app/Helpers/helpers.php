@@ -16,4 +16,15 @@ if (!function_exists('sifatSurat')) {
                 return 'Tidak Diketahui';
         }
     }
+}
+
+if (!function_exists('getListTahun')) {
+    function getListTahun($start = 2015) {
+        $now = (int)date('Y');
+        $tahun = [];
+        for ($i = $now; $i >= $start; $i--) {
+            $tahun[] = $i;
+        }
+        return $tahun;
+    }
 } 

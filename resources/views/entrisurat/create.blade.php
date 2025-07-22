@@ -83,8 +83,9 @@
                                         <select class="form-control select-1" name="kepada[]" multiple="multiple">
                                             <option value="">Pilih Kepada</option>
                                             @foreach ($users as $item)
-                                                <option value="{{ $item['id'] }}">{{ $item['FullName'] }} -
-                                                    {{ $item['Jabatan2'] }}</option>
+                                                @if (strtolower($item['Jabatan2']) != 'administrator')
+                                                    <option value="{{ $item['id'] }}">{{ $item['FullName'] }} - {{ $item['Jabatan2'] }}</option>
+                                                @endif
                                             @endforeach
                                         </select>
                                     </div>
@@ -130,8 +131,7 @@
                                             name="jenis_surat">
                                             <option disabled>Pilih Jenis Surat</option>
                                             @foreach ($jenisSurat as $item)
-                                                <option value="{{ $item->id }}"
-                                                    {{ $item->name == 'Surat Masuk' ? 'selected' : '' }}>
+                                                <option value="{{ $item->last_id }}" {{ $item->last_id == $default_jenis_surat_last_id ? 'selected' : '' }}>
                                                     {{ $item->name }}
                                                 </option>
                                             @endforeach

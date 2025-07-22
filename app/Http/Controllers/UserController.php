@@ -16,8 +16,8 @@ class UserController extends Controller
     public function index(Request $request, UsersDataTable $dataTable)
     {
         if ($request->ajax() && $request->id != null) {
-            $userById = User::with('masterSatker')->findOrFail($request->id);
-            return response()->json($userById);
+                $userById = User::with('masterSatker')->findOrFail($request->id);
+                return response()->json($userById);
         }
         $userGroups = ['Administrator', 'Pribadi', 'Eksekutif', 'TU Persuratan', 'TU Satker'];
         $masterSatkers = MasterSatker::get();

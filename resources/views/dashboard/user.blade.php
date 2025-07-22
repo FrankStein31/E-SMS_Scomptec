@@ -81,4 +81,84 @@
         </div>
     </div>
 </main>
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <b>Surat Masuk Terbaru</b>
+                </div>
+                <div class="card-body p-3">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>No Surat</th>
+                                <th>Perihal</th>
+                                <th>Tanggal</th>
+                                <th>Pengirim</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($latest_surat_masuk ?? [] as $s)
+                            <tr>
+                                <td>{{ $s->nomor_surat ?? '-' }}</td>
+                                <td>{{ $s->hal ?? '-' }}</td>
+                                <td>{{ $s->tgl_surat ?? '-' }}</td>
+                                <td>{{ $s->dari ?? '-' }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-light">
+                    <b>Surat Keluar Terbaru</b>
+                </div>
+                <div class="card-body p-3">
+                    <table class="table table-sm mb-0">
+                        <thead>
+                            <tr>
+                                <th>No Surat</th>
+                                <th>Perihal</th>
+                                <th>Tanggal</th>
+                                <th>Penerima</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($latest_surat_keluar ?? [] as $s)
+                            <tr>
+                                <td>{{ $s->nosurat ?? '-' }}</td>
+                                <td>{{ $s->hal ?? '-' }}</td>
+                                <td>{{ date('Y-m-d', strtotime($s->tgl_surat)) ?? '-' }}</td>
+                                <td>
+                                    @php
+                                        $penerima = [];
+                                        if (!empty($s->kepada)) {
+                                            $arr = is_array($s->kepada) ? $s->kepada : json_decode($s->kepada);
+                                            if ($arr) {
+                                                foreach ($arr as $k) {
+                                                    $data = is_string($k) ? json_decode($k) : $k;
+                                                    if (isset($data->name)) {
+                                                        $jabatan = isset($data->jabatan) ? $data->jabatan : '';
+                                                        $penerima[] = $data->name . ($jabatan ? ' (' . $jabatan . ')' : '');
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    {{ count($penerima) ? implode(', ', $penerima) : '-' }}
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection 

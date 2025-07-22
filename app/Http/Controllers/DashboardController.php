@@ -10,6 +10,8 @@ use App\Models\MasterInstansi;
 use App\Models\MasterTindakanDisposisi;
 use App\Models\EntrySuratIsi;
 use App\Models\SuratKeluarIsi;
+use App\Models\DraftSurat;
+use App\Models\Disposisi;
 
 class DashboardController extends Controller
 {
@@ -41,11 +43,26 @@ class DashboardController extends Controller
 
     private function userDashboard()
     {
+        $userId = Auth::id();
+        $total_surat_masuk = EntrySuratIsi::whereHas('tujuanSurat', function($q) use ($userId) {
+            $q->where('userid_tujuan', $userId);
+        })->count();
+        $total_surat_keluar = SuratKeluarIsi::where('user_id_pembuat', $userId)->count();
+        $total_draft = class_exists('App\\Models\\DraftSurat') ? DraftSurat::where('userid_pembuat', $userId)->count() : 0;
+        $total_disposisi = class_exists('App\\Models\\Disposisi') ? Disposisi::where('userid_pembuat', $userId)->count() : 0;
+
+        $latest_surat_masuk = EntrySuratIsi::whereHas('tujuanSurat', function($q) use ($userId) {
+            $q->where('userid_tujuan', $userId);
+        })->orderBy('created_at', 'desc')->take(5)->get();
+        $latest_surat_keluar = SuratKeluarIsi::where('user_id_pembuat', $userId)->orderBy('created_at', 'desc')->take(5)->get();
+
         $data = [
-            'total_surat_masuk' => 0, // Tambahkan query sesuai model
-            'total_surat_keluar' => 0,
-            'total_draft' => 0,
-            'total_disposisi' => 0,
+            'total_surat_masuk' => $total_surat_masuk,
+            'total_surat_keluar' => $total_surat_keluar,
+            'total_draft' => $total_draft,
+            'total_disposisi' => $total_disposisi,
+            'latest_surat_masuk' => $latest_surat_masuk,
+            'latest_surat_keluar' => $latest_surat_keluar,
         ];
         return view('dashboard.user', $data);
     }

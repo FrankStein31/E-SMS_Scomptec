@@ -134,7 +134,7 @@
                                     </div>
                                     <div class="col-md-9">
                                         <select class="select-example form-select form-select-sm select-basic"
-                                            name="jenis_surat">
+                                            name="kepada">
                                             <option selected value=""></option>
                                             @foreach ($satker as $item)
                                                 <option value="{{ $item->id }}">{{ $item->satker }}</option>
@@ -148,7 +148,7 @@
                                     </div>
                                     <div class="col-md-9">
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
-                                        <button type="submit" class="btn btn-warning btn-sm">Cetak</button> 
+                                        <a href="{{ url()->current() . '?' . http_build_query(request()->except('_token')) . '&cetak=1' }}" target="_blank" class="btn btn-warning btn-sm">Cetak</a> 
                                     </div>
                                 </div>
                             </form>
@@ -200,42 +200,24 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- @if ($data != null)
-                                            @foreach ($data as $item)
-                                                <tr data-href='{{ route('kotakmasuk.show', $item->id) }}' class="clickable-row">
-                                                    <td>
-                                                        {{ $loop->iteration }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->noagenda }}
-                                                    </td>
-                                                    <td>
-                                                        {{ sifatSurat($item->sifat) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->jenis->name }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->nomor_surat }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->dari }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->kepada }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->hal }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->createdby->fullname }}
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        {{ $item->tgl_surat }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @endif --}}
+                                        @forelse ($data as $item)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $item->noagenda ?? '-' }}</td>
+                                                <td>{{ sifatSurat($item->sifat ?? 0) }}</td>
+                                                <td>{{ $item->jenis_id ?? '-' }}</td>
+                                                <td>{{ $item->nomor_surat ?? '-' }}</td>
+                                                <td>{{ $item->dari ?? '-' }}</td>
+                                                <td>{{ $item->kepada ?? '-' }}</td>
+                                                <td>{{ $item->hal ?? '-' }}</td>
+                                                <td>{{ $item->created_by ?? '-' }}</td>
+                                                <td>{{ $item->tgl_surat ?? '-' }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="10" class="text-center">Tidak ada data</td>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
                                 </table>
                             </div>

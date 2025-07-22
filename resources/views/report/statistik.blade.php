@@ -100,40 +100,38 @@
                             <form action="" class="app-form" method="get">
                                 <div class="row">
                                     <div class="col">
-                                        <select class="select-example form-select form-select-sm select-basic"
-                                            name="jenis_surat">
-                                            <option selected>Pilih Tahun</option>
+                                        <select class="select-example form-select form-select-sm select-basic" name="tahun">
+                                            <option value="">Pilih Tahun</option>
                                             @foreach (getListTahun() as $item)
-                                                <option value="{{ $item }}">{{ $item }}</option>
+                                                <option value="{{ $item }}" {{ (isset($tahun) && $tahun == $item) ? 'selected' : '' }}>{{ $item }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col">
-                                        <select class="select-example form-select form-select-sm select-basic"
-                                            name="jenis_surat">
-                                            <option selected>Pilih Jenis Surat</option>
+                                        <select class="select-example form-select form-select-sm select-basic" name="jenis_surat">
+                                            <option value="">Pilih Jenis Surat</option>
                                             @foreach ($jenisSurat as $item)
-                                                <option value="{{ $item->id }}">{{ $item->name }}</option>
+                                                <option value="{{ $item->last_id }}" {{ (isset($jenis) && $jenis == $item->last_id) ? 'selected' : '' }}>{{ $item->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-sm mt-3">Tampilkan</button>
                             </form>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col">
-                                    <h5>Grafik</h5>
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h5>Grafik</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <figure class="highcharts-figure">
+                                        <div id="container"></div>
+                                    </figure>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <figure class="highcharts-figure">
-                                <div id="container"></div>
-                            </figure>
                         </div>
                     </div>
                 </div>
@@ -153,31 +151,20 @@
 
     <script>
         let datas = @json($data);
-        let arrayFix = [];
-
-        for (let item of datas) {
-            arrayFix.push([item.nama_bulan, item.jumlah]);
-        }
+        let bulan = datas.map(item => item.nama_bulan);
+        let masuk = datas.map(item => item.jumlah_masuk);
+        let keluar = datas.map(item => item.jumlah_keluar);
 
         Highcharts.chart('container', {
             chart: {
                 type: 'column'
             },
             title: {
-                text: 'Statistik'
-            },
-            subtitle: {
-                text: ''
+                text: 'Statistik Surat Masuk & Keluar'
             },
             xAxis: {
-                type: 'category',
-                labels: {
-                    autoRotation: [-45, -90],
-                    style: {
-                        fontSize: '13px',
-                        fontFamily: 'Verdana, sans-serif'
-                    }
-                }
+                categories: bulan,
+                crosshair: true
             },
             yAxis: {
                 min: 0,
@@ -185,34 +172,27 @@
                     text: 'JUMLAH'
                 }
             },
-            legend: {
-                enabled: false
-            },
             tooltip: {
-                pointFormat: 'Jumlah : <b>{point.y:.1f}</b>'
+                shared: true
             },
-            series: [{
-                name: 'Jumlah',
-                colors: [
-                    '#8E7DBE'
-                ],
-                colorByPoint: true,
-                groupPadding: 0,
-                data: arrayFix,
-                dataLabels: {
-                    enabled: true,
-                    rotation: -90,
-                    color: '#FFFFFF',
-                    inside: true,
-                    verticalAlign: 'top',
-                    format: '{point.y:.1f}', // one decimal
-                    y: 10, // 10 pixels down from the top
-                    style: {
-                        fontSize: '13px',
-                        fontFamily: 'Verdana, sans-serif'
-                    }
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
                 }
-            }]
+            },
+            series: [
+                {
+                    name: 'Surat Masuk',
+                    data: masuk,
+                    color: '#8E7DBE'
+                },
+                {
+                    name: 'Surat Keluar',
+                    data: keluar,
+                    color: '#F7B731'
+                }
+            ]
         });
     </script>
 @endpush
