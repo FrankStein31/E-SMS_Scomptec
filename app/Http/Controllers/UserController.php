@@ -15,25 +15,13 @@ class UserController extends Controller
      */
     public function index(Request $request, UsersDataTable $dataTable)
     {
-        if ($request->ajax()) {
-            if ($request->id != null) {
-                $userById = User::with('masterSatker')->findOrFail($request->id);
-                return response()->json($userById);
-            }
+        if ($request->ajax() && $request->id != null) {
+            $userById = User::with('masterSatker')->findOrFail($request->id);
+            return response()->json($userById);
         }
-
-        $group = $request->input('group');
-
         $userGroups = ['Administrator', 'Pribadi', 'Eksekutif', 'TU Persuratan', 'TU Satker'];
-
-        // $user = User::when($group, function ($query, $group) {
-        //     return $query->where('jabatan', $group);
-        // })->get();
-
-        $masterSatkers = MasterSatker::get(); // ambil semua satker
-
-        return $dataTable->render('user.index', compact('userGroups', 'group', 'masterSatkers'));
-        // return view('user.index', compact('user', 'userGroups', 'group', 'masterSatkers'));
+        $masterSatkers = MasterSatker::get();
+        return $dataTable->render('user.index', compact('userGroups', 'masterSatkers'));
     }
 
 
@@ -60,7 +48,6 @@ class UserController extends Controller
             'satkerid'   => 'required|exists:master_satkers,id',
             'email'      => 'nullable|email|unique:users,email',
         ]);
-
         $user = new User();
         $user->username   = $validated['username'];
         $user->password   = Hash::make($validated['password']);
@@ -68,12 +55,10 @@ class UserController extends Controller
         $user->nip        = $validated['nip'] ?? null;
         $user->pangkat    = $validated['pangkat'] ?? null;
         $user->jabatan    = $validated['jabatan'] ?? null;
-        $user->satkerid   = $validated['satkerid']; // foreign key to master_satkers
+        $user->satkerid   = $validated['satkerid'];
         $user->email      = $validated['email'] ?? null;
-
         $user->save();
-
-        return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan.');
+        return response()->json(['success' => true, 'data' => $user]);
     }
 
     /**
@@ -98,17 +83,15 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'username' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users,username,' . $id,
             'fullname' => 'required|string|max:255',
-            'nip' => 'required|string|max:50',
-            'pangkat' => 'required|string|max:100',
-            'jabatan' => 'required|string|max:100',
+            'nip' => 'nullable|string|max:50',
+            'pangkat' => 'nullable|string|max:100',
+            'jabatan' => 'nullable|string|max:100',
             'satkerid' => 'required|exists:master_satkers,id',
-            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'email' => 'nullable|email|max:255|unique:users,email,' . $id,
         ]);
-
         $user = User::findOrFail($id);
-
         $user->username = $request->username;
         $user->fullname = $request->fullname;
         $user->nip = $request->nip;
@@ -116,15 +99,11 @@ class UserController extends Controller
         $user->jabatan = $request->jabatan;
         $user->satkerid = $request->satkerid;
         $user->email = $request->email;
-
-        // Jika field password diisi, maka update password
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
-
         $user->save();
-
-        return redirect()->route('user.index')->with('success', 'Data pengguna berhasil diperbarui.');
+        return response()->json(['success' => true, 'data' => $user]);
     }
 
     /**
@@ -136,9 +115,9 @@ class UserController extends Controller
 
         try {
             $user->delete(); // Jika menggunakan SoftDeletes, ini hanya akan menandai sebagai terhapus
-            return redirect()->back()->with('success', 'Data pengguna berhasil dihapus.');
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage()], 500);
         }
     }
 }

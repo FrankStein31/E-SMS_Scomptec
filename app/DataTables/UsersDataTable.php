@@ -24,19 +24,8 @@ class UsersDataTable extends DataTable
         return (new EloquentDataTable($query))
             ->addColumn('aksi', function ($q){
                 $btn = '';
-                $routeDel = route('user.destroy', $q->id);
-                $methodDel = 'DELETE';
-                $btn .= '<form action="'.$routeDel.'" onsubmit="return confirm(Yakin ingin menghapus data ini?)" method="post">
-                            '. csrf_field() .'
-                            '. method_field($methodDel) .'
-                            <button type="submit" class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash"></i> Hapus
-                            </button>
-                        </form>';
-                
-                $btn .= '<button type="button" data-id="'.$q->id.'" onclick="editModel(this)" class="btn btn-warning btn-sm">
-                                                            Edit
-                                                        </button>';
+                $btn .= '<button type="button" data-id="'.$q->id.'" class="btn btn-warning btn-sm btnEdit">Edit</button> ';
+                $btn .= '<button type="button" data-id="'.$q->id.'" class="btn btn-danger btn-sm btnHapus">Hapus</button>';
                 return $btn;
             })
             ->rawColumns(['aksi'])
@@ -50,7 +39,13 @@ class UsersDataTable extends DataTable
      */
     public function query(User $model): QueryBuilder
     {
-        return $model->newQuery();
+        $query = $model->newQuery();
+        // Filter by jabatan/usergroup jika ada request
+        $jabatan = $this->request->get('jabatan');
+        if ($jabatan) {
+            $query->where('jabatan', $jabatan);
+        }
+        return $query->orderBy('username');
     }
 
     /**

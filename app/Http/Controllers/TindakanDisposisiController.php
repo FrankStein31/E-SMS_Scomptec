@@ -5,13 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\MasterTindakanDisposisi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\DataTables\MasterTindakanDisposisiDataTable;
+
 
 class TindakanDisposisiController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, MasterTindakanDisposisiDataTable $dataTable)
     {
-        $data = MasterTindakanDisposisi::orderBy('tindakan')->get();
-        return view('tindakan_disposisi.index', compact('data'));
+        if ($request->ajax()) {
+            return $dataTable->ajax();
+        }
+        return $dataTable->render('tindakan_disposisi.index');
     }
 
     public function store(Request $request)
@@ -20,6 +24,10 @@ class TindakanDisposisiController extends Controller
             'tindakan' => 'required|string|max:255',
             'satkerid' => 'required|string|max:255',
         ]);
+        // Cek duplikat manual
+        if (\App\Models\MasterTindakanDisposisi::where('tindakan', $request->tindakan)->where('satkerid', $request->satkerid)->exists()) {
+            return response()->json(['success' => false, 'message' => 'Nama tindakan untuk satker ini sudah ada, tidak boleh duplikat.'], 422);
+        }
         $data = $request->only(['tindakan','satkerid']);
         $data['id'] = (string) Str::ulid();
         $tindakan = MasterTindakanDisposisi::create($data);
@@ -32,6 +40,10 @@ class TindakanDisposisiController extends Controller
             'tindakan' => 'required|string|max:255',
             'satkerid' => 'required|string|max:255',
         ]);
+        // Cek duplikat manual kecuali dirinya sendiri
+        if (\App\Models\MasterTindakanDisposisi::where('tindakan', $request->tindakan)->where('satkerid', $request->satkerid)->where('id', '!=', $id)->exists()) {
+            return response()->json(['success' => false, 'message' => 'Nama tindakan untuk satker ini sudah ada, tidak boleh duplikat.'], 422);
+        }
         $tindakan = MasterTindakanDisposisi::findOrFail($id);
         $tindakan->update($request->only(['tindakan','satkerid']));
         return response()->json(['success' => true, 'data' => $tindakan]);
