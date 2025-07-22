@@ -70,8 +70,16 @@
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>{{ $surat->nosurat }}</td>
-                                                <td>{{ $surat->sifat }}</td>
-                                                <td>{{ $surat->jenisSurat->name ?? '-' }}</td>
+                                                <td>
+                                                    @if ($surat->sifat == 1)
+                                                        <span class="badge bg-danger">Penting</span>
+                                                    @elseif($surat->sifat == 2)
+                                                        <span class="badge bg-warning">Rahasia</span>
+                                                    @else
+                                                        <span class="badge bg-info">Biasa</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $surat->jenis->name }}</td>
                                                 <td>{{ $surat->hal }}</td>
                                                 <td>{{ $surat->tgl_surat }}</td>
                                                 <td>{{ $surat->klasifikasi['klasifikasi'] ?? '-' }}</td>
@@ -97,7 +105,7 @@
                                                 <td>{{ $surat->pembuat->jabatan ?? '-' }}</td>
                                                 <td>{{ $surat->userFinal->satker->satker ?? '-' }}</td>
                                                 {{-- If you need action buttons for each row, you'd add another <td> here --}}
-                                            </tr>   
+                                            </tr>
                                         @empty
                                             <tr>
                                                 <td colspan="11" class="text-center">Tidak ada data</td>
