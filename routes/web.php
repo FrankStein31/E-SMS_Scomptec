@@ -93,5 +93,6 @@ Route::get('/surat-terkirim/data', [SuratTerkirimController::class, 'getData'])-
 
 
 
+Route::resource('disposisi', DisposisiController::class);
 Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
 Route::get('/disposisi/{id}', [DisposisiController::class, 'show'])->name('disposisi.show');

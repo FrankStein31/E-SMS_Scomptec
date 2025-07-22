@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Disposisi extends Model
 {
-    protected $table = 'disposisi_isis'; 
+    use HasUlids;
+    protected $table = 'disposisi_isis';
 
     protected $keyType = 'string'; 
     public $incrementing = false;
@@ -63,4 +65,9 @@ class Disposisi extends Model
         'tgl_disposisi' => 'date',
         'tgl_remitten' => 'date'
     ];
+
+    public function suratSumber()
+    {
+        return \App\Models\EntrySuratIsi::find($this->entrysurat_id);
+    }
 }
