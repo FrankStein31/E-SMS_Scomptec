@@ -128,297 +128,398 @@
             /* Biru muda */
         }
 
+
+        /* Kop Surat */
+        .kop-surat {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .kop-kiri {
+            flex: 0 0 auto;
+            margin-right: 15px;
+        }
+
+        .kop-logo {
+            width: 80px;
+            height: auto;
+        }
+
+        .kop-kanan {
+            flex: 1;
+            text-align: center;
+        }
+
+        .kop-nama {
+            font-size: 16pt;
+            font-weight: 700;
+            margin: 0;
+            color: #000;
+            text-transform: uppercase;
+        }
+
+        .kop-alamat,
+        .kop-kontak {
+            font-size: 10pt;
+            margin: 2px 0;
+            color: #333;
+        }
+
+        .garis-pemisah {
+            border: 2px solid #000;
+            margin: 10px 0 20px;
+        }
+
+
         /* Media Cetak */
         @media print {
-    @page {
-        size: A4 portrait;
-        margin: 15mm 20mm 20mm 20mm; /* top, right, bottom, left */
-        /* Remove default headers/footers */
-        @top-left { content: none; }
-        @top-right { content: none; }
-        @bottom-left { content: none; }
-        @bottom-right { content: none; }
-    }
+            @page {
+                size: A4 portrait;
+                margin: 15mm 20mm 20mm 20mm;
 
-    /* Reset and base styles */
-    * {
-        box-shadow: none !important;
-        text-shadow: none !important;
-    }
+                /* top, right, bottom, left */
+                /* Remove default headers/footers */
+                @top-left {
+                    content: none;
+                }
 
-    body {
-        margin: 0;
-        padding: 0;
-        background: white !important;
-        color: #000 !important;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif;
-        font-size: 10pt;
-        line-height: 1.4;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        -moz-print-color-adjust: exact;
-    }
+                @top-right {
+                    content: none;
+                }
 
-    /* Hide non-printable elements */
-    .no-print,
-    .btn,
-    button,
-    input[type="button"],
-    input[type="submit"],
-    .sidebar,
-    .navigation,
-    .nav,
-    .footer,
-    .advertisement {
-        display: none !important;
-    }
+                @bottom-left {
+                    content: none;
+                }
 
-    /* Headings optimization */
-    h1, h2, h3, h4, h5, h6 {
-        color: #000 !important;
-        page-break-after: avoid;
-        margin: 12pt 0 6pt 0;
-        font-weight: bold;
-    }
+                @bottom-right {
+                    content: none;
+                }
+            }
 
-    h1 { font-size: 16pt; }
-    h2 { font-size: 14pt; }
-    h3 { font-size: 12pt; }
-    h4, h5, h6 { font-size: 11pt; }
+            /* Reset and base styles */
+            * {
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
 
-    /* Paragraph spacing */
-    p {
-        margin: 6pt 0;
-        orphans: 3;
-        widows: 3;
-    }
+            body {
+                margin: 0;
+                padding: 0;
+                background: white !important;
+                color: #000 !important;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif;
+                font-size: 10pt;
+                line-height: 1.4;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                -moz-print-color-adjust: exact;
+            }
 
-    /* Table styling */
-    table {
-        width: 100% !important;
-        border-collapse: collapse !important;
-        border-spacing: 0 !important;
-        margin: 12pt 0;
-        background: white !important;
-        font-size: 9pt;
-        page-break-inside: avoid;
-    }
+            /* Hide non-printable elements */
+            .no-print,
+            .btn,
+            button,
+            input[type="button"],
+            input[type="submit"],
+            .sidebar,
+            .navigation,
+            .nav,
+            .footer,
+            .advertisement {
+                display: none !important;
+            }
 
-    /* Table headers */
-    thead {
-        display: table-header-group; /* Repeat on every page */
-    }
+            /* Headings optimization */
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6 {
+                color: #000 !important;
+                page-break-after: avoid;
+                margin: 12pt 0 6pt 0;
+                font-weight: bold;
+            }
 
-    thead th {
-        background: #f0f0f0 !important;
-        color: #000 !important;
-        font-weight: bold;
-        text-align: left;
-        padding: 8pt 6pt;
-        border: 1px solid #333 !important;
-        page-break-after: avoid;
-        vertical-align: top;
-    }
+            h1 {
+                font-size: 16pt;
+            }
 
-    /* Table cells */
-    td, th {
-        border: 1px solid #444 !important;
-        padding: 6pt;
-        vertical-align: top;
-        word-wrap: break-word;
-        hyphens: auto;
-    }
+            h2 {
+                font-size: 14pt;
+            }
 
-    /* Alternating row colors */
-    tbody tr:nth-child(even) {
-        background: #f8f8f8 !important;
-    }
+            h3 {
+                font-size: 12pt;
+            }
 
-    tbody tr:nth-child(odd) {
-        background: white !important;
-    }
+            h4,
+            h5,
+            h6 {
+                font-size: 11pt;
+            }
 
-    /* Table footer */
-    tfoot {
-        display: table-footer-group;
-        font-weight: bold;
-        background: #e9e9e9 !important;
-    }
+            /* Paragraph spacing */
+            p {
+                margin: 6pt 0;
+                orphans: 3;
+                widows: 3;
+            }
 
-    /* Prevent page breaks in critical elements */
-    tr, td, th {
-        page-break-inside: avoid;
-    }
+            /* Table styling */
+            table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                border-spacing: 0 !important;
+                margin: 12pt 0;
+                background: white !important;
+                font-size: 9pt;
+                page-break-inside: avoid;
+            }
 
-    /* Images and media */
-    img {
-        max-width: 100% !important;
-        height: auto !important;
-        page-break-inside: avoid;
-    }
+            /* Table headers */
+            thead {
+                display: table-header-group;
+                /* Repeat on every page */
+            }
 
-    /* Lists */
-    ul, ol {
-        margin: 6pt 0;
-        padding-left: 20pt;
-    }
+            thead th {
+                background: #f0f0f0 !important;
+                color: #000 !important;
+                font-weight: bold;
+                text-align: left;
+                padding: 8pt 6pt;
+                border: 1px solid #333 !important;
+                page-break-after: avoid;
+                vertical-align: top;
+            }
 
-    li {
-        margin: 2pt 0;
-    }
+            /* Table cells */
+            td,
+            th {
+                border: 1px solid #444 !important;
+                padding: 6pt;
+                vertical-align: top;
+                word-wrap: break-word;
+                hyphens: auto;
+            }
 
-    /* Links */
-    a {
-        color: #000 !important;
-        text-decoration: underline;
-    }
+            /* Alternating row colors */
+            tbody tr:nth-child(even) {
+                background: #f8f8f8 !important;
+            }
 
-    /* Print-specific classes */
-    .print-only {
-        display: block !important;
-    }
+            tbody tr:nth-child(odd) {
+                background: white !important;
+            }
 
-    .page-break {
-        page-break-before: always;
-    }
+            /* Table footer */
+            tfoot {
+                display: table-footer-group;
+                font-weight: bold;
+                background: #e9e9e9 !important;
+            }
 
-    .no-page-break {
-        page-break-inside: avoid;
-    }
+            /* Prevent page breaks in critical elements */
+            tr,
+            td,
+            th {
+                page-break-inside: avoid;
+            }
 
-    /* Date/timestamp styling */
-    .tanggal-cetak,
-    .print-date,
-    .timestamp {
-        text-align: right;
-        font-size: 8pt;
-        color: #666 !important;
-        margin-top: 15pt;
-        border-top: 1px solid #ccc;
-        padding-top: 6pt;
-    }
+            /* Images and media */
+            img {
+                max-width: 100% !important;
+                height: auto !important;
+                page-break-inside: avoid;
+            }
 
-    /* Header/title area */
-    .print-header {
-        text-align: center;
-        margin-bottom: 20pt;
-        padding-bottom: 10pt;
-        border-bottom: 2px solid #000;
-    }
+            /* Lists */
+            ul,
+            ol {
+                margin: 6pt 0;
+                padding-left: 20pt;
+            }
 
-    .print-title {
-        font-size: 16pt;
-        font-weight: bold;
-        color: #000 !important;
-        margin: 0 0 6pt 0;
-    }
+            li {
+                margin: 2pt 0;
+            }
 
-    .print-subtitle {
-        font-size: 12pt;
-        color: #333 !important;
-        margin: 0;
-    }
+            /* Links */
+            a {
+                color: #000 !important;
+                text-decoration: underline;
+            }
 
-    /* Footer information */
-    .print-footer {
-        margin-top: 20pt;
-        padding-top: 10pt;
-        border-top: 1px solid #ccc;
-        font-size: 8pt;
-        color: #666 !important;
-    }
+            /* Print-specific classes */
+            .print-only {
+                display: block !important;
+            }
 
-    /* Data formatting */
-    .currency,
-    .number {
-        text-align: right;
-        font-family: 'Courier New', monospace;
-    }
+            .page-break {
+                page-break-before: always;
+            }
 
-    .center {
-        text-align: center;
-    }
+            .no-page-break {
+                page-break-inside: avoid;
+            }
 
-    .right {
-        text-align: right;
-    }
+            /* Date/timestamp styling */
+            .tanggal-cetak,
+            .print-date,
+            .timestamp {
+                text-align: right;
+                font-size: 8pt;
+                color: #666 !important;
+                margin-top: 15pt;
+                border-top: 1px solid #ccc;
+                padding-top: 6pt;
+            }
 
-    /* Status indicators */
-    .status-active,
-    .status-success {
-        background: #e8f5e8 !important;
-        color: #2d5a2d !important;
-        padding: 2pt 4pt;
-        border-radius: 2pt;
-    }
+            /* Header/title area */
+            .print-header {
+                text-align: center;
+                margin-bottom: 20pt;
+                padding-bottom: 10pt;
+                border-bottom: 2px solid #000;
+            }
 
-    .status-inactive,
-    .status-error {
-        background: #f5e8e8 !important;
-        color: #5a2d2d !important;
-        padding: 2pt 4pt;
-        border-radius: 2pt;
-    }
+            .print-title {
+                font-size: 16pt;
+                font-weight: bold;
+                color: #000 !important;
+                margin: 0 0 6pt 0;
+            }
 
-    .status-warning {
-        background: #f5f1e8 !important;
-        color: #5a4d2d !important;
-        padding: 2pt 4pt;
-        border-radius: 2pt;
-    }
+            .print-subtitle {
+                font-size: 12pt;
+                color: #333 !important;
+                margin: 0;
+            }
 
-    /* Compact table variant */
-    .table-compact {
-        font-size: 8pt;
-    }
+            /* Footer information */
+            .print-footer {
+                margin-top: 20pt;
+                padding-top: 10pt;
+                border-top: 1px solid #ccc;
+                font-size: 8pt;
+                color: #666 !important;
+            }
 
-    .table-compact td,
-    .table-compact th {
-        padding: 4pt;
-    }
+            /* Data formatting */
+            .currency,
+            .number {
+                text-align: right;
+                font-family: 'Courier New', monospace;
+            }
 
-    /* Summary/total rows */
-    .total-row,
-    .summary-row {
-        font-weight: bold;
-        background: #e9e9e9 !important;
-        border-top: 2px solid #000 !important;
-    }
+            .center {
+                text-align: center;
+            }
 
-    /* Force exact colors for important elements */
-    .force-print-colors * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        color-adjust: exact !important;
-    }
-}
+            .right {
+                text-align: right;
+            }
+
+            /* Status indicators */
+            .status-active,
+            .status-success {
+                background: #e8f5e8 !important;
+                color: #2d5a2d !important;
+                padding: 2pt 4pt;
+                border-radius: 2pt;
+            }
+
+            .status-inactive,
+            .status-error {
+                background: #f5e8e8 !important;
+                color: #5a2d2d !important;
+                padding: 2pt 4pt;
+                border-radius: 2pt;
+            }
+
+            .status-warning {
+                background: #f5f1e8 !important;
+                color: #5a4d2d !important;
+                padding: 2pt 4pt;
+                border-radius: 2pt;
+            }
+
+            /* Compact table variant */
+            .table-compact {
+                font-size: 8pt;
+            }
+
+            .table-compact td,
+            .table-compact th {
+                padding: 4pt;
+            }
+
+            /* Summary/total rows */
+            .total-row,
+            .summary-row {
+                font-weight: bold;
+                background: #e9e9e9 !important;
+                border-top: 2px solid #000 !important;
+            }
+
+            /* Force exact colors for important elements */
+            .force-print-colors * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="kop-surat">
+        <div class="kop-kiri">
+            <img src="{{ asset('assets/images/logo/logo_jatim.png') }}" alt="Logo" class="kop-logo">
+        </div>
+        <div class="kop-kanan">
+            <p class="kop-provinsi">PEMERINTAH PROVINSI JAWA TIMUR</p>
+            <h2 class="kop-nama">SEKRETARIAT DAERAH</h2>
+            <p class="kop-alamat">
+                <strong>Jl. Pahlawan 110</strong> &nbsp;&nbsp;
+                <strong>Telepon</strong> 3524001 - 3524011 <br>
+                <strong><span class="kop-kota">S U R A B A Y A</span></strong> 60174
+            </p>
+        </div>
+    </div>
+    <hr class="kop-garis">
+
+    </div>
+    <hr class="garis-pemisah">
     <h3>Daftar Surat Keluar</h3>
     <button class="no-print" onclick="window.print()">🖨️ Cetak Halaman Ini</button>
     <div class="tanggal-cetak">
-        Dicetak: {{ \Carbon\Carbon::now()->format('d/m/Y, H.i') }}
+        Surabaya:<span id="waktuCetak">{{ \Carbon\Carbon::now()->format('d/m/Y, H.i') }}</span>
     </div>
-    <table>
-        <thead>
+    <table class="table table-sm table-hover table-striped align-middle mb-0">
+        <thead style="text-align: center;">
             <tr>
-                <th>No</th>
-                <th>No. Surat</th>
-                <th>Sifat</th>
-                <th>Jenis</th>
-                <th>Hal</th>
-                <th>Tanggal</th>
-                <th>Klasifikasi</th>
-                <th>Kepada</th>
-                <th>Nama</th>
-                <th>Jabatan</th>
-                <th>Satker</th>
+                <th rowspan="2" scope="col">No</th>
+                <th rowspan="2" scope="col">No. Surat</th>
+                <th rowspan="2" scope="col">Sifat</th>
+                <th rowspan="2" scope="col">Jenis</th>
+                <th rowspan="2" scope="col">Hal</th>
+                <th rowspan="2" scope="col">Tgl. Surat</th>
+                <th rowspan="2" scope="col">Klasifikasi</th>
+                <th rowspan="2" scope="col">Kepada</th>
+                <th colspan="3" style="text-align: center; background-color: #f0f0f0;">Yang Memfinalkan</th>
+            </tr>
+            <tr>
+                <th scope="col">Nama</th>
+                <th scope="col">Jabatan</th>
+                <th scope="col">Satker</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($suratKeluar as $index => $surat)
+            @forelse ($suratKeluar as $index => $surat)
                 <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ $surat->nosurat }}</td>
@@ -457,9 +558,21 @@
                     <td>{{ $surat->pembuat->jabatan ?? '-' }}</td>
                     <td>{{ $surat->userFinal->satker->satker ?? '-' }}</td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="11" class="text-center">Tidak ada data</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
+
 </body>
+<script>
+    const now = new Date();
+    const tanggal = now.toLocaleDateString('id-ID');
+    const jam = now.getHours().toString().padStart(2, '0') + '.' + now.getMinutes().toString().padStart(2, '0');
+    document.getElementById('waktuCetak').innerText = `${tanggal}, ${jam}`;
+</script>
+
 
 </html>

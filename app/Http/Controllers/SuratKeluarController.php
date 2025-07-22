@@ -16,7 +16,7 @@ class SuratKeluarController extends Controller
         $suratKeluar = SuratKeluarIsi::with([
             'jenis',
             'klasifikasi',
-            'pembuat',      
+            'pembuat',
             'userFinal.satker'
         ])->get();
 
