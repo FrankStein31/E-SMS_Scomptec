@@ -46,6 +46,12 @@
                         Dashboard
                     </a>
                 </li>
+                <li>
+                    <a href="{{ route('kotakmasuk.index') }}">
+                        <i class="iconoir-mail"></i>
+                        Kotak Masuk
+                    </a>
+                </li>
                 <li class="menu-title">
                     <span>Menu Surat</span>
                 </li>
@@ -55,7 +61,7 @@
                         Manajemen Surat
                     </a>
                     <ul class="collapse" id="dashboard">
-                        <li><a href="{{ route('kotakmasuk.index') }}">Kotak Masuk</a></li>
+                        <!-- <li><a href="{{ route('kotakmasuk.index') }}">Kotak Masuk</a></li> -->
                         <li><a href="{{ route('buatsurat.index') }}">Buat Surat</a></li>
                         <li><a href="{{ route('entrisurat.index') }}">Entri Surat</a></li>
                         <li><a href="{{ route('draft_surat.index') }}">Draft Surat</a></li>
@@ -96,7 +102,7 @@
                         <li><a href="{{ route('report.surat') }}">Laporan</a></li>
                         <li><a href="{{ route('report.statistik') }}">Statistik</a></li>
                         <li><a href="">Pesan No.</a></li>
-                        <li><a href="">Aktivitas</a></li>
+                        <li><a href="{{ route('aktivitas') }}">Aktivitas</a></li>
                     </ul>
                 </li>
             @endif

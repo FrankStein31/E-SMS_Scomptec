@@ -21,8 +21,8 @@ USE `esms_v2`;
 DROP TABLE IF EXISTS `cache`;
 
 CREATE TABLE `cache` (
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -34,8 +34,8 @@ CREATE TABLE `cache` (
 DROP TABLE IF EXISTS `cache_locks`;
 
 CREATE TABLE `cache_locks` (
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL,
   PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -47,25 +47,25 @@ CREATE TABLE `cache_locks` (
 DROP TABLE IF EXISTS `disposisi_isis`;
 
 CREATE TABLE `disposisi_isis` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `entrysurat_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `parent_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `kodeklasifikasi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `kepada` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `hal` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entrysurat_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kodeklasifikasi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kepada` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hal` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tgl_disposisi` date DEFAULT NULL,
   `tgl_remitten` date DEFAULT NULL,
   `status` tinyint DEFAULT NULL,
-  `isi` text COLLATE utf8mb4_unicode_ci,
-  `tindakan` text COLLATE utf8mb4_unicode_ci,
+  `isi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `tindakan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `userid_pembuat` bigint unsigned NOT NULL,
-  `satkerid_pembuat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satkerid_pembuat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `terdisposisi` tinyint DEFAULT NULL,
-  `mig_nourut` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mig_satkerasalid` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mig_satkertujuanid` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mig_terbaca` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mig_nourutasal` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mig_nourut` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mig_satkerasalid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mig_satkertujuanid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mig_terbaca` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mig_nourutasal` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -77,34 +77,63 @@ CREATE TABLE `disposisi_isis` (
 
 /*Data for the table `disposisi_isis` */
 
+/*Table structure for table `draft_surats` */
+
+DROP TABLE IF EXISTS `draft_surats`;
+
+CREATE TABLE `draft_surats` (
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entrisurat_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kepada` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tgl_disposisi` date DEFAULT NULL,
+  `tgl_remiten` date DEFAULT NULL,
+  `isi` text COLLATE utf8mb4_unicode_ci,
+  `tindakan` text COLLATE utf8mb4_unicode_ci,
+  `userid_pembuat` bigint unsigned NOT NULL,
+  `userid_tujuan` bigint unsigned NOT NULL,
+  `file_original` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `file_rename` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `file_size` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `draft_surats_userid_pembuat_foreign` (`userid_pembuat`),
+  KEY `draft_surats_userid_tujuan_foreign` (`userid_tujuan`),
+  CONSTRAINT `draft_surats_userid_pembuat_foreign` FOREIGN KEY (`userid_pembuat`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `draft_surats_userid_tujuan_foreign` FOREIGN KEY (`userid_tujuan`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `draft_surats` */
+
 /*Table structure for table `entry_surat_isis` */
 
 DROP TABLE IF EXISTS `entry_surat_isis`;
 
 CREATE TABLE `entry_surat_isis` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `jenis_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT 'ini table dari master_jenissurat_join',
-  `nomor_surat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `kode_klasifikasi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `hal` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `kepada` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `dari` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `alamat` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `jenis_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT 'ini table dari master_jenissurat_join',
+  `nomor_surat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_klasifikasi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hal` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kepada` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dari` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alamat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tgl_surat` date NOT NULL,
   `tgl_diterima` date DEFAULT NULL,
   `tgl_diarahkan` date DEFAULT NULL,
   `sifat` tinyint NOT NULL DEFAULT '0',
-  `isi` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tembusan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `isi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tembusan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `isfinal` tinyint DEFAULT NULL COMMENT '0=draft, 1=selesai',
   `created_by` bigint unsigned NOT NULL,
-  `satkerid_pembuat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `jumlah_lampiran` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `referensi_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'ini dari id table entry_surat_isis ini sendiri',
+  `satkerid_pembuat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `jumlah_lampiran` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `referensi_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'ini dari id table entry_surat_isis ini sendiri',
   `noagenda` int DEFAULT NULL,
   `tgl_update` date DEFAULT NULL,
   `updated_by` bigint unsigned DEFAULT NULL,
-  `satkerid_update` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satkerid_update` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `terdisposisi` tinyint NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -118,20 +147,23 @@ CREATE TABLE `entry_surat_isis` (
 /*Data for the table `entry_surat_isis` */
 
 insert  into `entry_surat_isis`(`id`,`jenis_id`,`nomor_surat`,`kode_klasifikasi`,`hal`,`kepada`,`dari`,`alamat`,`tgl_surat`,`tgl_diterima`,`tgl_diarahkan`,`sifat`,`isi`,`tembusan`,`isfinal`,`created_by`,`satkerid_pembuat`,`jumlah_lampiran`,`referensi_id`,`noagenda`,`tgl_update`,`updated_by`,`satkerid_update`,`terdisposisi`,`created_at`,`updated_at`) values 
-('01k092jd65gf42g5q7fpt087z2','0','123/123/123',NULL,'wasd','Administrator,','frankie','wasdwasd','2025-07-16',NULL,'2025-07-16',4,NULL,'wasd',NULL,190,NULL,NULL,NULL,1,NULL,190,NULL,0,'2025-07-16 07:35:47','2025-07-16 07:35:47'),
-('01k093kknrqbv46rk8pt5wrmmv','0','123/123/1231',NULL,'COBA BARU','Administrator,','frankie','wasdawsdawsda','2025-07-16',NULL,'2025-07-16',3,NULL,'wasd',NULL,190,NULL,NULL,NULL,2,NULL,190,NULL,0,'2025-07-16 07:53:55','2025-07-16 07:53:55'),
-('01k094r8py30aw15q9z0kprq1w','Pilih Jenis Surat','123/123/12311','01k041xdryzdn0xhepvsc0bq0m','new new','Administrator','frankie','wasd','2025-07-16','2025-07-16','2025-07-16',1,'coba coba','wasd',NULL,190,NULL,'coba',NULL,3,NULL,190,NULL,0,'2025-07-16 08:13:56','2025-07-16 08:13:56');
+('01k092jd65gf42g5q7fpt087z2','0','123/123/123',NULL,'wasd','Admin','frankie','wasdwasd','2025-07-16',NULL,'2025-07-16',4,NULL,'wasd',NULL,190,NULL,NULL,NULL,1,NULL,190,NULL,0,'2025-07-16 07:35:47','2025-07-16 07:35:47'),
+('01k093kknrqbv46rk8pt5wrmmv','0','123/123/1231',NULL,'COBA BARU','Admin','frankie','wasdawsdawsda','2025-07-16',NULL,'2025-07-16',3,NULL,'wasd',NULL,190,NULL,NULL,NULL,2,NULL,190,NULL,0,'2025-07-16 07:53:55','2025-07-16 07:53:55'),
+('01k094r8py30aw15q9z0kprq1w','1','123/123/12311','01k041xdryzdn0xhepvsc0bq0m','new new','Admin','frankie','wasd','2025-07-16','2025-07-16','2025-07-16',1,'coba coba','wasd',NULL,190,NULL,'coba',NULL,3,NULL,190,NULL,0,'2025-07-16 08:13:56','2025-07-16 08:13:56'),
+('01k0r3sg5682wwtmdyeh6kphz9','0','123/123/1232','01k041xds005n343591da1zqee','COBA BARU','Admin','frankie','wasd','2025-07-22','2025-07-22','2025-07-22',2,'coba coba','wasd',NULL,190,NULL,'coba',NULL,4,NULL,190,NULL,0,'2025-07-22 03:45:44','2025-07-22 03:45:44'),
+('01k0r430p2010gt0134cr24zex','0','123/123/12323','01k041xds005n343591da1zqee','COBA BARU','Admin','frankie','wadas','2025-07-22','2025-07-22','2025-07-22',2,'coba coba','wasd',NULL,190,NULL,'coba',NULL,5,NULL,190,NULL,0,'2025-07-22 03:50:56','2025-07-22 03:50:56'),
+('01k0r61crr778j3ndcssrjm9dj','0','123/123/12312','01k041xdryzdn0xhepvsc0bq0m','COBA BARUasdasdasd','Admin,Biro Kesejahteraan Rakyat','frankie steinlie','adfasdadw','2025-07-22','2025-07-22','2025-07-22',3,'wae','asdasd',NULL,190,NULL,'coba',NULL,6,NULL,190,NULL,0,'2025-07-22 04:25:00','2025-07-22 04:25:00');
 
 /*Table structure for table `entry_surat_lampirans` */
 
 DROP TABLE IF EXISTS `entry_surat_lampirans`;
 
 CREATE TABLE `entry_surat_lampirans` (
-  `lampiran_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `entrysurat_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nama_lampiran` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nama_file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `size` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `lampiran_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entrysurat_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_lampiran` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `size` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tgl_upload` datetime DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -147,11 +179,11 @@ CREATE TABLE `entry_surat_lampirans` (
 DROP TABLE IF EXISTS `entry_surat_scans`;
 
 CREATE TABLE `entry_surat_scans` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `entrysurat_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entrysurat_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `nourut` int DEFAULT NULL,
-  `nama_scan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nama_file` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_scan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `size` double DEFAULT NULL,
   `tgl_upload` date DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -163,16 +195,21 @@ CREATE TABLE `entry_surat_scans` (
 
 /*Data for the table `entry_surat_scans` */
 
+insert  into `entry_surat_scans`(`id`,`entrysurat_id`,`nourut`,`nama_scan`,`nama_file`,`size`,`tgl_upload`,`created_at`,`updated_at`) values 
+('01k0r7t316j3kxtg5jephavqe9','01k092jd65gf42g5q7fpt087z2',3,'uploads_file_scan/687f19de2750f.jpeg','uploads_file_scan/687f19de2750f.jpeg',0,'2025-07-22','2025-07-22 04:55:58','2025-07-22 04:55:58'),
+('01k0r83hqhw9g7w6h6rfhv9w74','01k0r61crr778j3ndcssrjm9dj',2,'uploads_file_scan/687f1b1426a21.jpeg','uploads_file_scan/687f1b1426a21.jpeg',0,'2025-07-22','2025-07-22 05:01:08','2025-07-22 05:01:08'),
+('01k0r86cvgq6nhqr01k8za7btt','01k092jd65gf42g5q7fpt087z2',4,'uploads_file_scan/687f1b71729b9.jpeg','uploads_file_scan/687f1b71729b9.jpeg',0,'2025-07-22','2025-07-22 05:02:41','2025-07-22 05:02:41');
+
 /*Table structure for table `entry_surat_tujuans` */
 
 DROP TABLE IF EXISTS `entry_surat_tujuans`;
 
 CREATE TABLE `entry_surat_tujuans` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `satkerid_tujuan` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid_tujuan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `dibaca` tinyint(1) NOT NULL DEFAULT '0',
   `is_tembusan` tinyint(1) NOT NULL DEFAULT '0',
-  `entrysurat_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entrysurat_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `userid_tujuan` int unsigned NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -183,17 +220,20 @@ CREATE TABLE `entry_surat_tujuans` (
 
 /*Data for the table `entry_surat_tujuans` */
 
+insert  into `entry_surat_tujuans`(`id`,`satkerid_tujuan`,`dibaca`,`is_tembusan`,`entrysurat_id`,`userid_tujuan`,`created_at`,`updated_at`) values 
+('01k0r61csbstgwmenx3ab4dgvq','1.1.1.2.',0,0,'01k0r61crr778j3ndcssrjm9dj',174,'2025-07-22 04:25:00','2025-07-22 04:25:00');
+
 /*Table structure for table `failed_jobs` */
 
 DROP TABLE IF EXISTS `failed_jobs`;
 
 CREATE TABLE `failed_jobs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`)
@@ -206,13 +246,13 @@ CREATE TABLE `failed_jobs` (
 DROP TABLE IF EXISTS `job_batches`;
 
 CREATE TABLE `job_batches` (
-  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `total_jobs` int NOT NULL,
   `pending_jobs` int NOT NULL,
   `failed_jobs` int NOT NULL,
-  `failed_job_ids` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `options` mediumtext COLLATE utf8mb4_unicode_ci,
+  `failed_job_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `options` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `cancelled_at` int DEFAULT NULL,
   `created_at` int NOT NULL,
   `finished_at` int DEFAULT NULL,
@@ -227,8 +267,8 @@ DROP TABLE IF EXISTS `jobs`;
 
 CREATE TABLE `jobs` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `attempts` tinyint unsigned NOT NULL,
   `reserved_at` int unsigned DEFAULT NULL,
   `available_at` int unsigned NOT NULL,
@@ -244,13 +284,13 @@ CREATE TABLE `jobs` (
 DROP TABLE IF EXISTS `master_instansis`;
 
 CREATE TABLE `master_instansis` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_id` int DEFAULT NULL,
-  `instansi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `kepala` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `alamat` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `kota` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `telp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `instansi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kepala` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alamat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kota` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `telp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -350,16 +390,20 @@ insert  into `master_instansis`(`id`,`last_id`,`instansi`,`kepala`,`alamat`,`kot
 ('01k041xm4tne7bwqgpg82z2fy3',88,'Universitas Muhammadiyah Malang','-','-','-','-','2025-07-14 08:48:13','2025-07-14 08:48:13',NULL),
 ('01k041xm4w8f71czm9aqprbxkt',89,'Universitas Negeri Surabaya','-','-','-','-','2025-07-14 08:48:13','2025-07-14 08:48:13',NULL),
 ('01k041xm4yphf717yntpr6wwg3',90,'BULOG','-','Jl. Jend A. Yani 146-148 Surabaya','-','-','2025-07-14 08:48:13','2025-07-14 08:48:13',NULL),
-('01k041xm50r2st0hbqe8r70jd3',91,'Bank Jatim','-','Jl. Basuki Rahmat 98-104 Surabaya','-','-','2025-07-14 08:48:13','2025-07-14 08:48:13',NULL);
+('01k041xm50r2st0hbqe8r70jd3',91,'Bank Jatim','-','Jl. Basuki Rahmat 98-104 Surabaya','-','-','2025-07-14 08:48:13','2025-07-14 08:48:13',NULL),
+('01k0qy7g876nznd0gshe3ye1vq',NULL,'Steinlie Coorperation','Frankie Steinlie, S.Tr.Kom','-','Medan','08883866931','2025-07-22 02:08:32','2025-07-22 02:19:23','2025-07-22 02:19:23'),
+('01k0qymmass9nb4cnms2c2xxb2',NULL,'Steinlie Coorperation','Frankie Steinlie, S.Tr.Kom','Surabaya','Medan','08883866931','2025-07-22 02:15:42','2025-07-22 02:25:35','2025-07-22 02:25:35'),
+('01k0qypcpcsnpm0jyfe0r53z82',NULL,'ssss','ss','ss','ss','08883866931','2025-07-22 02:16:39','2025-07-22 02:19:10','2025-07-22 02:19:10'),
+('01k0qytp3wmbd9s59t26zdn8hb',NULL,'ssss','Frankie Steinlie, S.Tr.Kom','Mlg','Medan','08883866931','2025-07-22 02:19:00','2025-07-22 02:19:19','2025-07-22 02:19:19');
 
 /*Table structure for table `master_jenis_surats` */
 
 DROP TABLE IF EXISTS `master_jenis_surats`;
 
 CREATE TABLE `master_jenis_surats` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_id` int DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -384,14 +428,14 @@ insert  into `master_jenis_surats`(`id`,`last_id`,`name`,`created_at`,`updated_a
 DROP TABLE IF EXISTS `master_klasifikasis`;
 
 CREATE TABLE `master_klasifikasis` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `kodeklasifikasi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `klasifikasi` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kodeklasifikasi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `klasifikasi` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `retensi_aktif` tinyint NOT NULL,
   `retensi_inaktif` tinyint NOT NULL,
-  `keterangan` enum('1','2','3') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1' COMMENT '1 dinilai kembali, 2 musnah, 3 permanen',
+  `keterangan` enum('1','2','3') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1' COMMENT '1 dinilai kembali, 2 musnah, 3 permanen',
   `retensi` int DEFAULT NULL,
-  `parent` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `parent` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -3389,17 +3433,19 @@ insert  into `master_klasifikasis`(`id`,`kodeklasifikasi`,`klasifikasi`,`retensi
 ('01k041xkz2pvxgmz98jmzm8dpj','900.1.9','Penyusunan Anggaran Pilkada dan Biaya Bantuan Pemilu Dari APBD (antara lain: Kebijakan Keuangan Pilkada dan Penyusunan Anggaran Bantuan Pemilu, Peraturan/Pedoman/Standar Belanja Pegawai, Barang dan Jasa, Operasional dan Kontingensi untuk Biaya Pilkada dan Bantuan Pemilu, Bahan Usulan Rencana Kegiatan dan Anggaran (RKA) Pilkada KPUD dan Panwasda Kota, PPK, PPS, KPPS dan Permohonan Pengajuan RKA KPUD dan Panwas, Berkas Pembahasan RKA Pilkada dan Bantuan Pemilu, Rencana Anggaran Satuan Kerja (RASK) Pilkada dan Bantuan Pemilu Kota, Dokumen Rancangan Anggaran Satuan Kerja (DRASK) Pilkada KPUD dan Panwas Kota dan Bantuan Biaya Pemilu dari APBD, Berkas Pembentukan Dana Cadangan Pilkada, Bahan Rapat Rancangan Peraturan Daerah tentang Pilkada, dan Bantuan Biaya Pemilu dari APBD, Nota Persetujuan DPRD tentang Perda APBD Pilkada dan Bantuan Biaya Pemilu dari APBD)',0,0,'1',NULL,'900','2025-07-14 08:48:13','2025-07-14 08:48:13',NULL),
 ('01k0c7ak7j5ek99e1phsaaks0q','12','coba',0,0,'1',NULL,NULL,'2025-07-17 12:56:37','2025-07-17 12:56:55','2025-07-17 12:56:55'),
 ('01k0dmcbhpdbm8tapd9dhvf2bw','1111','cobaa',0,0,'1',NULL,NULL,'2025-07-18 02:04:00','2025-07-18 02:15:30','2025-07-18 02:15:30'),
-('01k0dpej1remnc89g7hc03nr56','1111111','cobaa',0,0,'1',NULL,NULL,'2025-07-18 02:40:10','2025-07-18 02:41:15','2025-07-18 02:41:15');
+('01k0dpej1remnc89g7hc03nr56','1111111','cobaa',0,0,'1',NULL,NULL,'2025-07-18 02:40:10','2025-07-18 02:41:15','2025-07-18 02:41:15'),
+('01k0nw7ad7tzx1ca2ev79j45px','111111','coba',0,0,'1',NULL,NULL,'2025-07-21 06:55:00','2025-07-21 06:57:09','2025-07-21 06:57:09'),
+('01k0p34vwd6z3kkx497q714z72','1111111','ciobaa',0,0,'1',NULL,NULL,'2025-07-21 08:55:59','2025-07-21 09:19:06','2025-07-21 09:19:06');
 
 /*Table structure for table `master_satkers` */
 
 DROP TABLE IF EXISTS `master_satkers`;
 
 CREATE TABLE `master_satkers` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `satkerid` longtext COLLATE utf8mb4_unicode_ci,
-  `kodesatker` longtext COLLATE utf8mb4_unicode_ci,
-  `satker` longtext COLLATE utf8mb4_unicode_ci,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `kodesatker` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `satker` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `eselon` int DEFAULT NULL,
   `userid` bigint unsigned DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -3652,9 +3698,9 @@ insert  into `master_satkers`(`id`,`satkerid`,`kodesatker`,`satker`,`eselon`,`us
 DROP TABLE IF EXISTS `master_tindakan_disposisis`;
 
 CREATE TABLE `master_tindakan_disposisis` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tindakan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `satkerid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tindakan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3670,10 +3716,10 @@ DROP TABLE IF EXISTS `migrations`;
 
 CREATE TABLE `migrations` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `migrations` */
 
@@ -3694,15 +3740,16 @@ insert  into `migrations`(`id`,`migration`,`batch`) values
 (14,'2025_04_29_005030_create_surat_keluar_lampirans_table',1),
 (15,'2025_04_29_010246_create_surat_keluar_nota_dinas_table',1),
 (16,'2025_04_29_064611_create_master_tindakan_disposisis_table',1),
-(17,'2025_06_19_021427_create_disposisi_isis_table',1);
+(17,'2025_06_19_021427_create_disposisi_isis_table',1),
+(18,'2025_07_20_191940_create_draft_surats_table',2);
 
 /*Table structure for table `password_reset_tokens` */
 
 DROP TABLE IF EXISTS `password_reset_tokens`;
 
 CREATE TABLE `password_reset_tokens` (
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3714,11 +3761,11 @@ CREATE TABLE `password_reset_tokens` (
 DROP TABLE IF EXISTS `sessions`;
 
 CREATE TABLE `sessions` (
-  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint unsigned DEFAULT NULL,
-  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `user_agent` text COLLATE utf8mb4_unicode_ci,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip_address` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_activity` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `sessions_user_id_index` (`user_id`),
@@ -3732,41 +3779,41 @@ CREATE TABLE `sessions` (
 DROP TABLE IF EXISTS `surat_keluar_isis`;
 
 CREATE TABLE `surat_keluar_isis` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `suratkeluar_id` int DEFAULT NULL,
   `revisi_id` bigint unsigned DEFAULT NULL,
-  `revisi_data_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `revisi_data_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tgl_revisi` datetime DEFAULT NULL,
   `jenis_id` tinyint unsigned DEFAULT NULL,
   `no_generate` int unsigned DEFAULT NULL,
-  `nosurat` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `kodeklasifikasi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nosurat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kodeklasifikasi` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tgl_surat` datetime DEFAULT NULL,
-  `hal` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `jml_lampiran` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hal` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `jml_lampiran` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `sifat` tinyint unsigned DEFAULT NULL,
-  `kepada` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `isi` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tembusan` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kepada` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `isi` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tembusan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `jenisref_id` tinyint unsigned DEFAULT NULL,
   `referensi_id` int unsigned DEFAULT NULL,
-  `entry_surat_isi_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ttd_nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `entry_surat_isi_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ttd_nama` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `ttd_id` int unsigned DEFAULT NULL,
   `user_ttd_id` bigint unsigned DEFAULT NULL,
   `isfinal` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '0 = draft, 1 = posisi terakhir',
   `userid_pembuat` int unsigned DEFAULT NULL,
-  `user_id_pembuat` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `satkerid_pembuat` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id_pembuat` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid_pembuat` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `userid_tujuan` int unsigned DEFAULT NULL,
-  `user_id_tujuan` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `satkerid_tujuan` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id_tujuan` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid_tujuan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1 = konsep, 2 = kirim acc, 3 = kirim revisi, 4 = final, 5 = cetak',
   `dibaca` tinyint unsigned NOT NULL DEFAULT '0',
   `last_sent` tinyint unsigned NOT NULL DEFAULT '0' COMMENT '1 = yg terakhir dikirim',
   `userid_final` int unsigned DEFAULT NULL,
-  `user_id_final` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `satkerid_final` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id_final` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `satkerid_final` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -3794,15 +3841,15 @@ insert  into `surat_keluar_isis`(`id`,`suratkeluar_id`,`revisi_id`,`revisi_data_
 DROP TABLE IF EXISTS `surat_keluar_lampirans`;
 
 CREATE TABLE `surat_keluar_lampirans` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `lampiran_id` int DEFAULT NULL,
   `surat_keluar_id` int DEFAULT NULL,
-  `surat_keluar_isi_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `surat_keluar_isi_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `revisi_id` int DEFAULT NULL,
-  `revisi_data_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `nama_lapiran` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nama_file` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `size` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `revisi_data_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nama_lapiran` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_file` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `size` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tanggal_upload` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -3822,22 +3869,22 @@ CREATE TABLE `surat_keluar_lampirans` (
 DROP TABLE IF EXISTS `surat_keluar_nota_dinas`;
 
 CREATE TABLE `surat_keluar_nota_dinas` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `suratkeluar_id` int DEFAULT NULL,
-  `surat_keluar_isi_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `surat_keluar_isi_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `revisi_id` int NOT NULL,
-  `revisi_data_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `revisi_data_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `nourut_riw` int NOT NULL,
   `nourut_kirim` int NOT NULL DEFAULT '1',
   `userid_pembuat` int NOT NULL,
   `user_id_pembuat` bigint unsigned NOT NULL,
-  `satkerid_pembuat` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid_pembuat` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `userid_tujuan` int DEFAULT NULL,
   `user_id_tujuan` bigint unsigned NOT NULL,
-  `satkerid_tujuan` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid_tujuan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `userid_final` int DEFAULT NULL,
   `user_id_final` bigint unsigned NOT NULL,
-  `satkerid_final` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid_final` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `dibaca` tinyint NOT NULL DEFAULT '0',
   `last_sent` tinyint NOT NULL DEFAULT '0',
   `isfinal` tinyint NOT NULL DEFAULT '1',
@@ -3869,22 +3916,22 @@ CREATE TABLE `surat_keluar_nota_dinas` (
 DROP TABLE IF EXISTS `surat_keluar_riwayats`;
 
 CREATE TABLE `surat_keluar_riwayats` (
-  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `suratkeluar_id` int DEFAULT NULL,
-  `surat_keluar_isi_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `surat_keluar_isi_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `revisi_id` int NOT NULL,
-  `revisi_data_id` char(26) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `revisi_data_id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `nourut_riw` int NOT NULL,
   `nourut_kirim` int NOT NULL DEFAULT '1',
   `userid_pembuat` int NOT NULL,
   `user_id_pembuat` bigint unsigned DEFAULT NULL,
-  `satkerid_pembuat` longtext COLLATE utf8mb4_unicode_ci,
+  `satkerid_pembuat` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `userid_tujuan` int DEFAULT NULL,
   `user_id_tujuan` bigint unsigned DEFAULT NULL,
-  `satkerid_tujuan` longtext COLLATE utf8mb4_unicode_ci,
+  `satkerid_tujuan` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `userid_final` int DEFAULT NULL,
   `user_id_final` bigint unsigned DEFAULT NULL,
-  `satkerid_final` longtext COLLATE utf8mb4_unicode_ci,
+  `satkerid_final` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `dibaca` tinyint NOT NULL DEFAULT '0',
   `last_sent` tinyint NOT NULL DEFAULT '0',
   `isfinal` tinyint NOT NULL DEFAULT '1',
@@ -3917,22 +3964,22 @@ DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `fullname` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `jabatan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `satkerid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nip` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-',
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fullname` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `jabatan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nip` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '-',
   `usergroupid` int DEFAULT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `last_notif` date DEFAULT NULL,
-  `pangkat` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pangkat` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=887 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=891 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `users` */
 
@@ -4330,7 +4377,7 @@ insert  into `users`(`id`,`username`,`fullname`,`jabatan`,`satkerid`,`nip`,`user
 (883,'proposalp2021','Proposal','Proposal','1.1.11.4.','-',2,'-',NULL,NULL,'-','$2y$12$BJ3wyLidDEw3Jdv/ln5Sp.XBScj4vFwZ.WgJiS2l9uOPPTExPvemi',NULL,'2025-07-14 08:48:06','2025-07-14 08:48:06'),
 (884,'proposal','Proposal','Proposal','1.1.11.5.','-',2,'-',NULL,NULL,'Proposal','$2y$12$eG3jzxVPC9S3Q8wdYiCfE.ZeVTpxHyqZCnbll3VGAvt2Tcef1dvI.',NULL,'2025-07-14 08:48:06','2025-07-14 08:48:06'),
 (885,'tes','tes staff protokol','-','1.1.4.6.3.1.','123',2,'-',NULL,NULL,'-','$2y$12$z7opm0Vn.vIVH43EicBseOKx5AvRda.tT5zcLYawWJi6BvT6h9f3e',NULL,'2025-07-14 08:48:07','2025-07-14 08:48:07'),
-(886,'coba','frankie coba','Pribadi','1','123123',1,'frankie.steinlie@gmail.com',NULL,NULL,'L','$2y$12$w01FtKRO6ixE7k7fJ8X8PedDiQYY5fNNQZL79Nr23qB8R2WIbWbRm',NULL,'2025-07-15 07:54:52','2025-07-15 07:54:52');
+(886,'coba','frankie coba','Pribadi','01k041xm5famzhrnbv64bph145','123123',1,'frankie.steinlie@gmail.com',NULL,NULL,'L','$2y$12$w01FtKRO6ixE7k7fJ8X8PedDiQYY5fNNQZL79Nr23qB8R2WIbWbRm',NULL,'2025-07-15 07:54:52','2025-07-22 02:51:16');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

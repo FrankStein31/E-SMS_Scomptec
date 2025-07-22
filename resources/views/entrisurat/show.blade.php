@@ -143,23 +143,33 @@
         function displayImagesOnPage(successful, mesg, response) {
             if (!successful) { // On error
                 console.error('Failed: ' + mesg);
+                var loading = document.getElementById('scanLoading');
+                if (loading) loading.style.display = 'none';
                 return;
             }
 
             if (successful && mesg != null && mesg.toLowerCase().indexOf('user cancel') >= 0) { // User cancelled.
                 console.info('User cancelled');
+                var loading = document.getElementById('scanLoading');
+                if (loading) loading.style.display = 'none';
                 return;
             }
 
+            // Bersihkan slider sebelum menambah gambar baru
+            var sliderContainer = document.getElementById('scannedImagesSlider');
+            if (sliderContainer) {
+                sliderContainer.innerHTML = '';
+            }
             var scannedImages = scanner.getScannedImages(response, true, false); // returns an array of ScannedImage
             for (var i = 0;
                 (scannedImages instanceof Array) && i < scannedImages.length; i++) {
                 var scannedImage = scannedImages[i];
                 processScannedImage(scannedImage);
             }
-
             // Inisialisasi slider setelah gambar ditambahkan
             initImageSlider();
+            var loading = document.getElementById('scanLoading');
+            if (loading) loading.style.display = 'none';
         }
 
         /** Images scanned so far. */
@@ -176,21 +186,55 @@
                 }
             });
 
+            // Tambahkan tombol X (hapus) di pojok kanan atas
+            var closeBtn = document.createElement('button');
+            closeBtn.innerHTML = '&times;';
+            closeBtn.className = 'btn btn-sm btn-danger btn-close-scan';
+            closeBtn.style.position = 'absolute';
+            closeBtn.style.top = '5px';
+            closeBtn.style.right = '5px';
+            closeBtn.style.zIndex = '10';
+            closeBtn.onclick = function(e) {
+                e.preventDefault();
+                var slideDiv = this.parentNode;
+                if (slideDiv && slideDiv.parentNode) {
+                    $(slideDiv).remove();
+                    // Jika sudah tidak ada slide, reset input
+                    if ($('#scannedImagesSlider > div').length === 0) {
+                        var inputImg = document.getElementById('images_input');
+                        if (inputImg) inputImg.value = '';
+                    }
+                }
+            };
+
             // Tambahkan gambar ke container slider
             var sliderContainer = document.getElementById('scannedImagesSlider');
             var slideDiv = document.createElement('div');
+            slideDiv.style.position = 'relative';
             slideDiv.appendChild(elementImg);
-            sliderContainer.appendChild(slideDiv);
+            slideDiv.appendChild(closeBtn);
+            if (sliderContainer) sliderContainer.appendChild(slideDiv);
 
-            document.getElementById('images_input').value = scannedImage.src;
-            document.getElementById('scan_btn').remove();
+            var inputImg = document.getElementById('images_input');
+            if (inputImg) inputImg.value = scannedImage.src;
+            var scanBtn = document.getElementById('scan_btn');
+            if (scanBtn) scanBtn.remove();
+            var loading = document.getElementById('scanLoading');
+            if (loading) loading.style.display = 'none';
         }
 
         /** Initialize image slider */
         function initImageSlider() {
             // Pastikan jQuery dan Slick sudah dimuat
+            try {
             if (typeof jQuery !== 'undefined' && typeof jQuery.fn.slick !== 'undefined') {
-                $('#scannedImagesSlider').slick({
+                    var $slider = $('#scannedImagesSlider');
+                    if ($slider.length) {
+                        // Destroy slick jika sudah ada
+                        if ($slider.hasClass('slick-initialized')) {
+                            $slider.slick('unslick');
+                        }
+                        $slider.slick({
                     dots: true,
                     infinite: true,
                     speed: 300,
@@ -198,6 +242,10 @@
                     adaptiveHeight: true,
                     arrows: true
                 });
+                    }
+                }
+            } catch (e) {
+                console.error('Slick/initImageSlider error:', e);
             }
         }
     </script>
@@ -208,6 +256,9 @@
         <div class="container-fluid">
             <div class="row m-1">
                 <div class="col-12 ">
+                    <a href="{{ route('entrisurat.index') }}" class="btn btn-secondary btn-sm mb-3">
+                        <i class="iconoir-arrow-left"></i> Kembali ke Daftar Entri Surat
+                    </a>
                     <h4 class="main-title">Detail Entri Surat</h4>
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">
@@ -232,6 +283,13 @@
             </div>
 
             @include('layout.alert')
+
+            @if(session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
 
             <!-- Blank start -->
             <div class="row">
@@ -334,12 +392,13 @@
                                     @csrf
                                     <!-- Ganti div images dengan slider container -->
                                     <div id="scannedImagesSlider" class="scanned-images-slider"></div>
+                                    <br>
                                     <input type="text" id="images_input" hidden name="images_input">
                                     <button type="button"
                                         class="btn btn-secondary btn-sm mb-3 d-lg-inline-flex align-items-center b-r-22"
                                         onclick="scan('default');" id="scan_btn">Scan File</button>
                                     <button type="submit"
-                                        class="btn btn-warning btn-sm mb-3 d-lg-inline-flex align-items-center b-r-22"">Simpan
+                                        class="btn btn-warning btn-sm mb-3 d-lg-inline-flex align-items-center b-r-22">Simpan
                                         File
                                         Scan</button>
                                     <div class="app-form">
@@ -362,9 +421,9 @@
                                             <div class="card-body">
                                                 <div class="scanned-images-slider">
                                                     @foreach ($data->FileScan as $scan)
-                                                        <div>
-                                                            <img src="{{ asset('uploads/' . $scan->nama_file) }}"
-                                                                alt="">
+                                                        <div style="position:relative;">
+                                                            <img src="{{ asset('uploads/' . $scan->nama_file) }}" alt="">
+                                                            <button class="btn btn-sm btn-danger btn-close-scan-file" style="position:absolute;top:5px;right:5px;z-index:10;" data-id="{{ $scan->id }}">&times;</button>
                                                         </div>
                                                     @endforeach
                                                 </div>
@@ -398,6 +457,31 @@
                 adaptiveHeight: true,
                 arrows: true
             });
+        });
+    </script>
+    <script>
+    $(document).on('click', '.btn-close-scan-file', function(e){
+        e.preventDefault();
+        if(confirm('Yakin hapus file scan ini?')){
+            var id = $(this).data('id');
+            var btn = $(this);
+            $.ajax({
+                url: '/entrisurat/scan/'+id+'/delete',
+                type: 'POST',
+                data: {_token: '{{ csrf_token() }}', _method: 'DELETE'},
+                success: function(res){
+                    if(res.success){
+                        // Setelah hapus, reload halaman dan kirim pesan sukses
+                        location.reload();
+                    } else {
+                        alert(res.message || 'Gagal hapus file scan!');
+                    }
+                },
+                error: function(){
+                    alert('Gagal hapus file scan!');
+                }
+            });
+        }
         });
     </script>
 @endpush

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\DataTables\EntrySuratIsiDataTable;
 
 class EntriSuratController extends Controller
 {
@@ -81,16 +82,33 @@ class EntriSuratController extends Controller
         }
     }
 
+    public function deleteScan($id)
+    {
+        $scan = \App\Models\EntrySuratScan::find($id);
+        if (!$scan) {
+            return response()->json(['success' => false, 'message' => 'File scan tidak ditemukan']);
+        }
+        // Hapus file dari storage
+        try {
+            if ($scan->nama_file && \Storage::disk('public_uploads')->exists($scan->nama_file)) {
+                \Storage::disk('public_uploads')->delete($scan->nama_file);
+            }
+            $scan->delete();
+            return response()->json(['success' => true, 'message' => 'Berhasil hapus file scan']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal hapus file scan!']);
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, EntrySuratIsiDataTable $dataTable)
     {
-        $data = EntrySuratIsi::with('FileScan')->orderBy('tgl_surat', 'desc')->get();
-
-        // dd($data);
-
-        return view('entrisurat.index', compact('data'));
+        if ($request->ajax()) {
+            return $dataTable->ajax();
+        }
+        return $dataTable->render('entrisurat.index');
     }
 
     /**
@@ -113,10 +131,13 @@ class EntriSuratController extends Controller
         ])->get();
         $klasifikasi = MasterKlasifikasi::all();
         $jenisSurat = MasterJenisSurat::all();
+        $default_jenis_surat = MasterJenisSurat::where('name', 'Surat Masuk')->first();
+        $default_jenis_surat_last_id = $default_jenis_surat ? $default_jenis_surat->last_id : 0;
         return view('entrisurat.create', compact(
             'users',
             'klasifikasi',
-            'jenisSurat'
+            'jenisSurat',
+            'default_jenis_surat_last_id'
         ));
     }
 
@@ -151,7 +172,7 @@ class EntriSuratController extends Controller
             foreach ($request->kepada as $key => $value) {
                 $user = User::find($value);
                 if ($user) {
-                    $kepada .= $user->fullname . ",";
+                $kepada .= $user->fullname . ",";
                 }
             }
             $data['kepada'] = rtrim($kepada, ',');
@@ -161,15 +182,15 @@ class EntriSuratController extends Controller
             foreach ($request->kepada as $key => $value) {
                 $user = User::find($value);
                 if ($user) {
-                    $satker = MasterSatker::where('userid', $user->id)->first();
+                $satker = MasterSatker::where('userid', $user->id)->first();
                     if ($satker) {
-                        $tujuan = EntrySuratTujuan::create([
-                            'satkerid_tujuan' => $satker->satkerid,
-                            'dibaca' => 0,
-                            'is_tembusan' => 0,
-                            'entrysurat_id' => $create->id,
-                            'userid_tujuan' => $user->id,
-                        ]);
+                $tujuan = EntrySuratTujuan::create([
+                    'satkerid_tujuan' => $satker->satkerid,
+                    'dibaca' => 0,
+                    'is_tembusan' => 0,
+                    'entrysurat_id' => $create->id,
+                    'userid_tujuan' => $user->id,
+                ]);
                     }
                 }
             }

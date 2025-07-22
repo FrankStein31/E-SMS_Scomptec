@@ -36,73 +36,45 @@
                             </div>
                         </div>
                         <div class="card-body">
+                            <div class="row mb-2">
+                                <div class="col-md-3">
+                                    <select id="filterSifat" class="form-select form-select-sm" data-placeholder="-- Semua Sifat --">
+                                        <option value="">-- Semua Sifat --</option>
+                                        <option value="1">Penting</option>
+                                        <option value="2">Rahasia</option>
+                                        <option value="3">Biasa</option>
+                                        <option value="4">Pribadi</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="filterJenis" class="form-select form-select-sm" data-placeholder="-- Semua Jenis --">
+                                        <option value="">-- Semua Jenis --</option>
+                                        @foreach(App\Models\MasterJenisSurat::all() as $jenis)
+                                            <option value="{{ $jenis->last_id }}">{{ $jenis->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="filterUnit" class="form-select form-select-sm" data-placeholder="-- Semua Unit Pengentri --">
+                                        <option value="">-- Semua Unit Pengentri --</option>
+                                        @foreach(App\Models\User::orderBy('fullname')->get() as $user)
+                                            <option value="{{ $user->id }}">{{ $user->fullname }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="filterTujuan" class="form-select form-select-sm" data-placeholder="-- Semua Tujuan --">
+                                        <option value="">-- Semua Tujuan --</option>
+                                        @foreach(App\Models\EntrySuratIsi::select('kepada')->distinct()->get() as $row)
+                                            @if($row->kepada)
+                                                <option value="{{ $row->kepada }}">{{ $row->kepada }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                             <div class="table-responsive">
-                                <table class="table table-sm table-hover table-striped align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">No</th>
-                                            <th scope="col">No. Agenda</th>
-                                            <th scope="col">Sifat</th>
-                                            <th scope="col">Jenis</th>
-                                            <th scope="col">No. Surat</th>
-                                            <th scope="col">Dari</th>
-                                            <th scope="col">Tujuan</th>
-                                            <th scope="col">Hal</th>
-                                            <th scope="col">Unit Pengentri</th>
-                                            <th scope="col">Tanggal</th>
-                                            <th scope="col">Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse ($data as $item)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $item->noagenda }}</td>
-                                                <td>
-                                                    @if ($item->sifat == 1)
-                                                        <span class="badge bg-danger">Penting</span>
-                                                    @elseif($item->sifat == 2)
-                                                        <span class="badge bg-warning">Rahasia</span>
-                                                    @else
-                                                        <span class="badge bg-info">Biasa</span>
-                                                    @endif
-                                                </td>
-                                                <td>{{ $item->jenis->name }}</td>
-                                                <td>{{ $item->nomor_surat }}</td>
-                                                <td>{{ $item->dari }}</td>
-                                                <td>{{ $item->kepada }}</td>
-                                                <td>{{ $item->hal }}</td>
-                                                <td>{{ $item->createdby->fullname }}</td>
-                                                <td>{{ $item->tgl_surat }}</td>
-                                                <td>
-                                                    <div class="d-flex gap-1">
-                                                        <a href="{{ route('entrisurat.show', $item->id) }}"
-                                                            class="btn btn-info btn-sm b-r-22">
-                                                            <i class="iconoir-eye"></i>
-                                                        </a>
-                                                        {{-- <a href="{{ route('entrisurat.edit', $item->id) }}"
-                                                            class="btn btn-warning btn-sm b-r-22">
-                                                            <i class="iconoir-edit"></i>
-                                                        </a> --}}
-                                                        {{-- <form action="{{ route('entrisurat.destroy', $item->id) }}"
-                                                            method="POST" class="d-inline">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-sm b-r-22"
-                                                                onclick="return confirm('Apakah Anda yakin ingin menghapus entri surat ini?')">
-                                                                <i class="iconoir-trash"></i>
-                                                            </button>
-                                                        </form> --}}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="11" class="text-center">Tidak ada data</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                                {{ $dataTable->table(['id' => 'tabelEntriSurat']) }}
                             </div>
                         </div>
                     </div>
@@ -111,3 +83,24 @@
         </div>
     </main>
 @endsection
+
+@push('scripts')
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script>
+    $(function(){
+        $('#filterSifat, #filterJenis, #filterUnit, #filterTujuan').select2({
+            width: '100%',
+            allowClear: true
+        });
+        $('#filterSifat, #filterJenis, #filterUnit, #filterTujuan').on('change', function(){
+            let sifat = $('#filterSifat').val();
+            let jenis = $('#filterJenis').val();
+            let unit = $('#filterUnit').val();
+            let tujuan = $('#filterTujuan').val();
+            window.LaravelDataTables['tabelEntriSurat'].ajax.url('?sifat='+sifat+'&jenis='+jenis+'&unit_pengentri='+unit+'&tujuan='+tujuan).load();
+        });
+    });
+    </script>
+@endpush
