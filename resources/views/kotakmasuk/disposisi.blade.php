@@ -129,7 +129,7 @@
 
                                 <br>
 
-                                <form action="{{ route('kotakmasuk.post.disposisi') }}" class="app-form" method="post">
+                                <form action="{{ route('kotakmasuk.store') }}" class="app-form" method="post">
                                     @csrf
                                     <input type="hidden" name="entrysurat_id" value="{{ $id }}">
                                     <div class="row mb-2">

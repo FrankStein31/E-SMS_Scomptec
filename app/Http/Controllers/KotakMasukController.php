@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\Disposisi;
+use App\Models\DisposisiBaru;
 use App\Models\EntrySuratIsi;
 use App\Models\EntrySuratTujuan;
 use App\Models\MasterSatker;
@@ -49,42 +51,66 @@ class KotakMasukController extends Controller
         ));
     }
 
-    public function storeDisposisi(Request $request) {
-        
+    // public function storeDisposisi(Request $request) {
+
+    //     $request->validate([
+    //         'tindakan' => 'required',
+    //         'kepada' => 'required',
+    //         'remitten' => 'required'
+    //     ]);
+
+    //     DB::beginTransaction();
+    //     try {
+    //         foreach ($request->kepada as $key => $value) {
+    //             $user = User::find($value);
+    //             if (!$user) {
+    //                 continue; // skip jika user tidak ditemukan
+    //             }
+    //             $satker = MasterSatker::where('userid', $user->id)->first();
+    //             if (!$satker) {
+    //                 continue; // skip jika satker tidak ditemukan
+    //             }
+
+    //             $tujuan = EntrySuratTujuan::create([
+    //                 'satkerid_tujuan' => $satker->satkerid,
+    //                 'dibaca' => 0,
+    //                 'is_tembusan' => 0,
+    //                 'entrysurat_id' => $request->entrysurat_id,
+    //                 'userid_tujuan' => $user->id,
+    //             ]);
+    //         }
+
+    //         DB::commit();
+    //         return redirect()->back()->with('success', 'Berhasil Membuat Disposisi');
+    //     } catch (\Throwable $th) {
+    //         DB::rollBack();
+    //         return redirect()->back()->with('error', 'Gagal Membuat Disposisi');
+    //     }
+    // }
+
+    public function store(Request $request)
+    {
         $request->validate([
-            'tindakan' => 'required',
+            'entrysurat_id' => 'required|exists:entry_surat_isis,id',
             'kepada' => 'required',
-            'remitten' => 'required'
+            'content' => 'nullable|string',
+            'tindakan' => 'array',
         ]);
 
-        DB::beginTransaction();
-        try {
-            foreach ($request->kepada as $key => $value) {
-                $user = User::find($value);
-                if (!$user) {
-                    continue; // skip jika user tidak ditemukan
-                }
-                $satker = MasterSatker::where('userid', $user->id)->first();
-                if (!$satker) {
-                    continue; // skip jika satker tidak ditemukan
-                }
-                
-                $tujuan = EntrySuratTujuan::create([
-                    'satkerid_tujuan' => $satker->satkerid,
-                    'dibaca' => 0,
-                    'is_tembusan' => 0,
-                    'entrysurat_id' => $request->entrysurat_id,
-                    'userid_tujuan' => $user->id,
-                ]);
-            }
+        $disposisi = DisposisiBaru::create([
+            'entrysurat_id' => $request->entrysurat_id,
+            'kepada' => implode(',', $request->kepada), // fix array to string
+            'content' => $request->content,
+        ]);
 
-            DB::commit();
-            return redirect()->back()->with('success', 'Berhasil Membuat Disposisi');
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Gagal Membuat Disposisi');
+
+        if ($request->has('tindakan')) {
+            $disposisi->tindakans()->attach($request->tindakan);
         }
+
+        return redirect()->route('disposisi.index')->with('success', 'Disposisi berhasil dibuat.');
     }
+
 
     /**
      * Display a listing of the resource.
@@ -108,10 +134,6 @@ class KotakMasukController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.

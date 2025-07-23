@@ -128,10 +128,10 @@
                                 </table>
 
                                 <div class="mb-4"></div>
-                                <a href="" class="btn btn-info btn-sm b-r-22">Ubah</a>
+                                {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Ubah</a> --}}
                                 <a href="{{ route('kotakmasuk.disposisi', $data->id) }}" class="btn btn-info btn-sm b-r-22">Disposisi</a>
-                                <a href="" class="btn btn-info btn-sm b-r-22">Riw. Surat</a>
-                                <a href="" class="btn btn-info btn-sm b-r-22">Cetak</a>
+                                {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Riw. Surat</a> --}}
+                                {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Cetak</a> --}}
                             </div>
                         </div>
                     </div>
