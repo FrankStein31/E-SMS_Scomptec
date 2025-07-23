@@ -30,16 +30,12 @@
                                 <div class="col">
                                     <h5>List Draft Surat</h5>
                                 </div>
-                                <div class="col text-end">
-                                    {{-- <a href="{{ route('draft-surat.create') }}" class="btn btn-primary btn-sm b-r-22"> --}}
-                                    <i class="iconoir-plus"></i> Tambah Draft Surat
-                                    </a>
-                                </div>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-sm table-hover table-striped align-middle mb-0">
+                                {{ $dataTable->table(['id' => 'table-id']) }}
+                                {{-- <table class="table table-sm table-hover table-striped align-middle mb-0">
                                     <thead>
                                         <tr>
                                             <th scope="col">No</th>
@@ -57,12 +53,30 @@
                                             <tr data-href='{{ route('draft-surat.show', $draft['id']) }}'
                                                 class="clickable-row">
                                                 <td>{{ $index + 1 }}</td>
-                                                <td>{{ $draft['sifat'] ?? '-' }}</td>
-                                                <td>{{ $draft['jenis'] ?? '-' }}</td>
-                                                <td>{{ $draft['hal'] ?? '-' }}</td>
-                                                <td>{{ $draft['tanggal_surat'] ?? '-' }}</td>
-                                                <td>{{ $draft['klasifikasi'] ?? '-' }}</td>
-                                                <td>{{ $draft['kepada'] ?? '-' }}</td>
+                                                <td>
+                                                    @if ($draft->sifat == 1)
+                                                        <span class="badge bg-danger">Penting</span>
+                                                    @elseif($draft->sifat == 2)
+                                                        <span class="badge bg-warning">Rahasia</span>
+                                                    @else
+                                                        <span class="badge bg-info">Biasa</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $draft->jenis->name }}</td>
+                                                <td>{{ $draft->hal }}</td>
+                                                <td>{{ $draft->tgl_surat }}</td>
+                                                <td>{{ $draft->kodeklasifikasi }}</td>
+                                                <td>
+                                                    @php
+                                                        $kepada = json_decode($draft->kepada);
+                                                        $names = [];
+                                                        foreach ($kepada as $k) {
+                                                            $data = json_decode($k);
+                                                            $names[] = $data->name;
+                                                        }
+                                                        echo implode(', ', $names);
+                                                    @endphp
+                                                </td>
                                                 <td>
                                                     <a href="{{ route('draft-surat.edit', $draft['id']) }}"
                                                         class="btn btn-primary btn-sm">Edit</a>
@@ -82,7 +96,7 @@
                                             </tr>
                                         @endforelse
                                     </tbody>
-                                </table>
+                                </table> --}}
                             </div>
 
                             {{-- Pagination area --}}
@@ -113,6 +127,39 @@
 @endsection
 
 @push('js')
+    {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+    <script>
+        const showUrl = "{{ url('/draft-surat') }}/";
+
+        $(document).ready(function() {
+            $(document).on('click', '.btnDetail', function() {
+                var id = $(this).data('id');
+                window.location.href = showUrl + id;
+            });
+        });
+
+        // Tombol Hapus
+        $(document).on('click', '.btnHapus', function() {
+            var id = $(this).data('id');
+            if (confirm('Yakin ingin menghapus data ini?')) {
+                $.ajax({
+                    url: '/draft-surat/' + id,
+                    type: 'DELETE',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        alert('Data berhasil dihapus');
+                        $('#your-datatable-id').DataTable().ajax.reload(); // reload table
+                    },
+                    error: function(xhr) {
+                        alert('Gagal menghapus data');
+                    }
+                });
+            }
+        });
+    </script>
+
     <script>
         $(document).ready(function() {
             $('.clickable-row').click(function() {
