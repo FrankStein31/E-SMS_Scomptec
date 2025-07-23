@@ -51,64 +51,66 @@ class KotakMasukController extends Controller
         ));
     }
 
-    // public function storeDisposisi(Request $request) {
-
-    //     $request->validate([
-    //         'tindakan' => 'required',
-    //         'kepada' => 'required',
-    //         'remitten' => 'required'
-    //     ]);
-
-    //     DB::beginTransaction();
-    //     try {
-    //         foreach ($request->kepada as $key => $value) {
-    //             $user = User::find($value);
-    //             if (!$user) {
-    //                 continue; // skip jika user tidak ditemukan
-    //             }
-    //             $satker = MasterSatker::where('userid', $user->id)->first();
-    //             if (!$satker) {
-    //                 continue; // skip jika satker tidak ditemukan
-    //             }
-
-    //             $tujuan = EntrySuratTujuan::create([
-    //                 'satkerid_tujuan' => $satker->satkerid,
-    //                 'dibaca' => 0,
-    //                 'is_tembusan' => 0,
-    //                 'entrysurat_id' => $request->entrysurat_id,
-    //                 'userid_tujuan' => $user->id,
-    //             ]);
-    //         }
-
-    //         DB::commit();
-    //         return redirect()->back()->with('success', 'Berhasil Membuat Disposisi');
-    //     } catch (\Throwable $th) {
-    //         DB::rollBack();
-    //         return redirect()->back()->with('error', 'Gagal Membuat Disposisi');
-    //     }
-    // }
-
     public function store(Request $request)
     {
         $request->validate([
             'entrysurat_id' => 'required|exists:entry_surat_isis,id',
-            'kepada' => 'required',
+            'kepada' => 'required|array',
             'content' => 'nullable|string',
             'tindakan' => 'array',
         ]);
 
-        $disposisi = DisposisiBaru::create([
-            'entrysurat_id' => $request->entrysurat_id,
-            'kepada' => implode(',', $request->kepada), // fix array to string
-            'content' => $request->content,
-        ]);
+        DB::beginTransaction();
+        try {
+            // Simpan ke EntrySuratTujuan
+            foreach ($request->kepada as $key => $value) {
+                $user = User::find($value);
+                if (!$user) {
+                    \Log::info('User tidak ditemukan', ['user_id' => $value]);
+                    continue;
+                }
+                $satker = MasterSatker::where('userid', $user->id)->first();
+                if (!$satker) {
+                    \Log::info('Satker tidak ditemukan', ['user_id' => $user->id]);
+                    continue;
+                }
+                // Cek apakah sudah ada
+                $sudahAda = EntrySuratTujuan::where([
+                    'entrysurat_id' => $request->entrysurat_id,
+                    'userid_tujuan' => $user->id,
+                ])->first();
+                if (!$sudahAda) {
+                    EntrySuratTujuan::create([
+                        'satkerid_tujuan' => $satker->satkerid,
+                        'dibaca' => 0,
+                        'is_tembusan' => 0,
+                        'entrysurat_id' => $request->entrysurat_id,
+                        'userid_tujuan' => $user->id,
+                    ]);
+                    \Log::info('Berhasil simpan EntrySuratTujuan', ['user_id' => $user->id, 'satkerid' => $satker->satkerid]);
+                } else {
+                    \Log::info('EntrySuratTujuan sudah ada', ['user_id' => $user->id, 'entrysurat_id' => $request->entrysurat_id]);
+                }
+            }
 
+            // Simpan ke DisposisiBaru
+            $disposisi = DisposisiBaru::create([
+                'entrysurat_id' => $request->entrysurat_id,
+                'kepada' => implode(',', $request->kepada),
+                'content' => $request->content,
+            ]);
+            if ($request->has('tindakan')) {
+                $disposisi->tindakans()->attach($request->tindakan);
+            }
 
-        if ($request->has('tindakan')) {
-            $disposisi->tindakans()->attach($request->tindakan);
+            DB::commit();
+            \Log::info('DisposisiBaru berhasil disimpan', ['entrysurat_id' => $request->entrysurat_id]);
+            return redirect()->route('disposisi.index')->with('success', 'Disposisi berhasil dibuat.');
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            \Log::error('Gagal Membuat Disposisi', ['error' => $th->getMessage()]);
+            return redirect()->back()->with('error', 'Gagal Membuat Disposisi');
         }
-
-        return redirect()->route('disposisi.index')->with('success', 'Disposisi berhasil dibuat.');
     }
 
 

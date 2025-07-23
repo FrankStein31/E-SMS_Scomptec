@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->ulid('entrysurat_id');
             $table->foreign('entrysurat_id')->references('id')->on('entry_surat_isis')->onDelete('cascade');
-            $table->foreignId('kepada')->constrained('users')->onDelete('cascade'); // per penerima
+            $table->text('kepada'); // multi user, id user dipisah koma
             $table->date('remitten')->nullable();
             $table->text('content')->nullable();
             $table->timestamps();

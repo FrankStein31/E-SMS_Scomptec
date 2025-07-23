@@ -20,9 +20,20 @@ class DisposisiController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // public function index()
+    // {
+    //     $disposisis = \App\Models\DisposisiBaru::with('tindakans', 'entrysurat')->latest()->get();
+    //     return view('disposisi.index', compact('disposisis'));
+    // }
     public function index()
     {
-        $disposisis = \App\Models\DisposisiBaru::with('tindakans', 'entrysurat')->latest()->get();
+        $userId = Auth::user()->id;
+        $disposisis = \App\Models\DisposisiBaru::with('tindakans', 'entrysurat')
+            ->where(function($query) use ($userId) {
+                $query->whereRaw("FIND_IN_SET(?, kepada)", [$userId]);
+            })
+            ->latest()
+            ->get();
         return view('disposisi.index', compact('disposisis'));
     }
 
