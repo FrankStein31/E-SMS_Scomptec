@@ -8,7 +8,7 @@
                     <div class="card shadow-sm border-0 rounded-lg"> {{-- Styling modern untuk card --}}
                         <div
                             class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                            <h4 class="card-title mb-0 text-primary fw-bold">Tambah Draft Surat</h4> {{-- Judul dengan styling --}}
+                            <h5 class="card-title mb-0 text-primary fw-bold">Tambah Draft Surat</h5> {{-- Judul dengan styling --}}
                             <a href="{{ route('draft_surat.index') }}" class="btn btn-sm btn-outline-secondary">
                                 <i class="fas fa-arrow-left fa-fw me-1"></i> Kembali
                             </a> {{-- Tombol Kembali di pojok kanan atas --}}

@@ -494,7 +494,7 @@
 
     </div>
     <hr class="garis-pemisah">
-    <h3>Daftar Surat Keluar</h3>
+    <h4>Daftar Surat Keluar</h4>
     <button class="no-print" onclick="window.print()">🖨️ Cetak Halaman Ini</button>
     <div class="tanggal-cetak">
         Surabaya:<span id="waktuCetak">{{ \Carbon\Carbon::now()->format('d/m/Y, H.i') }}</span>

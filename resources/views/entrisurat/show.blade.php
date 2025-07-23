@@ -227,7 +227,7 @@
         function initImageSlider() {
             // Pastikan jQuery dan Slick sudah dimuat
             try {
-            if (typeof jQuery !== 'undefined' && typeof jQuery.fn.slick !== 'undefined') {
+                if (typeof jQuery !== 'undefined' && typeof jQuery.fn.slick !== 'undefined') {
                     var $slider = $('#scannedImagesSlider');
                     if ($slider.length) {
                         // Destroy slick jika sudah ada
@@ -235,13 +235,13 @@
                             $slider.slick('unslick');
                         }
                         $slider.slick({
-                    dots: true,
-                    infinite: true,
-                    speed: 300,
-                    slidesToShow: 1,
-                    adaptiveHeight: true,
-                    arrows: true
-                });
+                            dots: true,
+                            infinite: true,
+                            speed: 300,
+                            slidesToShow: 1,
+                            adaptiveHeight: true,
+                            arrows: true
+                        });
                     }
                 }
             } catch (e) {
@@ -259,7 +259,7 @@
                     <a href="{{ route('entrisurat.index') }}" class="btn btn-secondary btn-sm mb-3">
                         <i class="iconoir-arrow-left"></i> Kembali ke Daftar Entri Surat
                     </a>
-                    <h4 class="main-title">Detail Entri Surat</h4>
+                    <h5 class="main-title">Detail Entri Surat</h5>
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">
                             <a class="f-s-14 f-w-500" href="#">
@@ -284,7 +284,7 @@
 
             @include('layout.alert')
 
-            @if(session('success'))
+            @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -422,8 +422,11 @@
                                                 <div class="scanned-images-slider">
                                                     @foreach ($data->FileScan as $scan)
                                                         <div style="position:relative;">
-                                                            <img src="{{ asset('uploads/' . $scan->nama_file) }}" alt="">
-                                                            <button class="btn btn-sm btn-danger btn-close-scan-file" style="position:absolute;top:5px;right:5px;z-index:10;" data-id="{{ $scan->id }}">&times;</button>
+                                                            <img src="{{ asset('uploads/' . $scan->nama_file) }}"
+                                                                alt="">
+                                                            <button class="btn btn-sm btn-danger btn-close-scan-file"
+                                                                style="position:absolute;top:5px;right:5px;z-index:10;"
+                                                                data-id="{{ $scan->id }}">&times;</button>
                                                         </div>
                                                     @endforeach
                                                 </div>
@@ -460,28 +463,31 @@
         });
     </script>
     <script>
-    $(document).on('click', '.btn-close-scan-file', function(e){
-        e.preventDefault();
-        if(confirm('Yakin hapus file scan ini?')){
-            var id = $(this).data('id');
-            var btn = $(this);
-            $.ajax({
-                url: '/entrisurat/scan/'+id+'/delete',
-                type: 'POST',
-                data: {_token: '{{ csrf_token() }}', _method: 'DELETE'},
-                success: function(res){
-                    if(res.success){
-                        // Setelah hapus, reload halaman dan kirim pesan sukses
-                        location.reload();
-                    } else {
-                        alert(res.message || 'Gagal hapus file scan!');
+        $(document).on('click', '.btn-close-scan-file', function(e) {
+            e.preventDefault();
+            if (confirm('Yakin hapus file scan ini?')) {
+                var id = $(this).data('id');
+                var btn = $(this);
+                $.ajax({
+                    url: '/entrisurat/scan/' + id + '/delete',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        _method: 'DELETE'
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            // Setelah hapus, reload halaman dan kirim pesan sukses
+                            location.reload();
+                        } else {
+                            alert(res.message || 'Gagal hapus file scan!');
+                        }
+                    },
+                    error: function() {
+                        alert('Gagal hapus file scan!');
                     }
-                },
-                error: function(){
-                    alert('Gagal hapus file scan!');
-                }
-            });
-        }
+                });
+            }
         });
     </script>
 @endpush

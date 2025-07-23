@@ -177,9 +177,7 @@
 <body>
 
     <div class="print-container">
-        {{-- Header Section: Logo, Institution Name, Address --}}
         <div class="header-section">
-            {{-- Assuming your logo path is dynamic or static --}}
             <img src="{{ asset('assets/images/logo/logo_jatim.png') }}" alt="Logo Provinsi Jawa Timur" class="logo">
             <div class="institution-details">
                 <h2>PEMERINTAH PROVINSI JAWA TIMUR</h2>
@@ -192,7 +190,8 @@
 
         {{-- Date and Recipient Block (Right Aligned) --}}
         <p style="text-align: right; margin-bottom: 10px;">Surabaya,
-            {{ $suratTerkirim->tgl_surat ? \Carbon\Carbon::parse($suratTerkirim->tgl_surat)->format('d F Y') : '-' }}</p>
+            {{ $suratTerkirim->tgl_surat ? \Carbon\Carbon::parse($suratTerkirim->tgl_surat)->format('d F Y') : '-' }}
+        </p>
 
         {{-- Letter Metadata Table --}}
         <table class="letter-meta">
@@ -207,7 +206,7 @@
             <tr>
                 <td class="label-col">Sifat</td>
                 <td>:
-                    @if($suratTerkirim->sifat == 1)
+                    @if ($suratTerkirim->sifat == 1)
                         Penting
                     @elseif($suratTerkirim->sifat == 2)
                         Rahasia
@@ -233,12 +232,14 @@
             @php
                 $kepada = $suratTerkirim->kepada;
                 $names = [];
-                if($kepada) {
+                if ($kepada) {
                     $arr = is_array($kepada) ? $kepada : json_decode($kepada);
-                    if($arr) {
-                        foreach($arr as $k) {
+                    if ($arr) {
+                        foreach ($arr as $k) {
                             $data = is_string($k) ? json_decode($k) : $k;
-                            if(isset($data->name)) $names[] = $data->name;
+                            if (isset($data->name)) {
+                                $names[] = $data->name;
+                            }
                         }
                     }
                 }
@@ -249,7 +250,9 @@
         </div>
 
         {{-- Letter Main Content (Isi Surat) --}}
-        <div style="text-align:center; font-weight:bold; text-transform:uppercase; margin: 30px 0 10px 0; font-size: 14pt;">SURAT EDARAN</div>
+        <div
+            style="text-align:center; font-weight:bold; text-transform:uppercase; margin: 30px 0 10px 0; font-size: 14pt;">
+            SURAT EDARAN</div>
         <div class="letter-content">
             {!! $suratTerkirim->isi ?? '<p>Isi surat belum tersedia.</p>' !!}
         </div>
@@ -271,11 +274,14 @@
                     @php
                         $tembusan = $suratTerkirim->tembusan;
                         $arr = is_array($tembusan) ? $tembusan : json_decode($tembusan);
-                        if($arr) {
-                            foreach($arr as $t) {
+                        if ($arr) {
+                            foreach ($arr as $t) {
                                 $data = is_string($t) ? json_decode($t) : $t;
-                                if(isset($data->name)) echo '<li>' . $data->name . '</li>';
-                                elseif(is_string($t)) echo '<li>' . $t . '</li>';
+                                if (isset($data->name)) {
+                                    echo '<li>' . $data->name . '</li>';
+                                } elseif (is_string($t)) {
+                                    echo '<li>' . $t . '</li>';
+                                }
                             }
                         } else {
                             echo '<li>' . $tembusan . '</li>';

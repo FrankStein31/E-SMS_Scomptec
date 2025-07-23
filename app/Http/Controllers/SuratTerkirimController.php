@@ -25,6 +25,8 @@ class SuratTerkirimController extends Controller
             });
         }
         $suratTerkirim = $suratTerkirim->orderBy('created_at', 'desc')->paginate(10);
+        // dd($suratTerkirim);
+
         return view('suratterkirim.index', compact('suratTerkirim'));
     }
 

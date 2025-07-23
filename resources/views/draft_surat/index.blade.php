@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row m-1">
                 <div class="col-12 ">
-                    <h4 class="main-title">Daftar Draft Surat</h4>
+                    <h5 class="main-title">Daftar Draft Surat</h5>
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">
                             <a class="f-s-14 f-w-500" href="#">
@@ -32,7 +32,7 @@
                                 </div>
                                 <div class="col text-end">
                                     {{-- <a href="{{ route('draft-surat.create') }}" class="btn btn-primary btn-sm b-r-22"> --}}
-                                        <i class="iconoir-plus"></i> Tambah Draft Surat
+                                    <i class="iconoir-plus"></i> Tambah Draft Surat
                                     </a>
                                 </div>
                             </div>
