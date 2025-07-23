@@ -24,6 +24,7 @@ class User extends Authenticatable
         'fullname',
         'jabatan',
         'satkerid',
+        'user_id_pembuat',
         'nip',
         'usergroupid',
         'email',

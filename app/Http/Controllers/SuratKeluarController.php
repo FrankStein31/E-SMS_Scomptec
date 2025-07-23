@@ -12,15 +12,13 @@ class SuratKeluarController extends Controller
      */
     public function index()
     {
-        // Ambil semua data surat keluar dari tabel
+        $userId = auth()->user()->username;
         $suratKeluar = SuratKeluarIsi::with([
             'jenis',
             'klasifikasi',
             'pembuat',
             'userFinal.satker'
-        ])->get();
-
-        // dd($suratKeluar);
+        ])->where('user_id_pembuat', $userId)->get();
 
         return view('suratkeluar.index', compact('suratKeluar'));
     }

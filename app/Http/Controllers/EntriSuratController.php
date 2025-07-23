@@ -105,7 +105,9 @@ class EntriSuratController extends Controller
      */
     public function index(Request $request, EntrySuratIsiDataTable $dataTable)
     {
+        $userId = Auth::user()->id;
         if ($request->ajax()) {
+            $request->merge(['unit_pengentri' => $userId]);
             return $dataTable->ajax();
         }
         return $dataTable->render('entrisurat.index');
