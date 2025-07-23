@@ -1,94 +1,155 @@
-@extends('layout.main') {{-- Assuming your main layout is layout.main --}}
+@extends('layout.main')
 
 @section('content')
     <main>
         <div class="container-fluid">
+            <!-- Breadcrumb start -->
             <div class="row m-1">
-                <div class="col-12">
-                    <h5 class="main-title">Riwayat Disposisi</h5>
+                <div class="col-12 ">
+                    <h5 class="main-title">Disposisi</h5>
                     <ul class="app-line-breadcrumbs mb-3">
-                        <li>
-                            <a class="f-s-14 f-w-500" href="{{ url('/') }}">
-                                <span>Home</span>
+                        <li class="">
+                            <a class="f-s-14 f-w-500" href="#">
+                                <span>
+                                    Home
+                                </span>
                             </a>
                         </li>
-                        <li>
-                            <a class="f-s-14 f-w-500" href="{{ route('disposisi.index') }}">Disposisi</a>
+                        <li class="">
+                            <a class="f-s-14 f-w-500" href="{{ route('disposisi.index') }}">
+                                <span>
+                                    Disposisi
+                                </span>
+                            </a>
                         </li>
                         <li class="active">
-                            <a class="f-s-14 f-w-500" href="#">Riwayat</a>
+                            <a class="f-s-14 f-w-500" href="#">Detail</a>
                         </li>
                     </ul>
                 </div>
             </div>
-            @include('layout.alert') {{-- Include your alert messages partial --}}
+            <!-- Breadcrumb end -->
 
+            @include('layout.alert')
+
+            <!-- Blank start -->
             <div class="row">
+                <!-- Default Card start -->
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <div class="row align-items-center">
+                            <div class="row">
                                 <div class="col">
-                                    <h5>Detail Disposisi: {{ $disposisi->no_surat ?? 'N/A' }}</h5>
+                                    <h5>Desposisi Surat</h5>
                                 </div>
-                                <div class="col-auto">
-                                    <a href="{{ route('disposisi.index') }}" class="btn btn-secondary btn-sm">
-                                        <i class="fas fa-arrow-left me-1"></i> Kembali
-                                    </a>
-                                    {{-- This will make the button look like a print button, but it still navigates to the index page. --}}
-                                    {{-- <a href="{{ route('disposisi.index') }}" class="btn btn-secondary btn-sm"> --}}
-                                        <i class="fas fa-print me-1"></i> Cetak
-                                    </a>
-                                    {{-- Add other action buttons like Edit, Print for detail view if needed --}}
-                                    {{-- <a href="{{ route('disposisi.edit', $disposisi->id) }}" class="btn btn-primary btn-sm ms-2">
-                                        <i class="fas fa-edit me-1"></i> Edit
-                                    </a> --}}
+                                <div class="col text-end">
+                                    {{-- <a href="{{ route('entrisurat.index') }}" class="btn btn-info btn-sm">Daftar Entri
+                                        Surat</a> --}}
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <strong>No Agenda:</strong> {{ $disposisi->no_agenda ?? '-' }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>No Surat:</strong> {{ $disposisi->no_surat ?? '-' }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Sifat:</strong> {{ $disposisi->sifat ?? '-' }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Jenis:</strong> {{ $disposisi->jenis ?? '-' }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Dari:</strong> {{ $disposisi->dari ?? '-' }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Tujuan:</strong> {{ $disposisi->tujuan ?? '-' }}
-                                </div>
-                                <div class="col-md-12 mb-3">
-                                    <strong>Hal:</strong> {{ $disposisi->hal ?? '-' }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Tanggal Surat:</strong>
-                                    {{ \Carbon\Carbon::parse($disposisi->tgl_surat)->format('d F Y') ?? '-' }}
-                                </div>
-                                {{-- Add more detail fields as per your Disposition model --}}
-                                {{-- For example: --}}
-                                {{-- <div class="col-md-12 mb-3">
-                                    <strong>Isi Disposisi:</strong> {{ $disposisi->isi_disposisi ?? '-' }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Penerima:</strong> {{ $disposisi->penerima ?? '-' }}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Tanggal Disposisi:</strong> {{ \Carbon\Carbon::parse($disposisi->tgl_disposisi)->format('d F Y H:i') ?? '-' }}
-                                </div> --}}
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover table-striped align-middle mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                No. Agenda
+                                            </th>
+                                            <td>
+                                                {{ $disposisi->noagenda }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                Sifat
+                                            </th>
+                                            <td>
+                                                {{ sifatSurat($disposisi->sifat) }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                Jenis
+                                            </th>
+                                            <td>
+                                                {{ $disposisi->jenis->name }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                No. Surat
+                                            </th>
+                                            <td>
+                                                {{ $disposisi->nomor_surat }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                Dari
+                                            </th>
+                                            <td>
+                                                {{ $disposisi->dari }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                Tujuan
+                                            </th>
+                                            <td>
+                                                {{ $disposisi->kepada }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                Hal
+                                            </th>
+                                            <td>
+                                                {{ $disposisi->hal }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                Unit Pengentri
+                                            </th>
+                                            <td>
+                                                {{ $disposisi->createdBy->fullname }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                Tanggal
+                                            </th>
+                                            <td>
+                                                {{ $disposisi->created_at->format('d-m-Y') }}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="mb-4"></div>
+                                <a href="" class="btn btn-info btn-sm b-r-22" >Ubah</a>
+                                {{-- <a href="{{ route('kotakmasuk.disposisi', $disposisi->id) }}" class="btn btn-info btn-sm b-r-22">Disposisi</a> --}}
+                                <a href="" class="btn btn-info btn-sm b-r-22" >Riw. Surat</a>
+                                <a href="" class="btn btn-info btn-sm b-r-22" >Cetak</a>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Default Card end -->
             </div>
+            <!-- Blank end -->
         </div>
     </main>
 @endsection
+
+@push('js')
+    <script>
+        $(document).ready(function() {
+            $('.clickable-row').click(function() {
+                window.location = $(this).data('href');
+            });
+        });
+    </script>
+@endpush
