@@ -3,7 +3,7 @@
 @section('content')
     <main>
         <div class="container-fluid">
-            <h4 class="main-title">Detail Draft Surat</h4>
+            <h5 class="main-title">Detail Draft Surat</h5>
 
             <div class="card">
                 <div class="card-body">

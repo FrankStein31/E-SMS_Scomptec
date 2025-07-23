@@ -5,7 +5,7 @@
         <div class="container-fluid">
             <div class="row m-1"></div>
             <div class="col-12 ">
-                <h4 class="main-title">Detail Surat Terkirim</h4>
+                <h5 class="main-title">Detail Surat Terkirim</h5>
                 <ul class="app-line-breadcrumbs mb-3">
                     <li class="">
                         <a class="f-s-14 f-w-500" href="{{ route('suratterkirim.index') }}">

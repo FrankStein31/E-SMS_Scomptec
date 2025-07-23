@@ -66,7 +66,7 @@
             <!-- Breadcrumb start -->
             <div class="row m-1">
                 <div class="col-12 ">
-                    <h4 class="main-title">Statistik</h4>
+                    <h5 class="main-title">Statistik</h5>
                     <ul class="app-line-breadcrumbs mb-3">
                         {{-- <li class="">
                             <a class="f-s-14 f-w-500" href="#">
@@ -100,18 +100,24 @@
                             <form action="" class="app-form" method="get">
                                 <div class="row">
                                     <div class="col">
-                                        <select class="select-example form-select form-select-sm select-basic" name="tahun">
+                                        <select class="select-example form-select form-select-sm select-basic"
+                                            name="tahun">
                                             <option value="">Pilih Tahun</option>
                                             @foreach (getListTahun() as $item)
-                                                <option value="{{ $item }}" {{ (isset($tahun) && $tahun == $item) ? 'selected' : '' }}>{{ $item }}</option>
+                                                <option value="{{ $item }}"
+                                                    {{ isset($tahun) && $tahun == $item ? 'selected' : '' }}>
+                                                    {{ $item }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                     <div class="col">
-                                        <select class="select-example form-select form-select-sm select-basic" name="jenis_surat">
+                                        <select class="select-example form-select form-select-sm select-basic"
+                                            name="jenis_surat">
                                             <option value="">Pilih Jenis Surat</option>
                                             @foreach ($jenisSurat as $item)
-                                                <option value="{{ $item->last_id }}" {{ (isset($jenis) && $jenis == $item->last_id) ? 'selected' : '' }}>{{ $item->name }}</option>
+                                                <option value="{{ $item->last_id }}"
+                                                    {{ isset($jenis) && $jenis == $item->last_id ? 'selected' : '' }}>
+                                                    {{ $item->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -181,8 +187,7 @@
                     borderWidth: 0
                 }
             },
-            series: [
-                {
+            series: [{
                     name: 'Surat Masuk',
                     data: masuk,
                     color: '#8E7DBE'

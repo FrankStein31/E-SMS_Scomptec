@@ -6,7 +6,7 @@
             <!-- Breadcrumb start -->
             <div class="row m-1">
                 <div class="col-12 ">
-                    <h4 class="main-title">Entri Surat</h4>
+                    <h5 class="main-title">Entri Surat</h5>
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">
                             <a class="f-s-14 f-w-500" href="#">
@@ -84,7 +84,8 @@
                                             <option value="">Pilih Kepada</option>
                                             @foreach ($users as $item)
                                                 @if (strtolower($item['Jabatan2']) != 'administrator')
-                                                    <option value="{{ $item['id'] }}">{{ $item['FullName'] }} - {{ $item['Jabatan2'] }}</option>
+                                                    <option value="{{ $item['id'] }}">{{ $item['FullName'] }} -
+                                                        {{ $item['Jabatan2'] }}</option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -131,7 +132,8 @@
                                             name="jenis_surat">
                                             <option disabled>Pilih Jenis Surat</option>
                                             @foreach ($jenisSurat as $item)
-                                                <option value="{{ $item->last_id }}" {{ $item->last_id == $default_jenis_surat_last_id ? 'selected' : '' }}>
+                                                <option value="{{ $item->last_id }}"
+                                                    {{ $item->last_id == $default_jenis_surat_last_id ? 'selected' : '' }}>
                                                     {{ $item->name }}
                                                 </option>
                                             @endforeach

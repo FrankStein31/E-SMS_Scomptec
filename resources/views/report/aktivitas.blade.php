@@ -5,7 +5,7 @@
     <div class="container-fluid">
         <div class="row m-1">
             <div class="col-12">
-                <h4 class="main-title">Aktivitas User</h4>
+                <h5 class="main-title">Aktivitas User</h5>
                 <ul class="app-line-breadcrumbs mb-3">
                     <li class="active">
                         <a class="f-s-14 f-w-500" href="#">Aktivitas</a>

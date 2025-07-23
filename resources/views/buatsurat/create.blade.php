@@ -6,7 +6,7 @@
             <!-- Breadcrumb start -->
             <div class="row m-1">
                 <div class="col-12 ">
-                    <h4 class="main-title">Buat Surat</h4>
+                    <h5 class="main-title">Buat Surat</h5>
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">
                             <a class="f-s-14 f-w-500" href="#">
@@ -38,14 +38,16 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('buatsurat.store') }}" class="app-form" method="post" enctype="multipart/form-data">
+                            <form action="{{ route('buatsurat.store') }}" class="app-form" method="post"
+                                enctype="multipart/form-data">
                                 @csrf
                                 <div class="row mb-2">
                                     <div class="col-md-2">
                                         <label class="form-label">Jenis Surat</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select class="select-example form-select form-select-sm select-basic @error('jenis_id') is-invalid @enderror"
+                                        <select
+                                            class="select-example form-select form-select-sm select-basic @error('jenis_id') is-invalid @enderror"
                                             name="jenis_id" required>
                                             <option value="">Pilih Jenis Surat</option>
                                             @foreach ($jenisSurat as $item)
@@ -62,7 +64,7 @@
                                         <label class="form-label">No. Surat</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm @error('nosurat') is-invalid @enderror" 
+                                        <input class="form-control form-control-sm @error('nosurat') is-invalid @enderror"
                                             name="nosurat" type="text" required value="{{ old('nosurat') }}">
                                         @error('nosurat')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -74,11 +76,13 @@
                                         <label class="form-label">Klasifikasi</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select class="select-example form-select form-select-sm select-basic @error('klasifikasi') is-invalid @enderror"
+                                        <select
+                                            class="select-example form-select form-select-sm select-basic @error('klasifikasi') is-invalid @enderror"
                                             name="klasifikasi" required>
                                             <option value="">Pilih Jenis Klasifikasi</option>
                                             @foreach ($klasifikasi as $item)
-                                                <option value="{{ $item->kodeklasifikasi }}" {{ old('klasifikasi') == $item->kodeklasifikasi ? 'selected' : '' }}>
+                                                <option value="{{ $item->kodeklasifikasi }}"
+                                                    {{ old('klasifikasi') == $item->kodeklasifikasi ? 'selected' : '' }}>
                                                     {{ $item->kodeklasifikasi }} - {{ $item->klasifikasi }}
                                                 </option>
                                             @endforeach
@@ -93,7 +97,7 @@
                                         <label class="form-label">Tgl Surat</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm @error('tgl_surat') is-invalid @enderror" 
+                                        <input class="form-control form-control-sm @error('tgl_surat') is-invalid @enderror"
                                             type="date" name="tgl_surat" required>
                                         @error('tgl_surat')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -105,7 +109,7 @@
                                         <label class="form-label">Hal</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm @error('hal') is-invalid @enderror" 
+                                        <input class="form-control form-control-sm @error('hal') is-invalid @enderror"
                                             name="hal" type="text" required>
                                         @error('hal')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -117,7 +121,7 @@
                                         <label class="form-label">Sifat</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select class="form-select form-select-sm @error('sifat') is-invalid @enderror" 
+                                        <select class="form-select form-select-sm @error('sifat') is-invalid @enderror"
                                             name="sifat" required>
                                             <option value="">Pilih Sifat Surat</option>
                                             <option value="1">Penting</option>
@@ -134,7 +138,7 @@
                                         <label class="form-label">Lampiran</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm @error('lampiran') is-invalid @enderror" 
+                                        <input class="form-control form-control-sm @error('lampiran') is-invalid @enderror"
                                             name="lampiran" type="number" value="0" required>
                                         @error('lampiran')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -146,7 +150,8 @@
                                         <label class="form-label">File Lampiran</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input type="file" class="form-control form-control-sm @error('lampiran_file') is-invalid @enderror" 
+                                        <input type="file"
+                                            class="form-control form-control-sm @error('lampiran_file') is-invalid @enderror"
                                             name="lampiran_file[]" multiple>
                                         @error('lampiran_file')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -159,11 +164,12 @@
                                         <label class="form-label">Kepada</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select class="form-control select-1 @error('kepada') is-invalid @enderror" 
+                                        <select class="form-control select-1 @error('kepada') is-invalid @enderror"
                                             name="kepada[]" multiple="multiple" required>
                                             @foreach ($users as $item)
-                                                <option value="{{ json_encode(['id' => $item['id'], 'name' => $item['FullName'], 'jabatan' => $item['Jabatan2']]) }}"
-                                                    {{ (old('kepada') && in_array($item['id'], old('kepada'))) ? 'selected' : '' }}>
+                                                <option
+                                                    value="{{ json_encode(['id' => $item['id'], 'name' => $item['FullName'], 'jabatan' => $item['Jabatan2']]) }}"
+                                                    {{ old('kepada') && in_array($item['id'], old('kepada')) ? 'selected' : '' }}>
                                                     {{ $item['FullName'] }} - {{ $item['Jabatan2'] }}
                                                 </option>
                                             @endforeach
@@ -190,7 +196,8 @@
                                         <label class="form-label">Tembusan</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm @error('tembusan') is-invalid @enderror" 
+                                        <input
+                                            class="form-control form-control-sm @error('tembusan') is-invalid @enderror"
                                             name="tembusan" type="text">
                                         @error('tembusan')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -202,8 +209,10 @@
                                         <label class="form-label">Referensi</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm @error('referensi') is-invalid @enderror" 
-                                            name="referensi" type="number" min="0" placeholder="Masukkan nomor referensi (opsional)">
+                                        <input
+                                            class="form-control form-control-sm @error('referensi') is-invalid @enderror"
+                                            name="referensi" type="number" min="0"
+                                            placeholder="Masukkan nomor referensi (opsional)">
                                         @error('referensi')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -214,7 +223,8 @@
                                         <label class="form-label">Penandatangan</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <select class="select-example form-select form-select-sm select-basic @error('penandatangan') is-invalid @enderror"
+                                        <select
+                                            class="select-example form-select form-select-sm select-basic @error('penandatangan') is-invalid @enderror"
                                             name="penandatangan" required>
                                             <option value="">Pilih Penanda Tangan</option>
                                             @foreach ($userTtd as $item)
@@ -251,10 +261,10 @@
 @push('js')
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
     <script>
-            ClassicEditor
+        ClassicEditor
             .create(document.querySelector('#editor'))
-                    .catch(error => {
-                        console.error(error);
-        });
+            .catch(error => {
+                console.error(error);
+            });
     </script>
 @endpush
