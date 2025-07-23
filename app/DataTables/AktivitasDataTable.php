@@ -50,17 +50,17 @@ class AktivitasDataTable extends DataTable
         return $this->builder()
             ->setTableId('aktivitas-table')
             ->columns($this->getColumns())
-            ->minifiedAjax()
-            ->orderBy(0)
-            ->selectStyleSingle()
-            ->buttons([
-                Button::make('excel'),
-                Button::make('csv'),
-                Button::make('pdf'),
-                Button::make('print'),
-                Button::make('reset'),
-                Button::make('reload')
-            ]);
+            // ->minifiedAjax()
+            ->orderBy(0);
+            // ->selectStyleSingle()
+            // ->buttons([
+            //     Button::make('excel'),
+            //     Button::make('csv'),
+            //     Button::make('pdf'),
+            //     Button::make('print'),
+            //     Button::make('reset'),
+            //     Button::make('reload')
+            // ]);
     }
 
     public function getColumns(): array
