@@ -9,8 +9,10 @@ class SuratTerkirimController extends Controller
 {
     public function index(Request $request)
     {
+        $userId = auth()->user()->username;
         $q = $request->q;
-        $suratTerkirim = SuratKeluarIsi::with(['jenis', 'klasifikasi']);
+        $suratTerkirim = SuratKeluarIsi::with(['jenis', 'klasifikasi'])
+            ->where('user_id_pembuat', $userId);
         if ($q) {
             $suratTerkirim->where(function ($query) use ($q) {
                 $query->where('nosurat', 'like', "%$q%")
