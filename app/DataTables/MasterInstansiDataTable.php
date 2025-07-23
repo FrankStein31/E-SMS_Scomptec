@@ -48,17 +48,18 @@ class MasterInstansiDataTable extends DataTable
         return $this->builder()
                     ->setTableId('masterinstansi-table')
                     ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    ->orderBy(1)
-                    ->selectStyleSingle()
-                    ->buttons([
-                        Button::make('excel'),
-                        Button::make('csv'),
-                        Button::make('pdf'),
-                        Button::make('print'),
-                        Button::make('reset'),
-                        Button::make('reload')
-                    ]);
+                    // ->minifiedAjax()
+                    ->orderBy(1);
+                    // ->selectStyleSingle()
+                //     ->buttons([
+                //         Button::make('excel'),
+                //         Button::make('csv'),
+                //         Button::make('pdf'),
+                //         Button::make('print'),
+                //         Button::make('reset'),
+                //         Button::make('reload')
+                //     ])
+                // ;
     }
 
     /**
