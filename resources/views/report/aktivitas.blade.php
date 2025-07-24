@@ -18,15 +18,15 @@
                 <div class="card">
                     <div class="card-header">
                         <form method="get" class="row g-2 align-items-end">
-                            <!-- <div class="col-md-3">
+                            <div class="col-md-3">
                                 <label>User</label>
                                 <select name="user" class="form-select form-select-sm select2-user">
                                     <option value="">Semua User</option>
-                                    @foreach(App\Models\User::all() as $u)
+                                    @foreach($users as $u)
                                         <option value="{{ $u->id }}" {{ request('user') == $u->id ? 'selected' : '' }}>{{ $u->fullname }}</option>
                                     @endforeach
                                 </select>
-                            </div> -->
+                            </div>
                             <div class="col-md-3">
                                 <label>Tanggal</label>
                                 <input type="date" name="tanggal" class="form-control form-control-sm" value="{{ request('tanggal') }}">

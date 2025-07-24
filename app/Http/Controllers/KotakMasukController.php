@@ -111,6 +111,7 @@ class KotakMasukController extends Controller
                 'entrysurat_id' => $request->entrysurat_id,
                 'kepada' => implode(',', $request->kepada),
                 'content' => $request->content,
+                'dari_id' => Auth::user() ? Auth::user()->id : null,
             ]);
             if ($request->has('tindakan')) {
                 $disposisi->tindakans()->attach($request->tindakan);

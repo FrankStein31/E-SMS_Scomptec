@@ -259,6 +259,9 @@
                     <a href="{{ route('entrisurat.index') }}" class="btn btn-secondary btn-sm mb-3">
                         <i class="iconoir-arrow-left"></i> Kembali ke Daftar Entri Surat
                     </a>
+                    <a href="{{ route('disposisi.riwayat', $data->id) }}" class="btn btn-info btn-sm mb-3">
+                        <i class="iconoir-eye"></i> Riwayat Surat
+                    </a>
                     <h5 class="main-title">Detail Entri Surat</h5>
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">

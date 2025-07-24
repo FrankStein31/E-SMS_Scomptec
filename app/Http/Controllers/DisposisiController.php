@@ -86,4 +86,15 @@ class DisposisiController extends Controller
     {
         //
     }
+
+    public function riwayatSurat($id)
+    {
+        // Ambil surat masuk
+        $surat = \App\Models\EntrySuratIsi::with('createdBy')->findOrFail($id);
+        // Ambil semua disposisi baru terkait surat ini
+        $riwayat = \App\Models\DisposisiBaru::where('entrysurat_id', $id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+        return view('disposisi.riwayat', compact('surat', 'riwayat'));
+    }
 }
