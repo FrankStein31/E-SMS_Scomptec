@@ -28,7 +28,20 @@ class KotakMasukController extends Controller
      **/
     public function disposisi($id)
     {
-        $users = User::select([
+        // Ambil kodesatker user login
+        $loginUser = Auth::user();
+        $loginSatker = \App\Models\MasterSatker::where('userid', $loginUser->id)->first();
+        $kodesatker = $loginSatker ? $loginSatker->kodesatker : null;
+
+        // Ambil user yang satu bagian (prefix kodesatker sama, dan bukan dirinya sendiri)
+        $users = User::whereHas('masterSatker', function($q) use ($kodesatker) {
+            if ($kodesatker) {
+                $q->where('kodesatker', 'like', $kodesatker . '%')
+                  ->whereRaw('LENGTH(kodesatker) > ?', [strlen($kodesatker)]);
+            }
+        })
+        ->where('id', '!=', $loginUser->id)
+        ->select([
             'id',
             'FullName',
             'Jabatan as Jabatan2',
