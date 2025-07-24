@@ -126,6 +126,38 @@
             box-shadow: var(--shadow-lg);
         }
 
+        /* Dropdown styling for authenticated user */
+        .navbar .dropdown-menu {
+            border: none;
+            box-shadow: var(--shadow);
+            border-radius: 15px;
+            padding: 10px 0;
+            margin-top: 10px;
+            min-width: 200px;
+        }
+
+        .navbar .dropdown-item {
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-radius: 10px;
+            margin: 0 10px;
+        }
+
+        .navbar .dropdown-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .navbar .dropdown-item.text-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .navbar .dropdown-toggle::after {
+            margin-left: 8px;
+        }
+
         /* Hero Section */
         #hero {
             min-height: 100vh;
@@ -485,7 +517,9 @@
     <!-- Header -->
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="logo text-decoration-none" href="/">E-SMS</a>
+            <a class="logo text-decoration-none" href="/">
+                <img alt="#" src="{{ asset('assets/images/logo/esms.png') }}" style="height:48px; width:auto; max-width:180px; object-fit:contain; display:block;">
+            </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -505,7 +539,29 @@
                         <a class="nav-link" href="#contact">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link getstarted" href="{{ route('login') }}">Login</a>
+                        @auth
+                            <div class="dropdown">
+                                <a class="nav-link getstarted dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle me-2"></i>{{ auth()->user()->name ?? 'User' }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
+                                    <li><a class="dropdown-item" href="{{ route('dashboard') }}">
+                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        @else
+                            <a class="nav-link getstarted" href="{{ route('login') }}">Login</a>
+                        @endauth
                     </li>
                 </ul>
             </div>
@@ -521,8 +577,8 @@
                     <h2 class="animate-on-scroll">Kelola surat masuk dan keluar dengan lebih efisien menggunakan
                         teknologi digital terdepan</h2>
                     @auth
-                        <a href="{{ route('login') }}" class="hero-btn animate-on-scroll">
-                            <i class="me-2">Get Started</i>
+                        <a href="{{ route('dashboard') }}" class="hero-btn animate-on-scroll">
+                            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="hero-btn animate-on-scroll">

@@ -1,7 +1,7 @@
 <nav>
     <div class="app-logo">
-        <a class="logo d-inline-block" href="/dashboard">
-            <img alt="#" src="{{ asset('assets/images/logo/1.png') }}">
+        <a class="logo d-inline-block" href="/">
+            <img alt="#" src="{{ asset('assets/images/logo/esms.png') }}">
         </a>
 
         <span class="bg-light-primary toggle-semi-nav">
@@ -15,7 +15,7 @@
                 <span>Dashboard</span>
             </li>
             @if (auth()->user()->jabatan == 'Administrator')
-                <li>
+                <li class="no-sub">
                     <a href="{{ route('dashboard') }}">
                         <i class="iconoir-home-alt"></i>
                         Dashboard
@@ -25,7 +25,8 @@
                     <span>Menu Utama</span>
                 </li>
                 <li>
-                    <a aria-expanded="false" data-bs-toggle="collapse" href="#master">
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#master" aria-controls="master"
+                        role="button">
                         <i class="iconoir-settings"></i>
                         Data Master
                     </a>
@@ -40,13 +41,13 @@
                     </ul>
                 </li>
             @else
-                <li>
+                <li class="no-sub">
                     <a href="{{ route('dashboard') }}">
                         <i class="iconoir-home-alt"></i>
                         Dashboard
                     </a>
                 </li>
-                <li>
+                <li class="no-sub">
                     <a href="{{ route('kotakmasuk.index') }}">
                         <i class="iconoir-mail"></i>
                         Kotak Masuk
@@ -56,11 +57,12 @@
                     <span>Menu Surat</span>
                 </li>
                 <li>
-                    <a aria-expanded="false" data-bs-toggle="collapse" href="#dashboard">
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#manajemen-surat"
+                        aria-controls="manajemen-surat" role="button">
                         <i class="iconoir-mail"></i>
                         Manajemen Surat
                     </a>
-                    <ul class="collapse" id="dashboard">
+                    <ul class="collapse" id="manajemen-surat">
                         <!-- <li><a href="{{ route('kotakmasuk.index') }}">Kotak Masuk</a></li> -->
                         <li><a href="{{ route('buatsurat.index') }}">Buat Surat</a></li>
                         <li><a href="{{ route('entrisurat.index') }}">Entri Surat</a></li>
@@ -70,7 +72,8 @@
                     </ul>
                 </li>
                 <li>
-                    <a aria-expanded="false" data-bs-toggle="collapse" href="#disposisi">
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#disposisi" aria-controls="disposisi"
+                        role="button">
                         <i class="iconoir-settings"></i>
                         Disposisi
                     </a>
@@ -94,7 +97,8 @@
                     </ul>
                 </li> -->
                 <li>
-                    <a aria-expanded="false" data-bs-toggle="collapse" href="#more">
+                    <a aria-expanded="false" data-bs-toggle="collapse" href="#more" aria-controls="more"
+                        role="button">
                         <i class="iconoir-more-horiz"></i>
                         Opsi Lain
                     </a>
