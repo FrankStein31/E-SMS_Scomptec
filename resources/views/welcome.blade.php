@@ -548,15 +548,15 @@
                                     <li><a class="dropdown-item" href="{{ route('dashboard') }}">
                                         <i class="bi bi-speedometer2 me-2"></i>Dashboard
                                     </a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
+                                    <!-- <li><hr class="dropdown-divider"></li> -->
+                                    <!-- <li>
                                         <form method="POST" action="{{ route('logout') }}" class="d-inline">
                                             @csrf
                                             <button type="submit" class="dropdown-item text-danger">
                                                 <i class="bi bi-box-arrow-right me-2"></i>Logout
                                             </button>
                                         </form>
-                                    </li>
+                                    </li> -->
                                 </ul>
                             </div>
                         @else
