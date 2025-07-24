@@ -542,7 +542,7 @@
                         @auth
                             <div class="dropdown">
                                 <a class="nav-link getstarted dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-person-circle me-2"></i>{{ auth()->user()->name ?? 'Hei! Mau kemanaa?? Sini balik' }}
+                                    <i class="bi bi-person-circle me-2"></i>{{ auth()->user()->fullname ?? 'Hei! Mau kemanaa?? Sini balik' }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
                                     <li><a class="dropdown-item" href="{{ route('dashboard') }}">
