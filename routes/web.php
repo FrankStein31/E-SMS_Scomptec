@@ -97,3 +97,4 @@ Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi
 Route::get('/disposisi/{id}', [DisposisiController::class, 'show'])->name('disposisi.show');
 
 Route::get('aktivitas', [ReportSuratController::class, 'aktivitas'])->name('aktivitas');
+Route::get('/report/cetak', [ReportSuratController::class, 'cetak'])->name('report.cetak');

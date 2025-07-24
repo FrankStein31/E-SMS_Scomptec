@@ -1,7 +1,7 @@
 <nav>
     <div class="app-logo">
         <a class="logo d-inline-block" href="/dashboard">
-            <img alt="#" src="{{ asset('assets/images/logo/1.png') }}">
+            <img alt="" src="{{ asset('assets/images/logo/1.png') }}">
         </a>
 
         <span class="bg-light-primary toggle-semi-nav">

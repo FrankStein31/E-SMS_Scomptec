@@ -2,10 +2,10 @@
 
 @section('content')
     <main>
-        <div class="container-fluid mt-4"> {{-- Menggunakan container-fluid untuk lebar penuh --}}
-            <div class="row justify-content-center"> {{-- Pusatkan konten di tengah --}}
-                <div class="col-md-10"> {{-- Sesuaikan lebar kolom agar form tidak terlalu lebar --}}
-                    <div class="card shadow-sm border-0 rounded-lg"> {{-- Styling modern untuk card --}}
+        <div class="container-fluid mt-4"> 
+            <div class="row justify-content-center">
+                <div class="col-md-10"> 
+                    <div class="card shadow-sm border-0 rounded-lg"> 
                         <div
                             class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0 text-primary fw-bold">Tambah Draft Surat</h5> {{-- Judul dengan styling --}}
