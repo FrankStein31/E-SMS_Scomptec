@@ -331,7 +331,24 @@ class ReportSuratController extends Controller
 
     public function aktivitas(Request $request, AktivitasDataTable $dataTable)
     {
-        return $dataTable->render('report.aktivitas');
+        $loginUser = auth()->user();
+        $isOperator = $loginUser->usergroupid == 1;
+        $kodesatker = null;
+        if (!$isOperator) {
+            $loginSatker = \App\Models\MasterSatker::where('userid', $loginUser->id)->first();
+            $kodesatker = $loginSatker ? $loginSatker->kodesatker : null;
+        }
+        if ($isOperator) {
+            $users = \App\Models\User::all();
+        } else if ($kodesatker) {
+            $users = \App\Models\User::whereHas('masterSatker', function($q) use ($kodesatker) {
+                $q->where('kodesatker', 'like', $kodesatker . '%')
+                  ->whereRaw('LENGTH(kodesatker) > ?', [strlen($kodesatker)]);
+            })->get();
+        } else {
+            $users = collect();
+        }
+        return $dataTable->render('report.aktivitas', compact('users'));
     }
 
     public function cetak(Request $request)

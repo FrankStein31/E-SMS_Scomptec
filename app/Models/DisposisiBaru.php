@@ -13,6 +13,7 @@ class DisposisiBaru extends Model
         'kepada',
         'catatan',
         'status',
+        'dari_id',
     ];
 
     public function tindakans()
