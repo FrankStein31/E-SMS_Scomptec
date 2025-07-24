@@ -98,3 +98,4 @@ Route::get('/disposisi/{id}', [DisposisiController::class, 'show'])->name('dispo
 Route::get('/disposisi/riwayat/{id}', [App\Http\Controllers\DisposisiController::class, 'riwayatSurat'])->name('disposisi.riwayat');
 
 Route::get('aktivitas', [ReportSuratController::class, 'aktivitas'])->name('aktivitas');
+Route::get('/report/cetak', [ReportSuratController::class, 'cetak'])->name('report.cetak');

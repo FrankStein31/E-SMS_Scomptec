@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\DataTables\AktivitasDataTable;
+
 class ReportSuratController extends Controller
 {
     /**
@@ -24,22 +25,95 @@ class ReportSuratController extends Controller
     {
         $jenisSurat = MasterJenisSurat::all();
         $satker = MasterSatker::all();
-        // Default: semua surat masuk
-        $query = DB::table('entry_surat_isis');
-        // Filter
+
+        $suratType = $request->input('surat_type', 'surat_masuk');
+
+        if (in_array($suratType, ['surat_masuk', 'entry_surat'])) {
+            $query = DB::table('entry_surat_isis')->select([
+                'id',
+                'noagenda',
+                'sifat',
+                'jenis_id',
+                'nomor_surat',
+                'dari',
+                'kepada',
+                'hal',
+                'created_by',
+                'tgl_surat',
+            ]);
+
+            if ($request->filled('kepada')) {
+                $targetSatker = MasterSatker::find($request->kepada);
+                if ($targetSatker) {
+                    $query->whereExists(function ($q) use ($targetSatker) {
+                        $q->select(DB::raw(1))
+                            ->from('entry_surat_tujuans')
+                            ->whereColumn('entry_surat_tujuans.entrysurat_id', 'entry_surat_isis.id')
+                            ->where('entry_surat_tujuans.satkerid_tujuan', $targetSatker->satkerid);
+                    });
+                }
+            }
+
+            if ($request->filled('tgl_terima')) {
+                $query->whereDate('tgl_diterima', $request->tgl_terima);
+            }
+        } elseif (in_array($suratType, ['surat_keluar', 'surat_terkirim'])) {
+            $query = DB::table('surat_keluar_isis')->select([
+                'id',
+                DB::raw("'' as noagenda"),
+                'sifat',
+                'jenis_id',
+                'nosurat as nomor_surat',
+                'ttd_nama as dari',
+                'kepada',
+                'hal',
+                'user_id_pembuat as created_by',
+                'tgl_surat',
+            ]);
+
+            if ($request->filled('kepada')) {
+                $targetSatker = MasterSatker::find($request->kepada);
+                if ($targetSatker) {
+                    $query->where('kepada', 'like', '%' . $targetSatker->satker . '%');
+                }
+            }
+        } else {
+            $query = DB::table('entry_surat_isis')->select([
+                'id',
+                'noagenda',
+                'sifat',
+                'jenis_id',
+                'nomor_surat',
+                'dari',
+                'kepada',
+                'hal',
+                'created_by',
+                'tgl_surat',
+            ]);
+        }
+
+        // Common filters
         if ($request->filled('jenis_surat')) {
             $query->where('jenis_id', $request->jenis_surat);
         }
-        if ($request->filled('sifat_surat')) {
-            $query->where('sifat', $request->sifat_surat);
+
+        $sifatMap = [
+            'penting' => 1,
+            'rahasia' => 2,
+            'biasa' => 3,
+            'pribadi' => 4,
+        ];
+        if ($request->filled('sifat_surat') && $request->sifat_surat != 'semua') {
+            $sifat = $sifatMap[$request->sifat_surat] ?? null;
+            if ($sifat) {
+                $query->where('sifat', $sifat);
+            }
         }
+
         if ($request->filled('tgl_surat')) {
             $query->whereDate('tgl_surat', $request->tgl_surat);
         }
-        if ($request->filled('tgl_terima')) {
-            $query->whereDate('tgl_diterima', $request->tgl_terima);
-        }
-        // dst, tambahkan filter lain sesuai kebutuhan
+
         $data = $query->orderBy('tgl_surat', 'desc')->get();
         return view('report.surat', compact('jenisSurat', 'satker', 'data'));
     }
@@ -61,13 +135,16 @@ class ReportSuratController extends Controller
         $jenisSurat = MasterJenisSurat::all();
 
         return view('report.statistik', compact(
-            "data", "jenisSurat", "tahun", "jenis"
+            "data",
+            "jenisSurat",
+            "tahun",
+            "jenis"
         ));
     }
 
     public static function getStatistik($userid, $jenisid, $tahun)
     {
-       $user = DB::table('users')
+        $user = DB::table('users')
             ->select('satkerid', 'usergroupid')
             ->where('id', $userid)
             ->first();
@@ -79,10 +156,10 @@ class ReportSuratController extends Controller
         // Ambil statistik bulanan dari entry_surat_isis
         $stat_masuk = DB::table('entry_surat_isis')
             ->selectRaw('MONTH(tgl_diarahkan) as bulan, COUNT(*) as jumlah')
-            ->when($tahun, function($q) use ($tahun) {
+            ->when($tahun, function ($q) use ($tahun) {
                 $q->whereYear('tgl_diarahkan', $tahun);
             })
-            ->when($jenisid, function($q) use ($jenisid) {
+            ->when($jenisid, function ($q) use ($jenisid) {
                 if ($jenisid && $jenisid != '00') $q->where('jenis_id', $jenisid);
             })
             ->groupBy(DB::raw('MONTH(tgl_diarahkan)'))
@@ -91,10 +168,10 @@ class ReportSuratController extends Controller
         // Ambil statistik bulanan dari surat_keluar_isi
         $stat_keluar = DB::table('surat_keluar_isis')
             ->selectRaw('MONTH(tgl_surat) as bulan, COUNT(*) as jumlah')
-            ->when($tahun, function($q) use ($tahun) {
+            ->when($tahun, function ($q) use ($tahun) {
                 $q->whereYear('tgl_surat', $tahun);
             })
-            ->when($jenisid, function($q) use ($jenisid) {
+            ->when($jenisid, function ($q) use ($jenisid) {
                 if ($jenisid && $jenisid != '00') $q->where('jenis_id', $jenisid);
             })
             ->groupBy(DB::raw('MONTH(tgl_surat)'))
@@ -104,8 +181,18 @@ class ReportSuratController extends Controller
         $result = [];
         for ($i = 1; $i <= 12; $i++) {
             $nama_bulan = [
-                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
-                7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+                1 => 'Januari',
+                2 => 'Februari',
+                3 => 'Maret',
+                4 => 'April',
+                5 => 'Mei',
+                6 => 'Juni',
+                7 => 'Juli',
+                8 => 'Agustus',
+                9 => 'September',
+                10 => 'Oktober',
+                11 => 'November',
+                12 => 'Desember',
             ][$i];
             $result[] = [
                 'bulan' => $i,
@@ -262,5 +349,64 @@ class ReportSuratController extends Controller
             $users = collect();
         }
         return $dataTable->render('report.aktivitas', compact('users'));
+    }
+
+    public function cetak(Request $request)
+    {
+        $suratType = $request->input('surat_type', 'surat_masuk');
+
+        if (in_array($suratType, ['surat_masuk', 'entry_surat'])) {
+            $query = DB::table('entry_surat_isis')->select([
+                'id',
+                'noagenda',
+                'sifat',
+                'jenis_id',
+                'nomor_surat',
+                'dari',
+                'kepada',
+                'hal',
+                'created_by',
+                'tgl_surat',
+            ]);
+        } elseif (in_array($suratType, ['surat_keluar', 'surat_terkirim'])) {
+            $query = DB::table('surat_keluar_isis')->select([
+                'id',
+                DB::raw("'' as noagenda"),
+                'sifat',
+                'jenis_id',
+                'nosurat as nomor_surat',
+                'ttd_nama as dari',
+                'kepada',
+                'hal',
+                'user_id_pembuat as created_by',
+                'tgl_surat',
+            ]);
+        } else {
+            $query = DB::table('entry_surat_isis')->select([
+                'id',
+                'noagenda',
+                'sifat',
+                'jenis_id',
+                'nomor_surat',
+                'dari',
+                'kepada',
+                'hal',
+                'created_by',
+                'tgl_surat',
+            ]);
+        }
+
+        // Optional filter by tanggal atau jenis
+        if ($request->filled('tgl_surat')) {
+            $query->whereDate('tgl_surat', $request->tgl_surat);
+        }
+
+        if ($request->filled('jenis_surat')) {
+            $query->where('jenis_id', $request->jenis_surat);
+        }
+
+        $data = $query->orderBy('tgl_surat', 'desc')->get();
+
+        return view('report.cetak', compact('data'));
     }
 }

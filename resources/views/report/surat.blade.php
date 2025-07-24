@@ -47,7 +47,7 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default1"
-                                                        name="jenis_surat" checked value="surat_masuk" type="radio">
+                                                        name="surat_type" checked value="surat_masuk" type="radio">
                                                     <label class="form-check-label" for="radio_default1">
                                                         Surat Masuk
                                                     </label>
@@ -56,7 +56,7 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default2"
-                                                        name="jenis_surat" value="entry_surat" type="radio">
+                                                        name="surat_type" value="entry_surat" type="radio">
                                                     <label class="form-check-label" for="radio_default2">
                                                         Entry Surat
                                                     </label>
@@ -65,7 +65,7 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default13"
-                                                        name="jenis_surat" value="surat_keluar" type="radio">
+                                                        name="surat_type" value="surat_keluar" type="radio">
                                                     <label class="form-check-label" for="radio_default13">
                                                         Surat Keluar
                                                     </label>
@@ -74,7 +74,7 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default14"
-                                                        name="jenis_surat" value="surat_terkirim" type="radio">
+                                                        name="surat_type" value="surat_terkirim" type="radio">
                                                     <label class="form-check-label" for="radio_default14">
                                                         Surat Terkirim
                                                     </label>
@@ -148,7 +148,12 @@
                                     </div>
                                     <div class="col-md-9">
                                         <button type="submit" class="btn btn-primary btn-sm">Tampilkan</button>
-                                        <a href="{{ url()->current() . '?' . http_build_query(request()->except('_token')) . '&cetak=1' }}" target="_blank" class="btn btn-warning btn-sm">Cetak</a> 
+                                        <a href="{{ route('report.cetak') . '?' . http_build_query(request()->except('_token')) . '&cetak=1' }}"
+                                            target="_blank" class="btn btn-warning btn-sm">
+                                            Cetak
+                                        </a>
+
+
                                     </div>
                                 </div>
                             </form>
@@ -208,7 +213,7 @@
                                                 <td>{{ $item->jenis_id ?? '-' }}</td>
                                                 <td>{{ $item->nomor_surat ?? '-' }}</td>
                                                 <td>{{ $item->dari ?? '-' }}</td>
-                                                <td>{{ $item->kepada ?? '-' }}</td>
+                                                <td>{{ $item->kepada }}</td>
                                                 <td>{{ $item->hal ?? '-' }}</td>
                                                 <td>{{ $item->created_by ?? '-' }}</td>
                                                 <td>{{ $item->tgl_surat ?? '-' }}</td>
