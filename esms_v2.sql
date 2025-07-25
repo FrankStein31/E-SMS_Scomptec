@@ -93,7 +93,7 @@ CREATE TABLE `disposisis_baru` (
   PRIMARY KEY (`id`),
   KEY `disposisis_baru_entrysurat_id_foreign` (`entrysurat_id`),
   CONSTRAINT `disposisis_baru_entrysurat_id_foreign` FOREIGN KEY (`entrysurat_id`) REFERENCES `entry_surat_isis` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `disposisis_baru` */
 
@@ -108,7 +108,11 @@ insert  into `disposisis_baru`(`id`,`entrysurat_id`,`dari_id`,`kepada`,`remitten
 (11,'01k0xae5fxhvthsksm6rhnbf4v',212,'213,214,215',NULL,NULL,'2025-07-24 04:29:14','2025-07-24 04:29:14'),
 (12,'01k0xae5fxhvthsksm6rhnbf4v',173,'216',NULL,NULL,'2025-07-24 04:33:19','2025-07-24 04:33:19'),
 (13,'01k0xae5fxhvthsksm6rhnbf4v',216,'217,218',NULL,NULL,'2025-07-24 04:34:33','2025-07-24 04:34:33'),
-(14,'01k0xae5fxhvthsksm6rhnbf4v',216,'219',NULL,NULL,'2025-07-24 04:35:18','2025-07-24 04:35:18');
+(14,'01k0xae5fxhvthsksm6rhnbf4v',216,'219',NULL,NULL,'2025-07-24 04:35:18','2025-07-24 04:35:18'),
+(16,'01k0xae5fxhvthsksm6rhnbf4v',173,'220','2025-07-25','<p>coba remitten dan kerja sama</p>','2025-07-25 04:39:33','2025-07-25 04:39:33'),
+(17,'01k0xae5fxhvthsksm6rhnbf4v',220,'221','2025-07-25','<p>wasd</p>','2025-07-25 07:07:59','2025-07-25 07:07:59'),
+(18,'01k0xae5fxhvthsksm6rhnbf4v',220,'222','2025-07-25','<p>wasd</p>','2025-07-25 07:26:27','2025-07-25 07:26:27'),
+(19,'01k0xae5fxhvthsksm6rhnbf4v',220,'223','2025-07-25','<p>wasd</p>','2025-07-25 07:39:23','2025-07-25 07:39:23');
 
 /*Table structure for table `disposisis_baru_tindakans` */
 
@@ -123,7 +127,7 @@ CREATE TABLE `disposisis_baru_tindakans` (
   PRIMARY KEY (`id`),
   KEY `disposisis_baru_tindakans_disposisis_baru_id_foreign` (`disposisis_baru_id`),
   CONSTRAINT `disposisis_baru_tindakans_disposisis_baru_id_foreign` FOREIGN KEY (`disposisis_baru_id`) REFERENCES `disposisis_baru` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `disposisis_baru_tindakans` */
 
@@ -138,7 +142,10 @@ insert  into `disposisis_baru_tindakans`(`id`,`disposisis_baru_id`,`tindakan_id`
 (11,11,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
 (12,12,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
 (13,13,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
-(14,14,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL);
+(16,16,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(17,17,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(18,18,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(19,19,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL);
 
 /*Table structure for table `draft_surats` */
 
@@ -295,7 +302,7 @@ insert  into `entry_surat_tujuans`(`id`,`satkerid_tujuan`,`dibaca`,`is_tembusan`
 ('01k0rpv1pg31mfn8d98tse7gvw','1.1.1.2.',0,0,'01k0rpv1nf4g9wknjhz1fhkwxf',174,'2025-07-22 09:18:38','2025-07-22 09:18:38'),
 ('01k0rpv1pn8sp6gws8272zcayw','1.1.1.3.',0,0,'01k0rpv1nf4g9wknjhz1fhkwxf',175,'2025-07-22 09:18:38','2025-07-22 09:18:38'),
 ('01k0rpyq84r8chvv5wc9h0w127','1.1.2.1.',0,0,'01k0rpv1nf4g9wknjhz1fhkwxf',176,'2025-07-22 09:20:38','2025-07-22 09:20:38'),
-('01k0thre35ym339d3fh9hm65h1','1.',0,0,'01k0thre2hx746g5qwpgzaw2kt',191,'2025-07-23 02:28:18','2025-07-23 02:28:18'),
+('01k0thre35ym339d3fh9hm65h1','1.',1,0,'01k0thre2hx746g5qwpgzaw2kt',191,'2025-07-23 02:28:18','2025-07-25 04:16:36'),
 ('01k0thre3bqh9q6nt63pj002ka','1.1.1.1.1.1.',0,0,'01k0thre2hx746g5qwpgzaw2kt',213,'2025-07-23 02:28:18','2025-07-23 02:28:18'),
 ('01k0thzcmwb06s5hgzpemv7yhb','1.1.1.1.1.2.',0,0,'01k0thre2hx746g5qwpgzaw2kt',214,'2025-07-23 02:32:06','2025-07-23 02:32:06'),
 ('01k0thzcna3th6gfqqqb89kv07','1.1.1.1.1.3.',0,0,'01k0thre2hx746g5qwpgzaw2kt',215,'2025-07-23 02:32:06','2025-07-23 02:32:06'),
@@ -306,16 +313,20 @@ insert  into `entry_surat_tujuans`(`id`,`satkerid_tujuan`,`dibaca`,`is_tembusan`
 ('01k0v9ya3tn3wz08cm8ksfgqd6','1.1.1.3.',0,0,'01k0v9v68ayp9mrgky53vn0nvx',175,'2025-07-23 09:30:57','2025-07-23 09:30:57'),
 ('01k0vaxx71ym8aava6f34x8k9g','1.1.1.',0,0,'01k0vaxx6ct06bwr3qbqsv116h',184,'2025-07-23 09:48:12','2025-07-23 09:48:12'),
 ('01k0vb01ajmwjrseejcf7wc0gv','1.1.2.',0,0,'01k0vaxx6ct06bwr3qbqsv116h',185,'2025-07-23 09:49:22','2025-07-23 09:49:22'),
-('01k0xae5g80017b4a42tq1swp3','1.1.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',184,'2025-07-24 04:18:05','2025-07-24 04:18:05'),
-('01k0xagd98xtfy9fzjyd9kb22e','1.1.1.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',173,'2025-07-24 04:19:18','2025-07-24 04:19:18'),
-('01k0xay2306vns2kaxrp11y0s5','1.1.1.1.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',212,'2025-07-24 04:26:46','2025-07-24 04:26:46'),
-('01k0xb2jgq0scmd9731pfkj29k','1.1.1.1.1.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',213,'2025-07-24 04:29:14','2025-07-24 04:29:14'),
-('01k0xb2jhmd212xaye8w6b06fm','1.1.1.1.1.2.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',214,'2025-07-24 04:29:14','2025-07-24 04:29:14'),
-('01k0xb2jhts6rg3exjemznbp3c','1.1.1.1.1.3.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',215,'2025-07-24 04:29:14','2025-07-24 04:29:14'),
+('01k0xae5g80017b4a42tq1swp3','1.1.1.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',184,'2025-07-24 04:18:05','2025-07-25 04:22:49'),
+('01k0xagd98xtfy9fzjyd9kb22e','1.1.1.1.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',173,'2025-07-24 04:19:18','2025-07-25 04:13:35'),
+('01k0xay2306vns2kaxrp11y0s5','1.1.1.1.1.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',212,'2025-07-24 04:26:46','2025-07-25 04:14:15'),
+('01k0xb2jgq0scmd9731pfkj29k','1.1.1.1.1.1.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',213,'2025-07-24 04:29:14','2025-07-25 04:15:38'),
+('01k0xb2jhmd212xaye8w6b06fm','1.1.1.1.1.2.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',214,'2025-07-24 04:29:14','2025-07-25 04:12:29'),
+('01k0xb2jhts6rg3exjemznbp3c','1.1.1.1.1.3.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',215,'2025-07-24 04:29:14','2025-07-25 05:48:37'),
 ('01k0xba1vrpabvz7qg2q5mwq9k','1.1.1.1.2.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',216,'2025-07-24 04:33:19','2025-07-24 04:33:19'),
 ('01k0xbcagtmmvs2h8rwbawthwe','1.1.1.1.2.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',217,'2025-07-24 04:34:33','2025-07-24 04:34:33'),
 ('01k0xbcahrvqgyska34fg52s4e','1.1.1.1.2.2.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',218,'2025-07-24 04:34:33','2025-07-24 04:34:33'),
-('01k0xbdpph8hvmpmmcfm67y09h','1.1.1.1.2.3.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',219,'2025-07-24 04:35:18','2025-07-24 04:35:18');
+('01k0xbdpph8hvmpmmcfm67y09h','1.1.1.1.2.3.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',219,'2025-07-24 04:35:18','2025-07-24 04:35:18'),
+('01k0zy26kkn6rk5jbgbf8aygmp','1.1.1.1.3.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',220,'2025-07-25 04:39:33','2025-07-25 07:07:25'),
+('01k106hz6rphwbq0phrjvkst4c','1.1.1.1.3.1.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',221,'2025-07-25 07:07:59','2025-07-25 07:09:30'),
+('01k107ks86ff281f2v2t69xbew','1.1.1.1.3.2.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',222,'2025-07-25 07:26:27','2025-07-25 07:37:23'),
+('01k108bfee17dacje2ns9q4syg','1.1.1.1.3.3.',1,0,'01k0xae5fxhvthsksm6rhnbf4v',223,'2025-07-25 07:39:23','2025-07-25 14:40:59');
 
 /*Table structure for table `failed_jobs` */
 
@@ -3931,7 +3942,7 @@ CREATE TABLE `surat_keluar_isis` (
 
 insert  into `surat_keluar_isis`(`id`,`suratkeluar_id`,`revisi_id`,`revisi_data_id`,`tgl_revisi`,`jenis_id`,`no_generate`,`nosurat`,`kodeklasifikasi`,`tgl_surat`,`hal`,`jml_lampiran`,`sifat`,`kepada`,`isi`,`tembusan`,`jenisref_id`,`referensi_id`,`entry_surat_isi_id`,`ttd_nama`,`ttd_id`,`user_ttd_id`,`isfinal`,`userid_pembuat`,`user_id_pembuat`,`satkerid_pembuat`,`userid_tujuan`,`user_id_tujuan`,`satkerid_tujuan`,`status`,`dibaca`,`last_sent`,`userid_final`,`user_id_final`,`satkerid_final`,`created_at`,`updated_at`,`deleted_at`) values 
 ('01K0BBXZ1AS8HT8F60FZ517K85',NULL,NULL,NULL,'2025-07-17 06:51:16',1,NULL,'41231241','000','2025-07-17 00:00:00','COBA BARU','2',1,'[\"{\\\"id\\\":3,\\\"name\\\":\\\"Administrator\\\",\\\"jabatan\\\":\\\"Administrator\\\"}\",\"{\\\"id\\\":173,\\\"name\\\":\\\"Biro Pemerintahan dan Otonomi Daerah\\\",\\\"jabatan\\\":\\\"Biro Pemerintahan dan Otonomi Daerah\\\"}\"]','<p>asdasda</p>','asdsaad',NULL,1,NULL,'Biro Pemerintahan dan Otonomi Daerah',NULL,173,1,NULL,'ps','0',3,'3','0',1,0,0,190,'190','0','2025-07-17 04:57:51','2025-07-17 06:51:16',NULL),
-('01K0DS8D3725T05HJYDH1C28CJ',NULL,NULL,NULL,'2025-07-18 03:29:14',0,NULL,'4123124112','000','2025-07-18 00:00:00','COBA BARU','1',1,'[\"{\\\"id\\\":3,\\\"name\\\":\\\"Admin\\\",\\\"jabatan\\\":\\\"Administrator\\\"}\"]','<p>wasd</p>','wasd',NULL,NULL,NULL,'Biro Pemerintahan dan Otonomi Daerah',NULL,173,1,NULL,'ps','0',3,'3','0',1,0,0,190,'190','0','2025-07-18 03:29:14','2025-07-18 03:29:14',NULL),
+('01K0DS8D3725T05HJYDH1C28CJ',NULL,NULL,NULL,'2025-07-18 03:29:14',0,NULL,'4123124112','000','2025-07-18 00:00:00','COBA BARU','1',1,'[\"{\\\"id\\\":3,\\\"name\\\":\\\"Admin\\\",\\\"jabatan\\\":\\\"Administrator\\\"}\"]','<p>wasd</p>','wasd',NULL,NULL,NULL,'Biro Pemerintahan dan Otonomi Daerah',NULL,173,1,NULL,'ps','0',3,'3','0',1,0,0,190,'190','0','2025-07-18 03:29:14','2025-07-25 01:53:30','2025-07-25 01:53:30'),
 ('01K0TE7R60JMM2CPMSCWVGG2TJ',NULL,NULL,NULL,'2025-07-23 01:26:46',0,NULL,'12312312','000.1','2025-07-23 00:00:00','coba','1',1,'[\"{\\\"id\\\":190,\\\"name\\\":\\\"Operator\\\",\\\"jabatan\\\":\\\"Operator\\\"}\"]','<p>coba kirim perekonomian ke operator</p>','coba kirim perekonomian ke operator',NULL,1,NULL,'Biro Pemerintahan dan Otonomi Daerah',NULL,173,1,NULL,'021','01010201',190,'190','0',1,0,0,176,'176','01010201','2025-07-23 01:26:46','2025-07-23 01:26:46',NULL);
 
 /*Table structure for table `surat_keluar_lampirans` */
