@@ -25,6 +25,54 @@
                             <tr><th>Kepada</th><td>{{ $surat->kepada }}</td></tr>
                             <tr><th>Tanggal</th><td>{{ $surat->tgl_surat ? $surat->tgl_surat : '-' }} {{ $surat->created_at ? $surat->created_at->format('H:i') : '' }}</td></tr>
                         </table>
+                        <h5>Status Penerimaan Surat</h5>
+                        <table class="table table-bordered table-hover table-sm align-middle mb-4">
+                            <thead class="table-light">
+                                <tr class="text-center">
+                                    <th>No</th>
+                                    <th>Tujuan</th>
+                                    <th>Status</th>
+                                    <th>Dibaca Pada</th>
+                                    <th>Didisposisikan Pada</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($tujuanList as $i => $t)
+                                    @php
+                                        $user = \App\Models\User::find($t->userid_tujuan);
+                                        $disposisiWaktu = null;
+                                        foreach($riwayat as $r) {
+                                            $kepadaArr = array_unique(explode(',', $r->kepada));
+                                            if(in_array($t->userid_tujuan, $kepadaArr)) {
+                                                $disposisiWaktu = $r->created_at;
+                                                break;
+                                            }
+                                        }
+                                    @endphp
+                                    <tr>
+                                        <td class="text-center">{{ $i+1 }}</td>
+                                        <td>{{ $user ? $user->fullname : '-' }}</td>
+                                        <td class="text-center">
+                                            @if($t->dibaca)
+                                                <span class="badge bg-success">Dibaca</span>
+                                            @else
+                                                <span class="badge bg-secondary">Belum Dibaca</span>
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            @if($t->dibaca)
+                                                {{ \Carbon\Carbon::parse($t->updated_at)->format('d-m-Y H:i') }}
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                        <td class="text-center">
+                                            {{ $disposisiWaktu ? \Carbon\Carbon::parse($disposisiWaktu)->format('d-m-Y H:i') : '-' }}
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
                         <h5>Riwayat Disposisi</h5>
                         <table class="table table-bordered table-hover table-sm align-middle">
                             <thead class="table-light">

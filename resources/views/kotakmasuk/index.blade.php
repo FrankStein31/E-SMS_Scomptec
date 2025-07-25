@@ -76,6 +76,9 @@
                                             <th scope="col">
                                                 Tanggal
                                             </th>
+                                            <th scope="col">
+                                                Status
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -111,6 +114,14 @@
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         {{ $item->tgl_surat }}
+                                                    </td>
+                                                    <td>
+                                                        @php $tujuan = $item->tujuanSurat->first(); @endphp
+                                                        @if($tujuan && $tujuan->dibaca)
+                                                            <span class="badge bg-success">Dibaca</span>
+                                                        @else
+                                                            <span class="badge bg-secondary">Belum Dibaca</span>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach

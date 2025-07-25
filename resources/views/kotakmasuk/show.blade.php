@@ -128,10 +128,26 @@
                                 </table>
 
                                 <div class="mb-4"></div>
-                                {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Ubah</a> --}}
-                                <a href="{{ route('kotakmasuk.disposisi', $data->id) }}" class="btn btn-info btn-sm b-r-22">Disposisi</a>
-                                {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Riw. Surat</a> --}}
-                                {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Cetak</a> --}}
+                                @if($tujuanUser && $tujuanUser->dibaca == 0)
+                                    <form action="{{ route('kotakmasuk.tandai-dibaca', [$data->id, $tujuanUser->id]) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-warning btn-sm b-r-22">Tandai Dibaca</button>
+                                    </form>
+                                    <button class="btn btn-info btn-sm b-r-22" disabled>Disposisi</button>
+                                    <div class="text-danger mt-2 small">Anda harus menandai surat sudah dibaca untuk melakukan disposisi</div>
+                                @elseif($tujuanUser && $tujuanUser->dibaca == 1)
+                                    <button class="btn btn-success btn-sm b-r-22" disabled>Sudah Dibaca</button>
+                                    @if($users->isEmpty())
+                                        <button class="btn btn-info btn-sm b-r-22" disabled>
+                                            Disposisi
+                                        </button>
+                                        <div class="text-danger mt-2 small">Anda merupakan posisi paling bawah, tidak dapat mendisposisikan surat</div>
+                                    @else
+                                        <a href="{{ route('kotakmasuk.disposisi', $data->id) }}" class="btn btn-info btn-sm b-r-22">Disposisi</a>
+                                    @endif
+                                @endif
+                                <!-- {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Riw. Surat</a> --}}
+                                {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Cetak</a> --}} -->
                             </div>
                         </div>
                     </div>

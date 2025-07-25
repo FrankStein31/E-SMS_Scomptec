@@ -59,6 +59,8 @@ Route::get('kotakmasuk/disposisi/{id}', [KotakMasukController::class, "disposisi
 // Route::post('kotakmasuk/disposisi', [KotakMasukController::class, "storeDisposisi"])->name('kotakmasuk.kirim.disposisi');
 Route::resource('kotakmasuk', KotakMasukController::class);
 
+Route::post('kotakmasuk/tandai-dibaca/{entrysurat_id}/{tujuan_id}', [KotakMasukController::class, 'tandaiDibaca'])->name('kotakmasuk.tandai-dibaca');
+
 Route::resource('draft-surat', DraftSuratController::class);
 Route::get('draft-surat/create', [DraftSuratController::class, 'create'])->name('draft_surat.create');
 Route::post('draft-surat', [DraftSuratController::class, 'store'])->name('draft-surat.store');

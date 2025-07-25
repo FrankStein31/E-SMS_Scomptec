@@ -127,15 +127,27 @@ class KotakMasukController extends Controller
         }
     }
 
+    public function tandaiDibaca($entrysurat_id, $tujuan_id)
+    {
+        $tujuan = \App\Models\EntrySuratTujuan::where('entrysurat_id', $entrysurat_id)
+            ->where('id', $tujuan_id)
+            ->firstOrFail();
+        $tujuan->dibaca = 1;
+        $tujuan->save();
+        return redirect()->route('kotakmasuk.show', $entrysurat_id)->with('success', 'Surat berhasil ditandai sudah dibaca.');
+    }
+
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $data = EntrySuratIsi::orderBy('tgl_surat', 'desc')->whereHas('tujuanSurat', function ($q) {
-            $q->where('userid_tujuan', Auth::user()->id);
-        })->get();
+        $data = EntrySuratIsi::with(['tujuanSurat'])
+            ->orderBy('tgl_surat', 'desc')
+            ->whereHas('tujuanSurat', function ($q) {
+                $q->where('userid_tujuan', Auth::user()->id);
+            })->get();
         return view('kotakmasuk.index', compact('data'));
     }
 
@@ -157,7 +169,22 @@ class KotakMasukController extends Controller
     public function show($id)
     {
         $data = EntrySuratIsi::find($id);
-        return view('kotakmasuk.show', compact('data'));
+        // Ambil kodesatker user login
+        $loginUser = Auth::user();
+        $loginSatker = \App\Models\MasterSatker::where('userid', $loginUser->id)->first();
+        $kodesatker = $loginSatker ? $loginSatker->kodesatker : null;
+        $users = User::whereHas('masterSatker', function($q) use ($kodesatker) {
+            if ($kodesatker) {
+                $q->where('kodesatker', 'like', $kodesatker . '%')
+                  ->whereRaw('LENGTH(kodesatker) > ?', [strlen($kodesatker)]);
+            }
+        })
+        ->where('id', '!=', $loginUser->id)
+        ->get();
+        $tujuanUser = \App\Models\EntrySuratTujuan::where('entrysurat_id', $id)
+            ->where('userid_tujuan', $loginUser->id)
+            ->first();
+        return view('kotakmasuk.show', compact('data', 'users', 'tujuanUser'));
     }
 
     /**
