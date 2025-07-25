@@ -172,7 +172,7 @@
                                     </div>
                                     <div class="row mb-2">
                                         <div class="col-md-2">
-                                            <label class="form-label"></label>
+                                            <label class="form-label">Content</label>
                                         </div>
                                         <div class="col-md-9">
                                             <textarea name="content" id="editor" class="form-control text-editor" rows="10"></textarea>

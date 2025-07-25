@@ -110,6 +110,7 @@ class KotakMasukController extends Controller
             $disposisi = DisposisiBaru::create([
                 'entrysurat_id' => $request->entrysurat_id,
                 'kepada' => implode(',', $request->kepada),
+                'remitten' => $request->remitten,
                 'content' => $request->content,
                 'dari_id' => Auth::user() ? Auth::user()->id : null,
             ]);

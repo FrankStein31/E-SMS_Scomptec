@@ -12,6 +12,8 @@ class DisposisiBaru extends Model
         'entrysurat_id',
         'kepada',
         'catatan',
+        'content',
+        'remitten',
         'status',
         'dari_id',
     ];
