@@ -105,7 +105,7 @@
                     <ul class="collapse" id="more">
                         <li><a href="{{ route('report.surat') }}">Laporan</a></li>
                         <li><a href="{{ route('report.statistik') }}">Statistik</a></li>
-                        <li><a href="">Pesan No.</a></li>
+                        <li><a href="" hidden>Pesan No.</a></li>
                         <li><a href="{{ route('aktivitas') }}">Aktivitas</a></li>
                     </ul>
                 </li>
