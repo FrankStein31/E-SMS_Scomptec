@@ -32,4 +32,17 @@ class DisposisiBaru extends Model
     {
         return $this->belongsTo(EntrySuratIsi::class, 'entrysurat_id');
     }
+
+    // Method untuk mendapatkan nama-nama user dari field kepada
+    public function getKepadaNamesAttribute()
+    {
+        if (empty($this->kepada)) {
+            return '-';
+        }
+
+        $userIds = explode(',', $this->kepada);
+        $users = \App\Models\User::whereIn('id', $userIds)->pluck('fullname')->toArray();
+
+        return implode(', ', $users);
+    }
 }

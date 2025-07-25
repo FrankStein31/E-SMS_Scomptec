@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\DisposisiBaruDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Disposisi;
 use App\Models\DisposisiBaru;
@@ -20,21 +21,9 @@ class DisposisiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // public function index()
-    // {
-    //     $disposisis = \App\Models\DisposisiBaru::with('tindakans', 'entrysurat')->latest()->get();
-    //     return view('disposisi.index', compact('disposisis'));
-    // }
-    public function index()
+    public function index(DisposisiBaruDataTable $dataTable)
     {
-        $userId = Auth::user()->id;
-        $disposisis = \App\Models\DisposisiBaru::with('tindakans', 'entrysurat')
-            ->where(function($query) use ($userId) {
-                $query->whereRaw("FIND_IN_SET(?, kepada)", [$userId]);
-            })
-            ->latest()
-            ->get();
-        return view('disposisi.index', compact('disposisis'));
+        return $dataTable->render('disposisi.index');
     }
 
 
