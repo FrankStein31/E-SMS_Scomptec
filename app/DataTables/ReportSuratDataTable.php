@@ -22,13 +22,13 @@ class ReportSuratDataTable extends DataTable
             })
             ->addColumn('sifat', function($row) {
                 switch($row->sifat) {
-                    case 1:
-                        return '<span class="badge bg-primary">Biasa</span>';
-                    case 2:
-                        return '<span class="badge bg-warning">Segera</span>';
-                    case 3:
-                        return '<span class="badge bg-danger">Rahasia</span>';
                     case 4:
+                        return '<span class="badge bg-primary">Pribadi</span>';
+                    case 3:
+                        return '<span class="badge bg-warning">Biasa</span>';
+                    case 2:
+                        return '<span class="badge bg-danger">Rahasia</span>';
+                    case 1:
                         return '<span class="badge bg-success">Penting</span>';
                     default:
                         return '<span class="badge bg-secondary">'.$row->sifat.'</span>';
@@ -41,6 +41,13 @@ class ReportSuratDataTable extends DataTable
     public function query()
     {
         $request = $this->request();
+        \Log::info('Filter ReportSuratDataTable', [
+            'jenis_surat' => $request->jenis_surat,
+            'sifat_surat' => $request->sifat_surat,
+            'tgl_surat' => $request->tgl_surat,
+            'tgl_terima' => $request->tgl_terima,
+            'kepada' => $request->kepada,
+        ]);
         $query = DB::table('entry_surat_isis')
             ->select([
                 'entry_surat_isis.id',

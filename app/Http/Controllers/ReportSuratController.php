@@ -266,60 +266,41 @@ class ReportSuratController extends Controller
 
     public function cetak(Request $request)
     {
-        $suratType = $request->input('surat_type', 'surat_masuk');
-
-        if (in_array($suratType, ['surat_masuk', 'entry_surat'])) {
-            $query = DB::table('entry_surat_isis')->select([
-                'id',
-                'noagenda',
-                'sifat',
-                'jenis_id',
-                'nomor_surat',
-                'dari',
-                'kepada',
-                'hal',
-                'created_by',
-                'tgl_surat',
+        $query = DB::table('entry_surat_isis')
+            ->select([
+                'entry_surat_isis.id',
+                'entry_surat_isis.noagenda',
+                'entry_surat_isis.sifat',
+                'entry_surat_isis.jenis_id',
+                'entry_surat_isis.nomor_surat',
+                'entry_surat_isis.dari',
+                'entry_surat_isis.kepada',
+                'entry_surat_isis.hal',
+                'entry_surat_isis.created_by',
+                'entry_surat_isis.tgl_surat',
             ]);
-        } elseif (in_array($suratType, ['surat_keluar', 'surat_terkirim'])) {
-            $query = DB::table('surat_keluar_isis')->select([
-                'id',
-                DB::raw("'' as noagenda"),
-                'sifat',
-                'jenis_id',
-                'nosurat as nomor_surat',
-                'ttd_nama as dari',
-                'kepada',
-                'hal',
-                'user_id_pembuat as created_by',
-                'tgl_surat',
-            ]);
-        } else {
-            $query = DB::table('entry_surat_isis')->select([
-                'id',
-                'noagenda',
-                'sifat',
-                'jenis_id',
-                'nomor_surat',
-                'dari',
-                'kepada',
-                'hal',
-                'created_by',
-                'tgl_surat',
-            ]);
-        }
-
-        // Optional filter by tanggal atau jenis
-        if ($request->filled('tgl_surat')) {
-            $query->whereDate('tgl_surat', $request->tgl_surat);
-        }
-
         if ($request->filled('jenis_surat')) {
-            $query->where('jenis_id', $request->jenis_surat);
+            $query->where('entry_surat_isis.jenis_id', $request->jenis_surat);
         }
-
-        $data = $query->orderBy('tgl_surat', 'desc')->get();
-
+        if ($request->filled('sifat_surat') && $request->sifat_surat != 'semua') {
+            $sifatMap = [
+                'penting' => 1,
+                'rahasia' => 2,
+                'biasa' => 3,
+                'pribadi' => 4,
+            ];
+            $sifat = $sifatMap[$request->sifat_surat] ?? null;
+            if ($sifat) {
+                $query->where('entry_surat_isis.sifat', $sifat);
+            }
+        }
+        if ($request->filled('tgl_surat')) {
+            $query->whereDate('entry_surat_isis.tgl_surat', $request->tgl_surat);
+        }
+        if ($request->filled('kepada')) {
+            $query->where('entry_surat_isis.kepada', 'like', '%'.$request->kepada.'%');
+        }
+        $data = $query->orderBy('entry_surat_isis.tgl_surat', 'desc')->get();
         return view('report.cetak', compact('data'));
     }
 }

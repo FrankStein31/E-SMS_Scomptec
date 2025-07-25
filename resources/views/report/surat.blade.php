@@ -46,10 +46,6 @@
                                 <input class="form-control form-control-sm" type="date" name="tgl_surat">
                             </div>
                             <div class="col-md-2">
-                                <label class="form-label">Tgl Terima</label>
-                                <input class="form-control form-control-sm" type="date" name="tgl_terima">
-                            </div>
-                            <div class="col-md-2">
                                 <label class="form-label">Kepada</label>
                                 <select name="kepada" class="form-select form-select-sm select2">
                                     <option value="">Semua</option>
@@ -94,6 +90,13 @@ $(function(){
         allowClear: true
     });
     var table = window.LaravelDataTables['reportsurat-table'];
+    // Tambahkan filter ke parameter AJAX DataTables
+    table.on('preXhr.dt', function(e, settings, data) {
+        var formData = $('#filterForm').serializeArray();
+        formData.forEach(function(item){
+            data[item.name] = item.value;
+        });
+    });
     // Trigger reload DataTables via ajax.reload() setiap filter berubah
     $('#filterForm').on('change', 'input,select', function(){
         table.ajax.reload();
