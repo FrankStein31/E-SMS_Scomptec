@@ -58,13 +58,4 @@
 
 @push('js')
 {!! $dataTable->scripts(attributes: ['type' => 'module']) !!}
-<script>
-    window.sifatSurat = function(val) {
-        if(val == 1) return 'Biasa';
-        if(val == 2) return 'Segera';
-        if(val == 3) return 'Rahasia';
-        if(val == 4) return 'Penting';
-        return val;
-    }
-</script>
 @endpush

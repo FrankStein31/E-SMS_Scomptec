@@ -9,6 +9,7 @@ use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
+use Illuminate\Support\Facades\Auth;
 
 class KotakMasukDataTable extends DataTable
 {
@@ -23,7 +24,24 @@ class KotakMasukDataTable extends DataTable
             ->addColumn('action', function($row) {
                 return '<a href="'.route('kotakmasuk.show', $row->id).'" class="btn btn-info btn-sm">Detail</a>';
             })
-            ->rawColumns(['status'])
+            ->addColumn('unit_pengentri', function($row) {
+                return $row->createdBy->fullname;
+            })
+            ->addColumn('sifat', function($row) {
+                switch($row->sifat) {
+                    case 1:
+                        return '<span class="badge bg-primary">Biasa</span>';
+                    case 2:
+                        return '<span class="badge bg-warning">Segera</span>';
+                    case 3:
+                        return '<span class="badge bg-danger">Rahasia</span>';
+                    case 4:
+                        return '<span class="badge bg-success">Penting</span>';
+                    default:
+                        return '<span class="badge bg-secondary">'.$row->sifat.'</span>';
+                }
+            })
+            ->rawColumns(['status','action','unit_pengentri','sifat'])
             ->setRowId('id');
     }
 
@@ -31,7 +49,7 @@ class KotakMasukDataTable extends DataTable
     {
         return $model->with(['jenis','createdBy','tujuanSurat'])
             ->whereHas('tujuanSurat', function($q) {
-                $q->where('userid_tujuan', auth()->id());
+                $q->where('userid_tujuan', Auth::user()->id);
             })
             ->orderBy('tgl_surat','desc');
     }
@@ -48,16 +66,16 @@ class KotakMasukDataTable extends DataTable
     {
         return [
             Column::make('noagenda')->title('No. Agenda'),
-            Column::make('sifat')->title('Sifat')->data('sifat')->render('function(data){return window.sifatSurat ? sifatSurat(data) : data;}'),
+            Column::make('sifat')->title('Sifat'),
             Column::make('jenis.name')->title('Jenis'),
             Column::make('nomor_surat')->title('No. Surat'),
             Column::make('dari')->title('Dari'),
             Column::make('kepada')->title('Kepada'),
             Column::make('hal')->title('Hal'),
-            Column::make('createdBy.fullname')->title('Unit Pengentri'),
+            Column::make('unit_pengentri')->title('Unit Pengentri'),
             Column::make('tgl_surat')->title('Tanggal'),
             Column::computed('status')->title('Status')->exportable(false)->printable(false)->width(80)->addClass('text-center'),
-            // Column::computed('action')->exportable(false)->printable(false)->width(60)->addClass('text-center'),
+            Column::computed('action')->exportable(false)->printable(false)->width(60)->addClass('text-center'),
         ];
     }
 
