@@ -77,6 +77,69 @@ CREATE TABLE `disposisi_isis` (
 
 /*Data for the table `disposisi_isis` */
 
+/*Table structure for table `disposisis_baru` */
+
+DROP TABLE IF EXISTS `disposisis_baru`;
+
+CREATE TABLE `disposisis_baru` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `entrysurat_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dari_id` bigint unsigned DEFAULT NULL,
+  `kepada` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remitten` date DEFAULT NULL,
+  `content` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `disposisis_baru_entrysurat_id_foreign` (`entrysurat_id`),
+  CONSTRAINT `disposisis_baru_entrysurat_id_foreign` FOREIGN KEY (`entrysurat_id`) REFERENCES `entry_surat_isis` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `disposisis_baru` */
+
+insert  into `disposisis_baru`(`id`,`entrysurat_id`,`dari_id`,`kepada`,`remitten`,`content`,`created_at`,`updated_at`) values 
+(3,'01k0rpv1nf4g9wknjhz1fhkwxf',NULL,'177,178',NULL,NULL,'2025-07-23 09:23:58','2025-07-23 09:23:58'),
+(4,'01k0rpv1nf4g9wknjhz1fhkwxf',NULL,'174,175',NULL,NULL,'2025-07-23 09:26:48','2025-07-23 09:26:48'),
+(5,'01k0v9v68ayp9mrgky53vn0nvx',NULL,'174,175',NULL,NULL,'2025-07-23 09:30:57','2025-07-23 09:30:57'),
+(6,'01k0vaxx6ct06bwr3qbqsv116h',NULL,'185',NULL,NULL,'2025-07-23 09:49:22','2025-07-23 09:49:22'),
+(7,'01k0vaxx6ct06bwr3qbqsv116h',NULL,'186',NULL,NULL,'2025-07-23 09:51:18','2025-07-23 09:51:18'),
+(8,'01k0xae5fxhvthsksm6rhnbf4v',184,'173',NULL,NULL,'2025-07-24 04:19:19','2025-07-24 04:19:19'),
+(10,'01k0xae5fxhvthsksm6rhnbf4v',173,'212',NULL,NULL,'2025-07-24 04:26:46','2025-07-24 04:26:46'),
+(11,'01k0xae5fxhvthsksm6rhnbf4v',212,'213,214,215',NULL,NULL,'2025-07-24 04:29:14','2025-07-24 04:29:14'),
+(12,'01k0xae5fxhvthsksm6rhnbf4v',173,'216',NULL,NULL,'2025-07-24 04:33:19','2025-07-24 04:33:19'),
+(13,'01k0xae5fxhvthsksm6rhnbf4v',216,'217,218',NULL,NULL,'2025-07-24 04:34:33','2025-07-24 04:34:33'),
+(14,'01k0xae5fxhvthsksm6rhnbf4v',216,'219',NULL,NULL,'2025-07-24 04:35:18','2025-07-24 04:35:18');
+
+/*Table structure for table `disposisis_baru_tindakans` */
+
+DROP TABLE IF EXISTS `disposisis_baru_tindakans`;
+
+CREATE TABLE `disposisis_baru_tindakans` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `disposisis_baru_id` bigint unsigned NOT NULL,
+  `tindakan_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `disposisis_baru_tindakans_disposisis_baru_id_foreign` (`disposisis_baru_id`),
+  CONSTRAINT `disposisis_baru_tindakans_disposisis_baru_id_foreign` FOREIGN KEY (`disposisis_baru_id`) REFERENCES `disposisis_baru` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `disposisis_baru_tindakans` */
+
+insert  into `disposisis_baru_tindakans`(`id`,`disposisis_baru_id`,`tindakan_id`,`created_at`,`updated_at`) values 
+(3,3,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(4,4,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(5,5,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(6,6,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(7,7,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(8,8,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(10,10,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(11,11,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(12,12,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(13,13,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL),
+(14,14,'01k0dpx1hhct2vxrxabetxz8pm',NULL,NULL);
+
 /*Table structure for table `draft_surats` */
 
 DROP TABLE IF EXISTS `draft_surats`;
@@ -152,7 +215,13 @@ insert  into `entry_surat_isis`(`id`,`jenis_id`,`nomor_surat`,`kode_klasifikasi`
 ('01k094r8py30aw15q9z0kprq1w','1','123/123/12311','01k041xdryzdn0xhepvsc0bq0m','new new','Admin','frankie','wasd','2025-07-16','2025-07-16','2025-07-16',1,'coba coba','wasd',NULL,190,NULL,'coba',NULL,3,NULL,190,NULL,0,'2025-07-16 08:13:56','2025-07-16 08:13:56'),
 ('01k0r3sg5682wwtmdyeh6kphz9','0','123/123/1232','01k041xds005n343591da1zqee','COBA BARU','Admin','frankie','wasd','2025-07-22','2025-07-22','2025-07-22',2,'coba coba','wasd',NULL,190,NULL,'coba',NULL,4,NULL,190,NULL,0,'2025-07-22 03:45:44','2025-07-22 03:45:44'),
 ('01k0r430p2010gt0134cr24zex','0','123/123/12323','01k041xds005n343591da1zqee','COBA BARU','Admin','frankie','wadas','2025-07-22','2025-07-22','2025-07-22',2,'coba coba','wasd',NULL,190,NULL,'coba',NULL,5,NULL,190,NULL,0,'2025-07-22 03:50:56','2025-07-22 03:50:56'),
-('01k0r61crr778j3ndcssrjm9dj','0','123/123/12312','01k041xdryzdn0xhepvsc0bq0m','COBA BARUasdasdasd','Admin,Biro Kesejahteraan Rakyat','frankie steinlie','adfasdadw','2025-07-22','2025-07-22','2025-07-22',3,'wae','asdasd',NULL,190,NULL,'coba',NULL,6,NULL,190,NULL,0,'2025-07-22 04:25:00','2025-07-22 04:25:00');
+('01k0r61crr778j3ndcssrjm9dj','0','123/123/12312','01k041xdryzdn0xhepvsc0bq0m','COBA BARUasdasdasd','Admin,Biro Kesejahteraan Rakyat','frankie steinlie','adfasdadw','2025-07-22','2025-07-22','2025-07-22',3,'wae','asdasd',NULL,190,NULL,'coba',NULL,6,NULL,190,NULL,0,'2025-07-22 04:25:00','2025-07-22 04:25:00'),
+('01k0rpv1nf4g9wknjhz1fhkwxf','0','Coba kirim surat','01k041xdrk0k9z6km1j9ktmqgt','Coba kirim surat','Admin,Biro Pemerintahan dan Otonomi Daerah,Biro Kesejahteraan Rakyat,Biro Hukum','frankie steinlie coba kirim','Coba kirim surat','2025-07-22','2025-07-22','2025-07-22',2,'Coba kirim surat','Coba kirim surat',NULL,190,NULL,'Coba kirim surat',NULL,7,NULL,190,NULL,0,'2025-07-22 09:18:38','2025-07-22 09:18:38'),
+('01k0te0xm8m2a0aesq3dpgdeyc','0','12312312312','01k041xdrk0k9z6km1j9ktmqgt','coba kirim perekonomian ke operator','Operator','biro perekonomian','coba kirim perekonomian ke operator','2025-07-23','2025-07-23','2025-07-23',2,'coba kirim perekonomian ke operator','coba kirim perekonomian ke operator',NULL,176,NULL,'coba kirim perekonomian ke operator',NULL,8,NULL,176,NULL,0,'2025-07-23 01:23:02','2025-07-23 01:23:02'),
+('01k0thre2hx746g5qwpgzaw2kt','0','123/123/1231256','01k041xdrk0k9z6km1j9ktmqgt','new new','Yth. Ibu Gubernur Jawa Timur,SUB BAGIAN PEMERINTAHAN UMUM','operator proposal','coba kirim','2025-07-23','2025-07-23','2025-07-23',2,'Coba kirim surat','Coba kirim surat',NULL,762,NULL,'wasd',NULL,9,NULL,762,NULL,0,'2025-07-23 02:28:18','2025-07-23 02:28:18'),
+('01k0v9v68ayp9mrgky53vn0nvx','0','111111111111111111111111','01k041xds005n343591da1zqee','COBA DISPOSISI 011 012 013','Biro Pemerintahan dan Otonomi Daerah','frankie steinlie','COBA DISPOSISI 011 012 013','2025-07-23','2025-07-23','2025-07-23',2,'COBA DISPOSISI 011 012 013','COBA DISPOSISI 011 012 013',NULL,190,NULL,'COBA DISPOSISI 011 012 013',NULL,10,NULL,190,NULL,0,'2025-07-23 09:29:14','2025-07-23 09:29:14'),
+('01k0vaxx6ct06bwr3qbqsv116h','0','22222222222222','01k041xdrk0k9z6km1j9ktmqgt','COBA DISPOSISI 10 20 50','Asisten Pemerintahan dan Kesejahteraan Rakyat','COBA DISPOSISI 10 20 50','COBA DISPOSISI 10 20 50','2025-07-23','2025-07-23','2025-07-23',2,'COBA DISPOSISI 10 20 50','COBA DISPOSISI 10 20 50',NULL,190,NULL,'COBA DISPOSISI 10 20 50',NULL,11,NULL,190,NULL,0,'2025-07-23 09:48:12','2025-07-23 09:48:12'),
+('01k0xae5fxhvthsksm6rhnbf4v','0','000/000/000',NULL,'Surat Penting Dari Gubernur','Asisten Pemerintahan dan Kesejahteraan Rakyat','Gubernur','Kantor','2025-07-24','2025-07-24','2025-07-24',1,'Surat Penting Dari Gubernur','Surat Penting Dari Gubernur',NULL,191,NULL,'Surat Penting Dari Gubernur',NULL,12,NULL,191,NULL,0,'2025-07-24 04:18:05','2025-07-24 04:18:05');
 
 /*Table structure for table `entry_surat_lampirans` */
 
@@ -221,7 +290,32 @@ CREATE TABLE `entry_surat_tujuans` (
 /*Data for the table `entry_surat_tujuans` */
 
 insert  into `entry_surat_tujuans`(`id`,`satkerid_tujuan`,`dibaca`,`is_tembusan`,`entrysurat_id`,`userid_tujuan`,`created_at`,`updated_at`) values 
-('01k0r61csbstgwmenx3ab4dgvq','1.1.1.2.',0,0,'01k0r61crr778j3ndcssrjm9dj',174,'2025-07-22 04:25:00','2025-07-22 04:25:00');
+('01k0r61csbstgwmenx3ab4dgvq','1.1.1.2.',0,0,'01k0r61crr778j3ndcssrjm9dj',174,'2025-07-22 04:25:00','2025-07-22 04:25:00'),
+('01k0rpv1p9x4cpgt4shd8p9djf','1.1.1.1.',0,0,'01k0rpv1nf4g9wknjhz1fhkwxf',173,'2025-07-22 09:18:38','2025-07-22 09:18:38'),
+('01k0rpv1pg31mfn8d98tse7gvw','1.1.1.2.',0,0,'01k0rpv1nf4g9wknjhz1fhkwxf',174,'2025-07-22 09:18:38','2025-07-22 09:18:38'),
+('01k0rpv1pn8sp6gws8272zcayw','1.1.1.3.',0,0,'01k0rpv1nf4g9wknjhz1fhkwxf',175,'2025-07-22 09:18:38','2025-07-22 09:18:38'),
+('01k0rpyq84r8chvv5wc9h0w127','1.1.2.1.',0,0,'01k0rpv1nf4g9wknjhz1fhkwxf',176,'2025-07-22 09:20:38','2025-07-22 09:20:38'),
+('01k0thre35ym339d3fh9hm65h1','1.',0,0,'01k0thre2hx746g5qwpgzaw2kt',191,'2025-07-23 02:28:18','2025-07-23 02:28:18'),
+('01k0thre3bqh9q6nt63pj002ka','1.1.1.1.1.1.',0,0,'01k0thre2hx746g5qwpgzaw2kt',213,'2025-07-23 02:28:18','2025-07-23 02:28:18'),
+('01k0thzcmwb06s5hgzpemv7yhb','1.1.1.1.1.2.',0,0,'01k0thre2hx746g5qwpgzaw2kt',214,'2025-07-23 02:32:06','2025-07-23 02:32:06'),
+('01k0thzcna3th6gfqqqb89kv07','1.1.1.1.1.3.',0,0,'01k0thre2hx746g5qwpgzaw2kt',215,'2025-07-23 02:32:06','2025-07-23 02:32:06'),
+('01k0tsg7nszvrwdr9p0pwmsyzc','1.1.',0,0,'01k0rpv1nf4g9wknjhz1fhkwxf',188,'2025-07-23 04:43:38','2025-07-23 04:43:38'),
+('01k0v9hgxwzgbee87mnjd3ztcb','1.1.2.3.',0,0,'01k0rpv1nf4g9wknjhz1fhkwxf',177,'2025-07-23 09:23:58','2025-07-23 09:23:58'),
+('01k0v9v68pwqmf64kaanz0bm0y','1.1.1.1.',0,0,'01k0v9v68ayp9mrgky53vn0nvx',173,'2025-07-23 09:29:14','2025-07-23 09:29:14'),
+('01k0v9ya2wxqd7pnr2gzn54e93','1.1.1.2.',0,0,'01k0v9v68ayp9mrgky53vn0nvx',174,'2025-07-23 09:30:56','2025-07-23 09:30:56'),
+('01k0v9ya3tn3wz08cm8ksfgqd6','1.1.1.3.',0,0,'01k0v9v68ayp9mrgky53vn0nvx',175,'2025-07-23 09:30:57','2025-07-23 09:30:57'),
+('01k0vaxx71ym8aava6f34x8k9g','1.1.1.',0,0,'01k0vaxx6ct06bwr3qbqsv116h',184,'2025-07-23 09:48:12','2025-07-23 09:48:12'),
+('01k0vb01ajmwjrseejcf7wc0gv','1.1.2.',0,0,'01k0vaxx6ct06bwr3qbqsv116h',185,'2025-07-23 09:49:22','2025-07-23 09:49:22'),
+('01k0xae5g80017b4a42tq1swp3','1.1.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',184,'2025-07-24 04:18:05','2025-07-24 04:18:05'),
+('01k0xagd98xtfy9fzjyd9kb22e','1.1.1.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',173,'2025-07-24 04:19:18','2025-07-24 04:19:18'),
+('01k0xay2306vns2kaxrp11y0s5','1.1.1.1.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',212,'2025-07-24 04:26:46','2025-07-24 04:26:46'),
+('01k0xb2jgq0scmd9731pfkj29k','1.1.1.1.1.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',213,'2025-07-24 04:29:14','2025-07-24 04:29:14'),
+('01k0xb2jhmd212xaye8w6b06fm','1.1.1.1.1.2.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',214,'2025-07-24 04:29:14','2025-07-24 04:29:14'),
+('01k0xb2jhts6rg3exjemznbp3c','1.1.1.1.1.3.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',215,'2025-07-24 04:29:14','2025-07-24 04:29:14'),
+('01k0xba1vrpabvz7qg2q5mwq9k','1.1.1.1.2.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',216,'2025-07-24 04:33:19','2025-07-24 04:33:19'),
+('01k0xbcagtmmvs2h8rwbawthwe','1.1.1.1.2.1.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',217,'2025-07-24 04:34:33','2025-07-24 04:34:33'),
+('01k0xbcahrvqgyska34fg52s4e','1.1.1.1.2.2.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',218,'2025-07-24 04:34:33','2025-07-24 04:34:33'),
+('01k0xbdpph8hvmpmmcfm67y09h','1.1.1.1.2.3.',0,0,'01k0xae5fxhvthsksm6rhnbf4v',219,'2025-07-24 04:35:18','2025-07-24 04:35:18');
 
 /*Table structure for table `failed_jobs` */
 
@@ -3719,7 +3813,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `migrations` */
 
@@ -3741,7 +3835,10 @@ insert  into `migrations`(`id`,`migration`,`batch`) values
 (15,'2025_04_29_010246_create_surat_keluar_nota_dinas_table',1),
 (16,'2025_04_29_064611_create_master_tindakan_disposisis_table',1),
 (17,'2025_06_19_021427_create_disposisi_isis_table',1),
-(18,'2025_07_20_191940_create_draft_surats_table',2);
+(18,'2025_07_20_191940_create_draft_surats_table',2),
+(19,'2025_07_23_033746_create_disposisis_baru_table',3),
+(20,'2025_07_23_033747_create_disposisis_baru_table',4),
+(21,'2025_07_24_000001_add_dari_id_to_disposisis_baru_table',5);
 
 /*Table structure for table `password_reset_tokens` */
 
@@ -3834,7 +3931,8 @@ CREATE TABLE `surat_keluar_isis` (
 
 insert  into `surat_keluar_isis`(`id`,`suratkeluar_id`,`revisi_id`,`revisi_data_id`,`tgl_revisi`,`jenis_id`,`no_generate`,`nosurat`,`kodeklasifikasi`,`tgl_surat`,`hal`,`jml_lampiran`,`sifat`,`kepada`,`isi`,`tembusan`,`jenisref_id`,`referensi_id`,`entry_surat_isi_id`,`ttd_nama`,`ttd_id`,`user_ttd_id`,`isfinal`,`userid_pembuat`,`user_id_pembuat`,`satkerid_pembuat`,`userid_tujuan`,`user_id_tujuan`,`satkerid_tujuan`,`status`,`dibaca`,`last_sent`,`userid_final`,`user_id_final`,`satkerid_final`,`created_at`,`updated_at`,`deleted_at`) values 
 ('01K0BBXZ1AS8HT8F60FZ517K85',NULL,NULL,NULL,'2025-07-17 06:51:16',1,NULL,'41231241','000','2025-07-17 00:00:00','COBA BARU','2',1,'[\"{\\\"id\\\":3,\\\"name\\\":\\\"Administrator\\\",\\\"jabatan\\\":\\\"Administrator\\\"}\",\"{\\\"id\\\":173,\\\"name\\\":\\\"Biro Pemerintahan dan Otonomi Daerah\\\",\\\"jabatan\\\":\\\"Biro Pemerintahan dan Otonomi Daerah\\\"}\"]','<p>asdasda</p>','asdsaad',NULL,1,NULL,'Biro Pemerintahan dan Otonomi Daerah',NULL,173,1,NULL,'ps','0',3,'3','0',1,0,0,190,'190','0','2025-07-17 04:57:51','2025-07-17 06:51:16',NULL),
-('01K0DS8D3725T05HJYDH1C28CJ',NULL,NULL,NULL,'2025-07-18 03:29:14',0,NULL,'4123124112','000','2025-07-18 00:00:00','COBA BARU','1',1,'[\"{\\\"id\\\":3,\\\"name\\\":\\\"Admin\\\",\\\"jabatan\\\":\\\"Administrator\\\"}\"]','<p>wasd</p>','wasd',NULL,NULL,NULL,'Biro Pemerintahan dan Otonomi Daerah',NULL,173,1,NULL,'ps','0',3,'3','0',1,0,0,190,'190','0','2025-07-18 03:29:14','2025-07-18 03:29:14',NULL);
+('01K0DS8D3725T05HJYDH1C28CJ',NULL,NULL,NULL,'2025-07-18 03:29:14',0,NULL,'4123124112','000','2025-07-18 00:00:00','COBA BARU','1',1,'[\"{\\\"id\\\":3,\\\"name\\\":\\\"Admin\\\",\\\"jabatan\\\":\\\"Administrator\\\"}\"]','<p>wasd</p>','wasd',NULL,NULL,NULL,'Biro Pemerintahan dan Otonomi Daerah',NULL,173,1,NULL,'ps','0',3,'3','0',1,0,0,190,'190','0','2025-07-18 03:29:14','2025-07-18 03:29:14',NULL),
+('01K0TE7R60JMM2CPMSCWVGG2TJ',NULL,NULL,NULL,'2025-07-23 01:26:46',0,NULL,'12312312','000.1','2025-07-23 00:00:00','coba','1',1,'[\"{\\\"id\\\":190,\\\"name\\\":\\\"Operator\\\",\\\"jabatan\\\":\\\"Operator\\\"}\"]','<p>coba kirim perekonomian ke operator</p>','coba kirim perekonomian ke operator',NULL,1,NULL,'Biro Pemerintahan dan Otonomi Daerah',NULL,173,1,NULL,'021','01010201',190,'190','0',1,0,0,176,'176','01010201','2025-07-23 01:26:46','2025-07-23 01:26:46',NULL);
 
 /*Table structure for table `surat_keluar_lampirans` */
 
@@ -3985,54 +4083,54 @@ CREATE TABLE `users` (
 
 insert  into `users`(`id`,`username`,`fullname`,`jabatan`,`satkerid`,`nip`,`usergroupid`,`email`,`email_verified_at`,`last_notif`,`pangkat`,`password`,`remember_token`,`created_at`,`updated_at`) values 
 (3,'admin','Admin','Administrator','1.','',1,'admin@gmail.com',NULL,'2019-12-03','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:52','2025-07-17 07:44:07'),
-(173,'011','Biro Pemerintahan dan Otonomi Daerah','Biro Pemerintahan dan Otonomi Daerah','1.1.1.1.','',3,'-',NULL,'2021-07-27','-','$2y$12$7O9.VQy.EgdzvbVSVDZer.h1zcjqfRLZIq/7nMlCzatII/F3TzEBK',NULL,'2025-07-14 08:44:53','2025-07-14 08:44:53'),
-(174,'012','Biro Kesejahteraan Rakyat','Biro Kesejahteraan Rakyat','1.1.1.2.','',3,'-',NULL,'2021-07-26','-','$2y$12$m3hBvgheSqLub.Tpe8z9teE17DNMUxMXVwTKuwjbEwat9sCc7vblu',NULL,'2025-07-14 08:44:53','2025-07-14 08:44:53'),
-(175,'013','Biro Hukum','Biro Hukum','1.1.1.3.','196403191989031001',3,'-',NULL,'2019-02-18','IV/b','$2y$12$dDw8PEnVTyXrOb9uxZ4kF.Q1oKaWFzLA270/1XxBcogRtfDTgFJd.',NULL,'2025-07-14 08:44:54','2025-07-14 08:44:54'),
-(176,'021','Biro Perekonomian','Biro Perekonomian','1.1.2.1.','-',3,'-',NULL,'2021-07-26','-','$2y$12$FUEKbkzGyyk2Fziq.pDWY.O27ZwIBxNBmdrNL0AAq3alSCNc.kylq',NULL,'2025-07-14 08:44:54','2025-07-14 08:44:54'),
-(177,'023','Biro Adm. Pembangunan','Biro Adm. Pembangunan','1.1.2.3.','',3,'-',NULL,'2021-07-27','-','$2y$12$VzAWX6OLnquZ89AE.HQ7D.9Bfmkr.gVe86pX9APHFmSepoOvPkNYm',NULL,'2025-07-14 08:44:55','2025-07-14 08:44:55'),
-(178,'052','SITI NURAHMI, SH, M.Si','Biro Adm.Kesejahteraan Rakyat','1.1.3.1.','19581125 198309 2 001',3,'-',NULL,'2016-12-20','Pembina Utama Muda (IV/c)','$2y$12$TRffQ1vmKh6NclAneGpd8OFuEtgDd0kexeb1bpk0n3uPZxD./1Vjy',NULL,'2025-07-14 08:44:55','2025-07-14 08:44:55'),
-(179,'051','051','051','1.1.3.2.','-',3,'-',NULL,'2016-12-22','-','$2y$12$h5SZRAmzYT8WJMEuIWeEiuhdzaOJgwplEdMV9EIOkKtlHwqRdGTey',NULL,'2025-07-14 08:44:56','2025-07-14 08:44:56'),
-(180,'031','Biro Organisasi','Biro Organisasi','1.1.4.1.','',3,'-',NULL,'2021-07-26','-','$2y$12$Yq9UZaEtvfWPsx/M9OF56unV.oD0h8AFU.VD5ALFOnTHwX9j/LOMC',NULL,'2025-07-14 08:44:56','2025-07-14 08:44:56'),
+(173,'011','Biro Pemerintahan dan Otonomi Daerah','Biro Pemerintahan dan Otonomi Daerah','1.1.1.1.','',3,'-',NULL,'2021-07-27','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:53','2025-07-14 08:44:53'),
+(174,'012','Biro Kesejahteraan Rakyat','Biro Kesejahteraan Rakyat','1.1.1.2.','',3,'biro@gmail.com',NULL,'2021-07-26','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:53','2025-07-14 08:44:53'),
+(175,'013','Biro Hukum','Biro Hukum','1.1.1.3.','196403191989031001',3,'-',NULL,'2019-02-18','IV/b','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:54','2025-07-14 08:44:54'),
+(176,'021','Biro Perekonomian','Biro Perekonomian','1.1.2.1.','-',3,'-',NULL,'2021-07-26','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:54','2025-07-14 08:44:54'),
+(177,'023','Biro Adm. Pembangunan','Biro Adm. Pembangunan','1.1.2.3.','',3,'-',NULL,'2021-07-27','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:55','2025-07-14 08:44:55'),
+(178,'052','SITI NURAHMI, SH, M.Si','Biro Adm.Kesejahteraan Rakyat','1.1.3.1.','19581125 198309 2 001',3,'-',NULL,'2016-12-20','Pembina Utama Muda (IV/c)','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:55','2025-07-14 08:44:55'),
+(179,'051','051','051','1.1.3.2.','-',3,'-',NULL,'2016-12-22','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:56','2025-07-14 08:44:56'),
+(180,'031','Biro Organisasi','Biro Organisasi','1.1.4.1.','',3,'-',NULL,'2021-07-26','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:56','2025-07-14 08:44:56'),
 (181,'033','Biro Administrasi Pimpinan','Biro Administrasi Pimpinan','1.1.4.6.','',3,'-',NULL,'2021-07-02','-','$2y$12$.00EzONy1GXBHBiDDKYqHu8cNJdF7rbSkGLM4bS8lzAfBXaTgQpem',NULL,'2025-07-14 08:44:57','2025-07-14 08:44:57'),
 (182,'022','Biro Pengadaan Barang dan Jasa','Biro Pengadaan Barang dan Jasa','1.1.2.2.','-',3,'-',NULL,'2021-07-15','-','$2y$12$1OMUzUcJMYuJ5NuBb54wbuXKQAku1sCAdzdhOrsgvIB1XZG2kPqT2',NULL,'2025-07-14 08:44:57','2025-07-14 08:44:57'),
-(184,'010','Asisten Pemerintahan dan Kesejahteraan Rakyat','Asisten Pemerintahan dan Kesejahteraan Rakyat','1.1.1.','',3,'-',NULL,'2021-07-26','-','$2y$12$hJll3jVHZyTkX.7n.dl8i.CG87VN.LxyPUjRe9unLidoOl2cxC9O2',NULL,'2025-07-14 08:44:58','2025-07-14 08:44:58'),
-(185,'020','Asisten Perekonomian dan Pembangunan','Asisten Perekonomian dan Pembangunan','1.1.2.','',3,'-',NULL,'2021-09-09','-','$2y$12$Ibug5tmuC3ZcxZI5gOI16.K6g4a8psyG4fu4pLxpkw.HMey8bdIvi',NULL,'2025-07-14 08:44:58','2025-07-14 08:44:58'),
-(186,'050','Margo AKM','Margo AKM','1.1.3.','',3,'-',NULL,'2017-01-10','-','$2y$12$Q77lkfgOwl.LEYYS6BLviOm2Kg0DEe7WyS36FO2IzX6PqbcRSwKii',NULL,'2025-07-14 08:44:59','2025-07-14 08:44:59'),
-(188,'sekda','Sekretaris Daerah Provinsi Jawa Timur','Sekretaris Daerah Jawa Timur','1.1.','-',3,'-',NULL,'2021-07-22','-','$2y$12$m2WbnxuuY4naXnz23aFtYOXRPJmvqeQswwhqPUBPaZw285HxLA/Su',NULL,'2025-07-14 08:44:59','2025-07-14 08:44:59'),
+(184,'010','Asisten Pemerintahan dan Kesejahteraan Rakyat','Asisten Pemerintahan dan Kesejahteraan Rakyat','1.1.1.','',3,'-',NULL,'2021-07-26','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:58','2025-07-14 08:44:58'),
+(185,'020','Asisten Perekonomian dan Pembangunan','Asisten Perekonomian dan Pembangunan','1.1.2.','',3,'-',NULL,'2021-09-09','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:58','2025-07-14 08:44:58'),
+(186,'050','Margo AKM','Margo AKM','1.1.3.','',3,'-',NULL,'2017-01-10','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:59','2025-07-14 08:44:59'),
+(188,'sekda','Sekretaris Daerah Provinsi Jawa Timur','Sekretaris Daerah Jawa Timur','1.1.','-',3,'-',NULL,'2021-07-22','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:44:59','2025-07-14 08:44:59'),
 (190,'ps','Operator','Operator','1.1.4.5.1.2.','',4,'-',NULL,'2021-03-29','-','$2y$12$F/cec7YOZfwsaRfQuXVxtumPT3nxPId0wEYN9FAG6gzdswXxjS57i',NULL,'2025-07-14 08:45:00','2025-07-17 07:46:47'),
-(191,'Gub','Yth. Ibu Gubernur Jawa Timur','Yth. Ibu Gubernur Jawa Timur','1.','-',3,'-',NULL,'2021-07-27','-','$2y$12$CByQRXBFqRdiZLNgsVPYZOfT0Ri.lTMZg1w8U5u1dYXXDUlcakHPS',NULL,'2025-07-14 08:45:00','2025-07-14 08:45:00'),
+(191,'Gub','Yth. Ibu Gubernur Jawa Timur','Yth. Ibu Gubernur Jawa Timur','1.','-',3,'-',NULL,'2021-07-27','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:00','2025-07-14 08:45:00'),
 (192,'wagub','Wakil Gubernur Jawa Timur','Wakil Gubernur Jawa Timur','1.2.','',3,'-',NULL,'2020-01-10','-','$2y$12$rH2R8dWVAhEMJQ9RsULh6unb9I4G7hKQx.P.sqpL9FdDXOsF2hbYO',NULL,'2025-07-14 08:45:01','2025-07-14 08:45:01'),
 (199,'030','Asisten Administrasi Umum','Asisten Administrasi Umum','1.1.4.','',3,'-',NULL,'2021-07-21','-','$2y$12$MR4ce729.6DWVr87RdmwW.baPS/Vo7dBredKZn0j5Y0ReRquy4k2W',NULL,'2025-07-14 08:45:01','2025-07-14 08:45:01'),
-(212,'0111','BAGIAN PEMERINTAHAN','BAGIAN PEMERINTAHAN','1.1.1.1.1.','',3,'-',NULL,'2020-02-18','-','$2y$12$MT4y3m2SFrLInWjvcXZBQ.bFQ9kT8WktU0QSlxnq9Vy2WAGDLsMZS',NULL,'2025-07-14 08:45:02','2025-07-14 08:45:02'),
-(213,'01111','SUB BAGIAN PEMERINTAHAN UMUM','SUB BAGIAN PEMERINTAHAN UMUM','1.1.1.1.1.1.','',3,'-',NULL,'2013-11-14','-','$2y$12$M4UHK3OYWR460fJwe97gh.cn.O2mMELH8C9RUdjWRdHk7pBaU7Ni.',NULL,'2025-07-14 08:45:02','2025-07-14 08:45:02'),
-(214,'01112','Sub Bagian Administrasi Pemerintahan dan Fasilitasi Penataan Wilayah','Sub Bagian Administrasi Pemerintahan dan Fasilitasi Penataan Wilayah','1.1.1.1.1.2.','',3,'-',NULL,'2013-04-29','-','$2y$12$rovcWP4mujBlf9ZJ/d1Ev.TwSxmDiiuFaKa6NpelE2XZaVgNih7y2',NULL,'2025-07-14 08:45:03','2025-07-14 08:45:03'),
-(215,'01113','Sub Bagian Tata Usaha POD','Sub Bagian Tata Usaha POD','1.1.1.1.1.3.','',3,'-',NULL,'2013-04-29','-','$2y$12$B8VRCb.xB/QKGPLpywQrYewE16lHivBHDOIUOtbA9hywJODrhpzwe',NULL,'2025-07-14 08:45:03','2025-07-14 08:45:03'),
-(216,'0112','Bagian Otonomi Daerah','Bagian Otonomi Daerah','1.1.1.1.2.','',3,'-',NULL,'2021-06-08','-','$2y$12$f5frys/0w7j0xE9A/ZOnGOGBWFGvOOwhRWf1mldxy4eIx1ZH0San.',NULL,'2025-07-14 08:45:04','2025-07-14 08:45:04'),
-(217,'01121','Sub Bagian Administrasi Kepala Daerah dan Dewan Perwakilan Rakyat Daerah','Sub Bagian Administrasi Kepala Daerah dan Dewan Perwakilan Rakyat Daerah','1.1.1.1.2.1.','',3,'-',NULL,'2013-04-29','-','$2y$12$xw4bPr5mAxiN/nV5sBb/XuGmyKYRtostHpvLWSoGP8VIEn4h72aue',NULL,'2025-07-14 08:45:04','2025-07-14 08:45:04'),
-(218,'01122','Sub Bagian Pengembangan Otonomi Daerah dan Pemetaan Urusan','Sub Bagian Pengembangan Otonomi Daerah dan Pemetaan Urusan','1.1.1.1.2.2.','',3,'-',NULL,'2013-04-29','-','$2y$12$WPSdUNNRPAv5gJ9GtLgx7.3mt3y1FqhkB45PHpjC7C8c9GI7L6L/m',NULL,'2025-07-14 08:45:05','2025-07-14 08:45:05'),
-(219,'01123','Sub Bagian Evaluasi dan Penyelenggaraan Pemerintahan','Sub Bagian Evaluasi dan Penyelenggaraan Pemerintahan','1.1.1.1.2.3.','',3,'-',NULL,'2013-04-29','-','$2y$12$V5dlwl2kw6ic5JyuiPQp.OxfocmlZzh9/8uoqc6.gO/Fkn1bdUpVG',NULL,'2025-07-14 08:45:05','2025-07-14 08:45:05'),
-(220,'0113','Bagian Kerjasama','Bagian Kerjasama','1.1.1.1.3.','',3,'-',NULL,'2016-07-01','-','$2y$12$doVB4WfAxa/Q4RB0UmruseAqSHvYI0ZffYV3m73h5lzTx.0SD3TS2',NULL,'2025-07-14 08:45:06','2025-07-14 08:45:06'),
-(221,'01131','Sub Bagian Kerja Sama Antar Pemerintah','Sub Bagian Kerja Sama Antar Pemerintah','1.1.1.1.3.1.','',3,'-',NULL,'2013-04-29','-','$2y$12$q1WKCh4Bt9seIE2o.VQVxunrNoIvhKvb2R0pUrz/g1t0mf3S8jTgu',NULL,'2025-07-14 08:45:06','2025-07-14 08:45:06'),
-(222,'01132','Sub Bagian Kerja Sama Badan Usaha/Swasta','Sub Bagian Kerja Sama Badan Usaha/Swasta','1.1.1.1.3.2.','',3,'-',NULL,'2013-04-29','-','$2y$12$0Fvs2Q5SWJw/svgKoO6u2e.WKA4Ood5.rkTmVVJPbkzN/8.AuaC2C',NULL,'2025-07-14 08:45:07','2025-07-14 08:45:07'),
-(223,'01133','Sub Bagian Evaluasi Pelaksanaan Kerja Sama','Sub Bagian Evaluasi Pelaksanaan Kerja Sama','1.1.1.1.3.3.','',3,'-',NULL,'2013-04-29','-','$2y$12$zbY0itKDE2M801cgUlLt0ODA81kqIJ6CuquShnl2iwhOKSZ78NBsW',NULL,'2025-07-14 08:45:07','2025-07-14 08:45:07'),
-(224,'0114','BAGIAN KEPENDUDUKAN','BAGIAN KEPENDUDUKAN','1.1.1.1.4.','',3,'-',NULL,'2016-05-27','-','$2y$12$.tn11b1lzIpwwZA66qM0rupTGlG70E7pc5Sn333rZC2qKTgur61by',NULL,'2025-07-14 08:45:08','2025-07-14 08:45:08'),
-(225,'01141','SUB BAGIAN ADMINISTRASI KEPENDUDUKAN DAN CATATAN SIPIL','SUB BAGIAN ADMINISTRASI KEPENDUDUKAN DAN CATATAN SIPIL','1.1.1.1.4.1.','',3,'-',NULL,'2013-04-29','-','$2y$12$uu2A3zfMpo5seFz8ZKqIKeG8bXI4UG0PDVCfyKMee0NpAjddTVJbq',NULL,'2025-07-14 08:45:09','2025-07-14 08:45:09'),
-(226,'01142','SUB BAGIAN DOKUMENTASI DAN INFORMASI KEPENDUDUKAN','SUB BAGIAN DOKUMENTASI DAN INFORMASI KEPENDUDUKAN','1.1.1.1.4.2.','',3,'-',NULL,'2013-04-29','-','$2y$12$ZraOm666M4m0wK0NYEsnWuEv1GaA/CxfAojnev886G.euTRDT0WGC',NULL,'2025-07-14 08:45:09','2025-07-14 08:45:09'),
-(227,'01143',' ','Kasubag TU Biro Adm.Pemerintahan','1.1.1.1.4.3.','',3,' ',NULL,'2013-04-29',' ','$2y$12$EQDcareaas3Hg82ajc/15eIhSzjIQfcsrtZ6Q5p2PaUeiCQBcsK4a',NULL,'2025-07-14 08:45:10','2025-07-14 08:45:10'),
-(228,'0121','Bagian Bina Mental Spiritual','Bagian Bina Mental Spiritual','1.1.1.2.1.','',3,'-',NULL,'2017-05-02','-','$2y$12$4O2EAySaINripwtNP26APeJ.q7ImCkzVPNeo2oiI.A/X7bsDYvTdG',NULL,'2025-07-14 08:45:10','2025-07-14 08:45:10'),
-(229,'01211','Sub Bagian Bina Kehidupan Spiritual','Sub Bagian Bina Kehidupan Spiritual','1.1.1.2.1.1.','-',3,'-',NULL,'2013-06-11','-','$2y$12$K.zMq2a94bf8cMRw8IAgJO5TCSWTPTXFzDUWuqHMU8L1Y0eBnCLWy',NULL,'2025-07-14 08:45:11','2025-07-14 08:45:11'),
-(230,'01212','Sub Bagian Sarana dan Prasarana Spiritual','Sub Bagian Sarana dan Prasarana Spiritual','1.1.1.2.1.2.','',3,'-',NULL,'2013-06-11','-','$2y$12$eIuWEex2QrZwhT7c0ff.Y.YhUhKEiqTF4BMSSSc3p/451ZOSODVvy',NULL,'2025-07-14 08:45:11','2025-07-14 08:45:11'),
-(231,'01213','Sub Bagian Kelembagaan Bina Spiritual','Sub Bagian Kelembagaan Bina Spiritual','1.1.1.2.1.3.','-',3,' -',NULL,'2013-06-10',' -','$2y$12$5U77zwfkcs.Yx7xHcfzSNuVMfS6u3f/V4aSgWLOOs.FwlLmeJrt.u',NULL,'2025-07-14 08:45:12','2025-07-14 08:45:12'),
-(232,'0122','Bagian Kesejahteraan Rakyat Non Pelayanan Dasar','Bagian Kesejahteraan Rakyat Non Pelayanan Dasar','1.1.1.2.2.','',3,'-',NULL,'2019-01-08','-','$2y$12$cwMQVGKna1IbRVx8WBiJY.XTdaxn39T4wrbpb0PTxzO5aLIXG..26',NULL,'2025-07-14 08:45:12','2025-07-14 08:45:12'),
-(233,'01221','Sub Bagian Kesejahteraan Rakyat Non Pelayanan Dasar I','Sub Bagian Kesejahteraan Rakyat Non Pelayanan Dasar I','1.1.1.2.2.1.','-',3,'-',NULL,'2013-04-29','-','$2y$12$1VuJS6TpRZKmGEivEEr2SOo8hiRjfHco6Bh0ZDvICkn7BS31daOa.',NULL,'2025-07-14 08:45:13','2025-07-14 08:45:13'),
-(234,'01222','Sub Bagian Kesejahteraan Rakyat Non Pelayanan Dasar II','Sub Bagian Kesejahteraan Rakyat Non Pelayanan Dasar II','1.1.1.2.2.2.','-',3,'-',NULL,'2013-04-29','-','$2y$12$uQ35apV3bwinEkMYXZK0kOYMIOt5hvh7WTDazjmXGl7o85/kHXM.u',NULL,'2025-07-14 08:45:13','2025-07-14 08:45:13'),
-(235,'01223','Sub Bagian Tata Usaha Biro Kesejahteraan Rakyat','Sub Bagian Tata Usaha Biro Kesejahteraan Rakyat','1.1.1.2.2.3.','-',3,'-',NULL,'2013-04-29','-','$2y$12$L9JWxJ7Tif.ms/jXbdK.WOyWwUpBDm3zt0/5xBKhb.x4TCloVMYhq',NULL,'2025-07-14 08:45:14','2025-07-14 08:45:14'),
-(236,'0123','Bagian Kesejahteraan Rakyat Pelayanan Dasar','Bagian Kesejahteraan Rakyat Pelayanan Dasar','1.1.1.2.3.','',3,'-',NULL,'2017-12-12','-','$2y$12$I9f./ydJErUSECcG9Qs9ZeIqa30nJnduvq0G.9jjIeapxwb1o1FwG',NULL,'2025-07-14 08:45:14','2025-07-14 08:45:14'),
-(237,'01231','Sub Bagian Kesehatan','Sub Bagian Kesehatan','1.1.1.2.3.1.','-',3,'-',NULL,'2013-04-29','-','$2y$12$ucMcsvHJHnp/LaO/AanrP.gAhtChrhWjTZsKhRZ8XNB11EWxXopkG',NULL,'2025-07-14 08:45:15','2025-07-14 08:45:15'),
-(238,'01232','Sub Bagian Sosial','Sub Bagian Sosial','1.1.1.2.3.2.','-',3,'-',NULL,'2013-04-29','-','$2y$12$ng0gBButh6ZHebpYJDa87.F7OH8n9azWyXHQgO6IyWXOEaD6cO0v6',NULL,'2025-07-14 08:45:15','2025-07-14 08:45:15'),
-(239,'01233','Sub Bagian Pendidikan','Sub Bagian Pendidikan','1.1.1.2.3.3.','-',3,'-',NULL,'2013-04-29','-','$2y$12$66z0AVeFW./6F38V56Z99uoEmIsKLLZmIMLlEXl6RqZx6grPKN9bW',NULL,'2025-07-14 08:45:16','2025-07-14 08:45:16'),
-(240,'0124','Bagian Sosial, Kesehatan, Pengendalian Penduduk dan Keluarga Berencana','Bagian Sosial, Kesehatan, Pengendalian Penduduk dan Keluarga Berencana','1.1.1.2.4.','',3,'-',NULL,'2017-12-12','-','$2y$12$yo6aS90clNl62qDJc5NWxu3YdVDj379HXL88Ieg3VdxzFfeE5BMgK',NULL,'2025-07-14 08:45:16','2025-07-14 08:45:16'),
-(241,'01241','SUB BAGIAN PENANGANAN SOSIAL','SUB BAGIAN PENANGANAN SOSIAL','1.1.1.2.4.1.','-',3,'-',NULL,'2013-04-29','-','$2y$12$g2NZed9/6wniV33Yi9HBZesbNwyU1R3.srB5kq/DnRtkaJdpzqGw.',NULL,'2025-07-14 08:45:17','2025-07-14 08:45:17'),
+(212,'0111','BAGIAN PEMERINTAHAN','BAGIAN PEMERINTAHAN','1.1.1.1.1.','',3,'-',NULL,'2020-02-18','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:02','2025-07-14 08:45:02'),
+(213,'01111','SUB BAGIAN PEMERINTAHAN UMUM','SUB BAGIAN PEMERINTAHAN UMUM','1.1.1.1.1.1.','',3,'-',NULL,'2013-11-14','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:02','2025-07-14 08:45:02'),
+(214,'01112','Sub Bagian Administrasi Pemerintahan dan Fasilitasi Penataan Wilayah','Sub Bagian Administrasi Pemerintahan dan Fasilitasi Penataan Wilayah','1.1.1.1.1.2.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:03','2025-07-14 08:45:03'),
+(215,'01113','Sub Bagian Tata Usaha POD','Sub Bagian Tata Usaha POD','1.1.1.1.1.3.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:03','2025-07-14 08:45:03'),
+(216,'0112','Bagian Otonomi Daerah','Bagian Otonomi Daerah','1.1.1.1.2.','',3,'-',NULL,'2021-06-08','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:04','2025-07-14 08:45:04'),
+(217,'01121','Sub Bagian Administrasi Kepala Daerah dan Dewan Perwakilan Rakyat Daerah','Sub Bagian Administrasi Kepala Daerah dan Dewan Perwakilan Rakyat Daerah','1.1.1.1.2.1.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:04','2025-07-14 08:45:04'),
+(218,'01122','Sub Bagian Pengembangan Otonomi Daerah dan Pemetaan Urusan','Sub Bagian Pengembangan Otonomi Daerah dan Pemetaan Urusan','1.1.1.1.2.2.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:05','2025-07-14 08:45:05'),
+(219,'01123','Sub Bagian Evaluasi dan Penyelenggaraan Pemerintahan','Sub Bagian Evaluasi dan Penyelenggaraan Pemerintahan','1.1.1.1.2.3.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:05','2025-07-14 08:45:05'),
+(220,'0113','Bagian Kerjasama','Bagian Kerjasama','1.1.1.1.3.','',3,'-',NULL,'2016-07-01','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:06','2025-07-14 08:45:06'),
+(221,'01131','Sub Bagian Kerja Sama Antar Pemerintah','Sub Bagian Kerja Sama Antar Pemerintah','1.1.1.1.3.1.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:06','2025-07-14 08:45:06'),
+(222,'01132','Sub Bagian Kerja Sama Badan Usaha/Swasta','Sub Bagian Kerja Sama Badan Usaha/Swasta','1.1.1.1.3.2.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:07','2025-07-14 08:45:07'),
+(223,'01133','Sub Bagian Evaluasi Pelaksanaan Kerja Sama','Sub Bagian Evaluasi Pelaksanaan Kerja Sama','1.1.1.1.3.3.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:07','2025-07-14 08:45:07'),
+(224,'0114','BAGIAN KEPENDUDUKAN','BAGIAN KEPENDUDUKAN','1.1.1.1.4.','',3,'-',NULL,'2016-05-27','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:08','2025-07-14 08:45:08'),
+(225,'01141','SUB BAGIAN ADMINISTRASI KEPENDUDUKAN DAN CATATAN SIPIL','SUB BAGIAN ADMINISTRASI KEPENDUDUKAN DAN CATATAN SIPIL','1.1.1.1.4.1.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:09','2025-07-14 08:45:09'),
+(226,'01142','SUB BAGIAN DOKUMENTASI DAN INFORMASI KEPENDUDUKAN','SUB BAGIAN DOKUMENTASI DAN INFORMASI KEPENDUDUKAN','1.1.1.1.4.2.','',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:09','2025-07-14 08:45:09'),
+(227,'01143',' ','Kasubag TU Biro Adm.Pemerintahan','1.1.1.1.4.3.','',3,' ',NULL,'2013-04-29',' ','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:10','2025-07-14 08:45:10'),
+(228,'0121','Bagian Bina Mental Spiritual','Bagian Bina Mental Spiritual','1.1.1.2.1.','',3,'-',NULL,'2017-05-02','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:10','2025-07-14 08:45:10'),
+(229,'01211','Sub Bagian Bina Kehidupan Spiritual','Sub Bagian Bina Kehidupan Spiritual','1.1.1.2.1.1.','-',3,'-',NULL,'2013-06-11','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:11','2025-07-14 08:45:11'),
+(230,'01212','Sub Bagian Sarana dan Prasarana Spiritual','Sub Bagian Sarana dan Prasarana Spiritual','1.1.1.2.1.2.','',3,'-',NULL,'2013-06-11','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:11','2025-07-14 08:45:11'),
+(231,'01213','Sub Bagian Kelembagaan Bina Spiritual','Sub Bagian Kelembagaan Bina Spiritual','1.1.1.2.1.3.','-',3,' -',NULL,'2013-06-10',' -','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:12','2025-07-14 08:45:12'),
+(232,'0122','Bagian Kesejahteraan Rakyat Non Pelayanan Dasar','Bagian Kesejahteraan Rakyat Non Pelayanan Dasar','1.1.1.2.2.','',3,'-',NULL,'2019-01-08','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:12','2025-07-14 08:45:12'),
+(233,'01221','Sub Bagian Kesejahteraan Rakyat Non Pelayanan Dasar I','Sub Bagian Kesejahteraan Rakyat Non Pelayanan Dasar I','1.1.1.2.2.1.','-',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:13','2025-07-14 08:45:13'),
+(234,'01222','Sub Bagian Kesejahteraan Rakyat Non Pelayanan Dasar II','Sub Bagian Kesejahteraan Rakyat Non Pelayanan Dasar II','1.1.1.2.2.2.','-',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:13','2025-07-14 08:45:13'),
+(235,'01223','Sub Bagian Tata Usaha Biro Kesejahteraan Rakyat','Sub Bagian Tata Usaha Biro Kesejahteraan Rakyat','1.1.1.2.2.3.','-',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:14','2025-07-14 08:45:14'),
+(236,'0123','Bagian Kesejahteraan Rakyat Pelayanan Dasar','Bagian Kesejahteraan Rakyat Pelayanan Dasar','1.1.1.2.3.','',3,'-',NULL,'2017-12-12','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:14','2025-07-14 08:45:14'),
+(237,'01231','Sub Bagian Kesehatan','Sub Bagian Kesehatan','1.1.1.2.3.1.','-',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:15','2025-07-14 08:45:15'),
+(238,'01232','Sub Bagian Sosial','Sub Bagian Sosial','1.1.1.2.3.2.','-',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:15','2025-07-14 08:45:15'),
+(239,'01233','Sub Bagian Pendidikan','Sub Bagian Pendidikan','1.1.1.2.3.3.','-',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:16','2025-07-14 08:45:16'),
+(240,'0124','Bagian Sosial, Kesehatan, Pengendalian Penduduk dan Keluarga Berencana','Bagian Sosial, Kesehatan, Pengendalian Penduduk dan Keluarga Berencana','1.1.1.2.4.','',3,'-',NULL,'2017-12-12','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:16','2025-07-14 08:45:16'),
+(241,'01241','SUB BAGIAN PENANGANAN SOSIAL','SUB BAGIAN PENANGANAN SOSIAL','1.1.1.2.4.1.','-',3,'-',NULL,'2013-04-29','-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:45:17','2025-07-14 08:45:17'),
 (242,'01242','SUB BAGIAN PENANGGULANGAN BENCANA','SUB BAGIAN PENANGGULANGAN BENCANA','1.1.1.2.4.2.','-',3,'-',NULL,'2013-04-29','-','$2y$12$gptQXl/SYzKXif7R5DfLVe4rq.gb3FQNTzwxLeXNO0C9DzvvwbSKy',NULL,'2025-07-14 08:45:17','2025-07-14 08:45:17'),
 (243,'01243','SUB BAGIAN KESEHATAN, PENGENDALIAN PENDUDUK DAN KELUARGA BERENCANA','SUB BAGIAN KESEHATAN, PENGENDALIAN PENDUDUK DAN KELUARGA BERENCANA','1.1.1.2.4.3.','-',3,'-',NULL,'2017-05-02','-','$2y$12$X0BepTVwEgfI8kf96HxuXefWxaLF2bcUkMfbDjd5huO6fbRUl0Sci',NULL,'2025-07-14 08:45:18','2025-07-14 08:45:18'),
 (244,'0131','Bagian Produk Hukum Provinsi','Bagian Produk Hukum Provinsi','1.1.1.3.1.','',3,'-',NULL,'2015-10-19','-','$2y$12$PBTXefe.yb743QhctRDay.Yiryt7CO8RdAY2GO0ATgFZbD.xBWcsS',NULL,'2025-07-14 08:45:18','2025-07-14 08:45:18'),
@@ -4266,7 +4364,7 @@ insert  into `users`(`id`,`username`,`fullname`,`jabatan`,`satkerid`,`nip`,`user
 (726,'197110041998031009','DONI IRNANTO','-','1.1.4.5.1.2.','197110041998031009',2,'-',NULL,NULL,'-','$2y$12$uYBZZv8AXf9nthIXeAwOK.gEzeKNUNS6ks5hbYQq9zxc7iO9mJgMi',NULL,'2025-07-14 08:47:11','2025-07-14 08:47:11'),
 (727,'196904041990031008','SUMARJIANTO','-','1.1.4.5.1.2.','196904041990031008',2,'-',NULL,NULL,'-','$2y$12$sA5X.85Bz7hBTh6ZIvCqfu/2/TlSd4O34oTjGi9JxvS858iEHPuhO',NULL,'2025-07-14 08:47:12','2025-07-14 08:47:12'),
 (728,'198805262011012006','MASAYU FITRI MAHARANI, A.Md','-','1.1.4.5.1.2.','198805262011012006',2,'-',NULL,NULL,'-','$2y$12$OixCDUx8TvUCMVgq/rz6ouf6gtBEmx3Uc952KO1WKaFAnJKXtZtBS',NULL,'2025-07-14 08:47:12','2025-07-14 08:47:12'),
-(730,'ASPEM','iuashcouhq','-','1.1.1.','-',2,'-',NULL,NULL,'-','$2y$12$DE7wzhRzjEZipCBVyI7rdebuyB2GOligv/nbEDdj8NS1vE7Ie0R0K',NULL,'2025-07-14 08:47:13','2025-07-14 08:47:13'),
+(730,'ASPEM','iuashcouhq','-','1.1.1.','-',2,'-',NULL,NULL,'-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:47:13','2025-07-14 08:47:13'),
 (736,'satker','Satker Luar Setda','Satker Luar Setda','1.1.6.','-',3,'-',NULL,'2016-11-28','-','$2y$12$b9xpTLIFjUsRNNZHy5xfVO2hTksB/R9uOdeH3xDnDBeq5Xpxkzm9C',NULL,'2025-07-14 08:47:13','2025-07-14 08:47:13'),
 (737,'staf','samp','staf subbag sarana agama','1.1.3.2.1.1.','-',2,'-',NULL,NULL,'-','$2y$12$QipF/z2WgMS1LshOO/D7ouUtEg88aHVsgbLSTXojRGyKP9GNueEhW',NULL,'2025-07-14 08:47:14','2025-07-14 08:47:14'),
 (738,'1','PSG','PSG/Magang','1.1.4.5.1.2.','PSG/Magang',4,'-',NULL,NULL,'PSG/Magang','$2y$12$uqcQ7bTh/Y969FLs2Y2lQO2ZBWD/4sev2isAa/SnotXr7g323.m3a',NULL,'2025-07-14 08:47:14','2025-07-14 08:47:14'),
@@ -4280,7 +4378,7 @@ insert  into `users`(`id`,`username`,`fullname`,`jabatan`,`satkerid`,`nip`,`user
 (746,'umis','Umi Suadah ','Staf','1.1.4.5.1.2.','196309141985092002',2,'-',NULL,'2016-04-13','Golongan III/b','$2y$12$u4dJJD4PFaqHKCUlHPKYNOtsRlIXvS/hhDMwhnT5st3/eUd4VtF3K',NULL,'2025-07-14 08:47:18','2025-07-14 08:47:18'),
 (747,'umiz','Umi Zulaika','Umi Zulaika','1.1.4.5.1.2.','196307011985092003',2,'-',NULL,'2016-04-14','Golongan III/b','$2y$12$Kylh4K9lu4RC/dJz2NUYieBQULlysR804HKrf6DomW1CZ5IoiKZRa',NULL,'2025-07-14 08:47:19','2025-07-14 08:47:19'),
 (749,'ps10','Anang Subagio','Staf','1.1.4.5.1.2.','-',4,'-',NULL,NULL,'-','$2y$12$es0uEiJz/nhUP9c4OB/cR.UFqd4YJbrr82ylfqogpYR3IGVdV7222',NULL,'2025-07-14 08:47:19','2025-07-14 08:47:19'),
-(751,'a','a','a','1.','a',4,'a',NULL,NULL,'a','$2y$12$DMNq2B.cp6tn.JZoT/gTvu1KB1auU9WowbwFnTH9.4NjfRgkhit1S',NULL,'2025-07-14 08:47:20','2025-07-14 08:47:20'),
+(751,'a','a','a','1.','a',4,'a',NULL,NULL,'a','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:47:20','2025-07-14 08:47:20'),
 (752,'susi','SUSIANI,S.Sos',' ','1.1.1.3.2.3.','196109181986032010',2,' ',NULL,NULL,' ','$2y$12$15RLfjnm7yCQA465Q0rfceNc1mvrwH6Wh3eicmrJ9WwtasAwpE4/K',NULL,'2025-07-14 08:47:20','2025-07-14 08:47:20'),
 (753,'suaib','SUA\'IB',' ','1.1.1.3.2.3.','195912021986032001',2,' ',NULL,NULL,' ','$2y$12$7CLoGUKqMA97HxwqxdXZSOXx3otOWJQEilGk.lxL1/q7CNckIpVF6',NULL,'2025-07-14 08:47:21','2025-07-14 08:47:21'),
 (754,'Ruddy','Ruddy Junanto.S.Sos','Staf','1.1.4.5.1.2.','19620505 198610 1 002',2,'-',NULL,NULL,'-','$2y$12$V5E/Bg7u/Ql8D3xbPnzu/uiuRQjxIHvprsjSOx5mImQXBcZyJQY3O',NULL,'2025-07-14 08:47:21','2025-07-14 08:47:21'),
@@ -4290,7 +4388,7 @@ insert  into `users`(`id`,`username`,`fullname`,`jabatan`,`satkerid`,`nip`,`user
 (759,'fitri','Taufik Fitri Ari Astutik','Operator','1.1.4.5.1.3.','-',2,'-',NULL,NULL,'-','$2y$12$i7VvHBTrQWO6eRLbtH1hr.VsInekmMj44ZAV8kAHqFLwjUbtaja0q',NULL,'2025-07-14 08:47:23','2025-07-14 08:47:23'),
 (760,'tutik','Sri Pangertiti','Operator','1.1.4.5.1.3.','-',2,'-',NULL,NULL,'-','$2y$12$ZZ7I6vdNNGCOj4PZR1tase57sdEQRUUwsh/fFGSTxT3hNObVbWuNq',NULL,'2025-07-14 08:47:24','2025-07-14 08:47:24'),
 (761,'proposal2018','proposal','Operator','1.1.9.','-',2,'asn_roumum@jatimprov.go.id',NULL,NULL,'-','$2y$12$d47Q8RzZocqr8HTUzVFA7.u1MeqHy/GD3b4edNNSONRCvrA8iRGd2',NULL,'2025-07-14 08:47:24','2025-07-14 08:47:24'),
-(762,'proposal2017','Operator','Operator','1.1.8.','199311993001',2,'asn_roumum@jatimprov.go.id',NULL,NULL,'Operator','$2y$12$ZypCeX5KQKX1mb/qHXlmuuQQuu2M3LyN8aDtqnbobCwA1B0B.KcXS',NULL,'2025-07-14 08:47:25','2025-07-14 08:47:25'),
+(762,'proposal2017','Operator','Operator','1.1.8.','199311993001',2,'asn_roumum@jatimprov.go.id',NULL,NULL,'Operator','$2y$12$F/cec7YOZfwsaRfQuXVxtumPT3nxPId0wEYN9FAG6gzdswXxjS57i',NULL,'2025-07-14 08:47:25','2025-07-14 08:47:25'),
 (763,'03341','Sub Bagian Administrasi Kerjasama Luar Negeri','Sub Bagian Administrasi Kerjasama Luar Negeri','1.1.4.6.4.1.','-',3,'-',NULL,NULL,'-','$2y$12$aJ8z.Zz3wkfiB2/hIZ5bT.RXwbSBB6c.dDinWpOTlkQpE6ot8S09.',NULL,'2025-07-14 08:47:25','2025-07-14 08:47:25'),
 (764,'03342','Sub Bagian Administrasi Kerjasama Dalam Negeri','Sub Bagian Administrasi Kerjasama Dalam Negeri','1.1.4.6.4.2.','-',3,'-',NULL,NULL,'-','$2y$12$7trVGekQeRCbwiP9VZX0euJuqyjMJjFjH1TcMmUSEhYzfr98qN12i',NULL,'2025-07-14 08:47:25','2025-07-14 08:47:25'),
 (765,'03343','Sub Bagian Monitoring Evaluasi Kerjasama','Sub Bagian Monitoring Evaluasi Kerjasama','1.1.4.6.4.3.','-',3,'-',NULL,NULL,'-','$2y$12$pxjWwbPn3spLmnmA.pZNl.MMOUbX7SWsX0hbxAQj8dqlcLyLABPAK',NULL,'2025-07-14 08:47:26','2025-07-14 08:47:26'),
@@ -4319,7 +4417,7 @@ insert  into `users`(`id`,`username`,`fullname`,`jabatan`,`satkerid`,`nip`,`user
 (790,'proposalp2019','PROPOSAL','-','1.1.11.','-',2,'-',NULL,'2019-12-18','-','$2y$12$tBrqQqIgrC0utmzdcmppy.OLDwKjApco4LY56sroobbUvTg7.6y2W',NULL,'2025-07-14 08:47:37','2025-07-14 08:47:37'),
 (791,'ptutik','-','-','1.1.11.','-',2,'-',NULL,NULL,'-','$2y$12$jah0AdPmk.e0BtakL429m.heCA31Ykxg3osnFCppgGkl7E3S4ZbxK',NULL,'2025-07-14 08:47:38','2025-07-14 08:47:38'),
 (792,'pyulis','yulis','-','1.1.11.','-',2,'-',NULL,NULL,'-','$2y$12$OYfX6vFVZw/J97.mT04dnuXQMOfE56twEheEGgyrC49wxA4dKF99q',NULL,'2025-07-14 08:47:38','2025-07-14 08:47:38'),
-(797,'administrator','Administrator','Administrator','1.','-',1,'-',NULL,NULL,'-','$2y$12$fgQxLHvOtS2fo85jsIuDDuw5do2FlD6ILp6LUHJnNskOmf9Hctrle',NULL,'2025-07-14 08:47:39','2025-07-14 08:47:39'),
+(797,'administrator','Administrator','Administrator','1.','-',1,'-',NULL,NULL,'-','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-14 08:47:39','2025-07-14 08:47:39'),
 (798,'200','Badan Perencanaan Pembangunan Daerah','Kepala Badan Perencanaan Pembangunan Daerah','1.17.','-',3,'-',NULL,'2019-02-28','-','$2y$12$8zWvRBCmAubfG63AaNK9yeIdyv5iJ0UzAEmSuE1.q4hUkPsLEhatu',NULL,'2025-07-14 08:47:39','2025-07-14 08:47:39'),
 (799,'300','Badan Pengelola Keuangan dan Aset Daerah','Kepala Badan Pengelola Keuangan dan Aset Daerah','1.16.','-',3,'-',NULL,NULL,'-','$2y$12$HVfwKU3BjvXUvxblqp00r./ZaeQYZCR4yPQRgQkKzHGNMpDpn1Rs.',NULL,'2025-07-14 08:47:40','2025-07-14 08:47:40'),
 (800,'jasmin','-','-','1.1.4.5.1.3.','-',2,'-',NULL,NULL,'-','$2y$12$oDgMog4AuVmoyUx0azv8iu27xJaKGlkFiYpnPSnzJEXshTuBjSVMC',NULL,'2025-07-14 08:47:40','2025-07-14 08:47:40'),
@@ -4377,7 +4475,7 @@ insert  into `users`(`id`,`username`,`fullname`,`jabatan`,`satkerid`,`nip`,`user
 (883,'proposalp2021','Proposal','Proposal','1.1.11.4.','-',2,'-',NULL,NULL,'-','$2y$12$BJ3wyLidDEw3Jdv/ln5Sp.XBScj4vFwZ.WgJiS2l9uOPPTExPvemi',NULL,'2025-07-14 08:48:06','2025-07-14 08:48:06'),
 (884,'proposal','Proposal','Proposal','1.1.11.5.','-',2,'-',NULL,NULL,'Proposal','$2y$12$eG3jzxVPC9S3Q8wdYiCfE.ZeVTpxHyqZCnbll3VGAvt2Tcef1dvI.',NULL,'2025-07-14 08:48:06','2025-07-14 08:48:06'),
 (885,'tes','tes staff protokol','-','1.1.4.6.3.1.','123',2,'-',NULL,NULL,'-','$2y$12$z7opm0Vn.vIVH43EicBseOKx5AvRda.tT5zcLYawWJi6BvT6h9f3e',NULL,'2025-07-14 08:48:07','2025-07-14 08:48:07'),
-(886,'coba','frankie coba','Pribadi','01k041xm5famzhrnbv64bph145','123123',1,'frankie.steinlie@gmail.com',NULL,NULL,'L','$2y$12$w01FtKRO6ixE7k7fJ8X8PedDiQYY5fNNQZL79Nr23qB8R2WIbWbRm',NULL,'2025-07-15 07:54:52','2025-07-22 02:51:16');
+(886,'coba','frankie coba','Pribadi','01k041xm5famzhrnbv64bph145','123123',1,'frankie.steinlie@gmail.com',NULL,NULL,'L','$2y$12$Gpe2h/lD6.YlSc8caMLQ9ORvSELR7C2woa7LMaZoQt5A.HlM4o3Di',NULL,'2025-07-15 07:54:52','2025-07-22 02:51:16');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
