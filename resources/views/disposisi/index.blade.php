@@ -42,63 +42,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-sm table-hover table-striped align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">
-                                                No
-                                            </th>
-                                            <th scope="col">
-                                                No. Agenda
-                                            </th>
-                                            <th scope="col">
-                                                Sifat
-                                            </th>
-                                            <th scope="col">
-                                                Jenis
-                                            </th>
-                                            <th scope="col">
-                                                No. Surat
-                                            </th>
-                                            <th scope="col">
-                                                Dari
-                                            </th>
-                                            <th scope="col">
-                                                Tujuan
-                                            </th>
-                                            <th scope="col">
-                                                Hal
-                                            </th>
-                                            <th scope="col">
-                                                Unit Pengentri
-                                            </th>
-                                            <th scope="col">
-                                                Tanggal
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if ($disposisis != null)
-                                            @foreach ($disposisis as $item)
-                                                <tr data-href='{{ route('disposisi.show', $item->entrysurat_id) }}'
-                                                    class="clickable-row">
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $item->entrysurat->noagenda ?? '-' }}</td>
-                                                    <td>{{ sifatSurat($item->entrysurat->sifat ?? '') }}</td>
-                                                    <td>{{ $item->entrysurat->jenis->name ?? '-' }}</td>
-                                                    <td>{{ $item->entrysurat->nomor_surat ?? '-' }}</td>
-                                                    <td>{{ $item->entrysurat->dari ?? '-' }}</td>
-                                                    <td>{{ $item->kepada }}</td>
-                                                    <td>{{ $item->entrysurat->hal ?? '-' }}</td>
-                                                    <td>{{ $item->entrysurat->createdBy->fullname ?? '-' }}</td>
-                                                    <td>{{ $item->entrysurat->tgl_surat ?? '-' }}</td>
-                                                </tr>
-                                            @endforeach
-                                        @endif
-                                    </tbody>
-                                </table>
-                            </div>
+                            {{ $dataTable->table(['class' => 'table table-sm table-hover table-striped align-middle mb-0']) }}
                         </div>
                     </div>
                 </div>
@@ -110,11 +54,5 @@
 @endsection
 
 @push('js')
-    <script>
-        $(document).ready(function() {
-            $('.clickable-row').click(function() {
-                window.location = $(this).data('href');
-            });
-        });
-    </script>
+    {{ $dataTable->scripts() }}
 @endpush
