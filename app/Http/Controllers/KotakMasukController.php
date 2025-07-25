@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\DataTables\KotakMasukDataTable;
 
 class KotakMasukController extends Controller
 {
@@ -142,16 +143,13 @@ class KotakMasukController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, KotakMasukDataTable $dataTable  )
     {
-        $data = EntrySuratIsi::with(['tujuanSurat'])
-            ->orderBy('tgl_surat', 'desc')
-            ->whereHas('tujuanSurat', function ($q) {
-                $q->where('userid_tujuan', Auth::user()->id);
-            })->get();
-        return view('kotakmasuk.index', compact('data'));
+        if ($request->ajax()) {
+            return $dataTable->ajax();
+        }
+        return $dataTable->render('kotakmasuk.index');
     }
-
     /**
      * Show the form for creating a new resource.
      */

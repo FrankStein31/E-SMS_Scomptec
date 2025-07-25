@@ -43,91 +43,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-sm table-hover table-striped align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">
-                                                No
-                                            </th>
-                                            <th scope="col">
-                                                No. Agenda
-                                            </th>
-                                            <th scope="col">
-                                                Sifat
-                                            </th>
-                                            <th scope="col">
-                                                Jenis
-                                            </th>
-                                            <th scope="col">
-                                                No. Surat
-                                            </th>
-                                            <th scope="col">
-                                                Dari
-                                            </th>
-                                            <th scope="col">
-                                                Tujuan
-                                            </th>
-                                            <th scope="col">
-                                                Hal
-                                            </th>
-                                            <th scope="col">
-                                                Unit Pengentri
-                                            </th>
-                                            <th scope="col">
-                                                Tanggal
-                                            </th>
-                                            <th scope="col">
-                                                Status
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if ($data != null)
-                                            @foreach ($data as $item)
-                                                <tr data-href='{{ route('kotakmasuk.show', $item->id) }}' class="clickable-row">
-                                                    <td>
-                                                        {{ $loop->iteration }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->noagenda }}
-                                                    </td>
-                                                    <td>
-                                                        {{ sifatSurat($item->sifat) }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->jenis->name }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->nomor_surat }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->dari }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->kepada }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->hal }}
-                                                    </td>
-                                                    <td>
-                                                        {{ $item->createdby->fullname }}
-                                                    </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap">
-                                                        {{ $item->tgl_surat }}
-                                                    </td>
-                                                    <td>
-                                                        @php $tujuan = $item->tujuanSurat->first(); @endphp
-                                                        @if($tujuan && $tujuan->dibaca)
-                                                            <span class="badge bg-success">Dibaca</span>
-                                                        @else
-                                                            <span class="badge bg-secondary">Belum Dibaca</span>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @endif
-                                    </tbody>
-                                </table>
+                                {!! $dataTable->table(['id' => 'kotakmasuk-table']) !!}
                             </div>
                         </div>
                     </div>
@@ -141,11 +57,14 @@
 @endsection
 
 @push('js')
-    <script>
-        $(document).ready(function() {
-            $('.clickable-row').click(function() {
-                window.location = $(this).data('href');
-            });
-        });
-    </script>
+{!! $dataTable->scripts(attributes: ['type' => 'module']) !!}
+<script>
+    window.sifatSurat = function(val) {
+        if(val == 1) return 'Biasa';
+        if(val == 2) return 'Segera';
+        if(val == 3) return 'Rahasia';
+        if(val == 4) return 'Penting';
+        return val;
+    }
+</script>
 @endpush
