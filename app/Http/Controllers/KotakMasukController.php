@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\DataTables\KotakMasukDataTable;
 
 class KotakMasukController extends Controller
 {
@@ -110,6 +111,7 @@ class KotakMasukController extends Controller
             $disposisi = DisposisiBaru::create([
                 'entrysurat_id' => $request->entrysurat_id,
                 'kepada' => implode(',', $request->kepada),
+                'remitten' => $request->remitten,
                 'content' => $request->content,
                 'dari_id' => Auth::user() ? Auth::user()->id : null,
             ]);
@@ -127,18 +129,27 @@ class KotakMasukController extends Controller
         }
     }
 
+    public function tandaiDibaca($entrysurat_id, $tujuan_id)
+    {
+        $tujuan = \App\Models\EntrySuratTujuan::where('entrysurat_id', $entrysurat_id)
+            ->where('id', $tujuan_id)
+            ->firstOrFail();
+        $tujuan->dibaca = 1;
+        $tujuan->save();
+        return redirect()->route('kotakmasuk.show', $entrysurat_id)->with('success', 'Surat berhasil ditandai sudah dibaca.');
+    }
+
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request, KotakMasukDataTable $dataTable  )
     {
-        $data = EntrySuratIsi::orderBy('tgl_surat', 'desc')->whereHas('tujuanSurat', function ($q) {
-            $q->where('userid_tujuan', Auth::user()->id);
-        })->get();
-        return view('kotakmasuk.index', compact('data'));
+        if ($request->ajax()) {
+            return $dataTable->ajax();
+        }
+        return $dataTable->render('kotakmasuk.index');
     }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -157,7 +168,22 @@ class KotakMasukController extends Controller
     public function show($id)
     {
         $data = EntrySuratIsi::find($id);
-        return view('kotakmasuk.show', compact('data'));
+        // Ambil kodesatker user login
+        $loginUser = Auth::user();
+        $loginSatker = \App\Models\MasterSatker::where('userid', $loginUser->id)->first();
+        $kodesatker = $loginSatker ? $loginSatker->kodesatker : null;
+        $users = User::whereHas('masterSatker', function($q) use ($kodesatker) {
+            if ($kodesatker) {
+                $q->where('kodesatker', 'like', $kodesatker . '%')
+                  ->whereRaw('LENGTH(kodesatker) > ?', [strlen($kodesatker)]);
+            }
+        })
+        ->where('id', '!=', $loginUser->id)
+        ->get();
+        $tujuanUser = \App\Models\EntrySuratTujuan::where('entrysurat_id', $id)
+            ->where('userid_tujuan', $loginUser->id)
+            ->first();
+        return view('kotakmasuk.show', compact('data', 'users', 'tujuanUser'));
     }
 
     /**

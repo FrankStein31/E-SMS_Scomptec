@@ -128,8 +128,8 @@
                                 </table>
 
                                 <div class="mb-4"></div>
-                                <a href="" class="btn btn-info btn-sm b-r-22" >Ubah</a>
-                                {{-- <a href="{{ route('kotakmasuk.disposisi', $disposisi->id) }}" class="btn btn-info btn-sm b-r-22">Disposisi</a> --}}
+                                <!-- <a href="" class="btn btn-info btn-sm b-r-22" >Ubah</a> -->
+                                <!-- <a href="{{ route('kotakmasuk.disposisi', $disposisi->id) }}" class="btn btn-info btn-sm b-r-22">Disposisi</a> -->
                                 <a href="{{ route('disposisi.riwayat', $disposisi->id) }}" class="btn btn-info btn-sm b-r-22" >Riwayat Surat</a>
                                 <a href="" class="btn btn-info btn-sm b-r-22" >Cetak</a>
                             </div>

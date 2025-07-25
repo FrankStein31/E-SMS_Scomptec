@@ -17,7 +17,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                {{ $dataTable->table(['id' => 'table-id']) }}
+                {{ $dataTable->table(['id' => 'table-masterklasifikasi-table']) }}
             </div>
         </div>
     </div>

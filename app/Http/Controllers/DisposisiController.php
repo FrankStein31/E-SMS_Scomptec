@@ -95,6 +95,8 @@ class DisposisiController extends Controller
         $riwayat = \App\Models\DisposisiBaru::where('entrysurat_id', $id)
             ->orderBy('created_at', 'asc')
             ->get();
-        return view('disposisi.riwayat', compact('surat', 'riwayat'));
+        // Ambil semua tujuan surat (EntrySuratTujuan)
+        $tujuanList = \App\Models\EntrySuratTujuan::where('entrysurat_id', $id)->get();
+        return view('disposisi.riwayat', compact('surat', 'riwayat', 'tujuanList'));
     }
 }
