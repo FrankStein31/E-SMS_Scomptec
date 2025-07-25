@@ -40,7 +40,7 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
-                                    <h5>Desposisi Surat</h5>
+                                    <h5>Disposisi Surat</h5>
                                 </div>
                                 <div class="col text-end">
                                     {{-- <a href="{{ route('entrisurat.index') }}" class="btn btn-info btn-sm">Daftar Entri

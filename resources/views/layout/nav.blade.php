@@ -47,12 +47,12 @@
                         Dashboard
                     </a>
                 </li>
-                <li class="no-sub">
+                <!-- <li class="no-sub">
                     <a href="{{ route('kotakmasuk.index') }}">
                         <i class="iconoir-mail"></i>
                         Kotak Masuk
                     </a>
-                </li>
+                </li> -->
                 <li class="menu-title">
                     <span>Menu Surat</span>
                 </li>
@@ -63,22 +63,22 @@
                         Manajemen Surat
                     </a>
                     <ul class="collapse" id="manajemen-surat">
-                        <!-- <li><a href="{{ route('kotakmasuk.index') }}">Kotak Masuk</a></li> -->
-                        <li><a href="{{ route('buatsurat.index') }}">Buat Surat</a></li>
+                        <li><a href="{{ route('kotakmasuk.index') }}">Kotak Masuk</a></li>
+                        <!-- <li><a href="{{ route('buatsurat.index') }}">Buat Surat</a></li> -->
                         <li><a href="{{ route('entrisurat.index') }}">Entri Surat</a></li>
-                        <li><a href="{{ route('draft_surat.index') }}">Draft Surat</a></li>
-                        <li><a href="{{ route('suratkeluar.index') }}">Surat Keluar</a></li>
-                        <li><a href="{{ route('suratterkirim.index') }}">Surat Terkirim</a></li>
+                        <!-- <li><a href="{{ route('draft_surat.index') }}">Draft Surat</a></li> -->
+                        <!-- <li><a href="{{ route('suratkeluar.index') }}">Surat Keluar</a></li> -->
+                        <!-- <li><a href="{{ route('suratterkirim.index') }}">Surat Terkirim</a></li> -->
                     </ul>
                 </li>
                 <li>
                     <a aria-expanded="false" data-bs-toggle="collapse" href="#disposisi" aria-controls="disposisi"
                         role="button">
                         <i class="iconoir-settings"></i>
-                        Disposisi
+                        Pengendalian
                     </a>
                     <ul class="collapse" id="disposisi">
-                        <li><a href="{{ route('disposisi.index') }}">Daftar Disposisi</a></li>
+                        <li><a href="{{ route('disposisi.index') }}">Disposisi</a></li>
                     </ul>
                 </li>
                 <!-- <li>
