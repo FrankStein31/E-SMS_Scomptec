@@ -11,7 +11,7 @@ use App\Models\MasterTindakanDisposisi;
 use App\Models\EntrySuratIsi;
 use App\Models\SuratKeluarIsi;
 use App\Models\DraftSurat;
-use App\Models\Disposisi;
+use App\Models\DisposisiBaru;
 
 class DashboardController extends Controller
 {
@@ -43,27 +43,60 @@ class DashboardController extends Controller
 
     private function userDashboard()
     {
-        $userId = Auth::id();
-        $total_surat_masuk = EntrySuratIsi::whereHas('tujuanSurat', function($q) use ($userId) {
-            $q->where('userid_tujuan', $userId);
-        })->count();
-        $total_surat_keluar = SuratKeluarIsi::where('user_id_pembuat', $userId)->count();
-        $total_draft = class_exists('App\\Models\\DraftSurat') ? DraftSurat::where('userid_pembuat', $userId)->count() : 0;
-        $total_disposisi = class_exists('App\\Models\\Disposisi') ? Disposisi::where('userid_pembuat', $userId)->count() : 0;
 
-        $latest_surat_masuk = EntrySuratIsi::whereHas('tujuanSurat', function($q) use ($userId) {
-            $q->where('userid_tujuan', $userId);
-        })->orderBy('created_at', 'desc')->take(5)->get();
-        $latest_surat_keluar = SuratKeluarIsi::where('user_id_pembuat', $userId)->orderBy('created_at', 'desc')->take(5)->get();
+        $userId = Auth::user()->id;
 
-        $data = [
-            'total_surat_masuk' => $total_surat_masuk,
-            'total_surat_keluar' => $total_surat_keluar,
-            'total_draft' => $total_draft,
+        $total_entry_surat = EntrySuratIsi::where('created_by', $userId)->count();
+
+        $total_disposisi = \App\Models\DisposisiBaru::with('tindakans', 'entrysurat')
+            ->where(function ($query) use ($userId) {
+                $query->whereRaw("FIND_IN_SET(?, kepada)", [$userId]);
+            })
+            ->latest()
+            ->count();
+
+
+
+        // dd($userId);
+
+        // Total surat masuk
+        // $total_surat_masuk = EntrySuratIsi::whereHas('tujuanSurat', function ($q) use ($userId) {
+        //     $q->where('userid_tujuan', $userId);
+        // })->count();
+
+        // // Total surat keluar
+        // $total_surat_keluar = SuratKeluarIsi::where('user_id_pembuat', $userId)->count();
+
+        // // Total draft (misal status = 1 adalah draft)
+        // $total_draft = SuratKeluarIsi::where('user_id_pembuat', $userId)
+        //     ->where('status', 1)
+        //     ->count();
+
+        // Total disposisi
+
+        // Surat masuk terbaru
+        // $latest_surat_masuk = EntrySuratIsi::whereHas('tujuanSurat', function ($q) use ($userId) {
+        //     $q->where('userid_tujuan', $userId);
+        // })->orderBy('created_at', 'desc')->take(5)->get();
+
+        // // Surat keluar terbaru
+        // $latest_surat_keluar = SuratKeluarIsi::where('user_id_pembuat', $userId)
+        //     ->orderBy('created_at', 'desc')->take(5)->get();
+
+        // // Draft terbaru (status = 1)
+        // $latest_draft = SuratKeluarIsi::where('user_id_pembuat', $userId)
+        //     ->where('status', 1)
+        //     ->orderBy('created_at', 'desc')->take(5)->get();
+
+        return view('dashboard.user', [
+            // 'total_surat_masuk' => $total_surat_masuk,
+            // 'total_surat_keluar' => $total_surat_keluar,
+            // 'total_draft' => $total_draft,
             'total_disposisi' => $total_disposisi,
-            'latest_surat_masuk' => $latest_surat_masuk,
-            'latest_surat_keluar' => $latest_surat_keluar,
-        ];
-        return view('dashboard.user', $data);
+            'total_entry_surat' => $total_entry_surat,
+            // 'latest_surat_masuk' => $latest_surat_masuk,
+            // 'latest_surat_keluar' => $latest_surat_keluar,
+            // 'latest_draft' => $latest_draft
+        ]);
     }
-} 
+}
