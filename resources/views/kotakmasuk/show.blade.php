@@ -6,6 +6,9 @@
             <!-- Breadcrumb start -->
             <div class="row m-1">
                 <div class="col-12 ">
+                    <a href="{{ route('kotakmasuk.index') }}" class="btn btn-secondary btn-sm mb-3">
+                        <i class="iconoir-arrow-left"></i> Kembali ke Kotak Masuk
+                    </a>
                     <h5 class="main-title">Kotak Masuk</h5>
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">

@@ -18,8 +18,11 @@ class KotakMasukDataTable extends DataTable
         return (new EloquentDataTable($query))
             ->addColumn('status', function($row) {
                 $tujuan = $row->tujuanSurat->first();
-                if($tujuan && $tujuan->dibaca) return '<span class="badge bg-success">Dibaca</span>';
-                return '<span class="badge bg-secondary">Belum Dibaca</span>';
+                if($tujuan) {
+                    if($tujuan->dibaca == 1) return '<span class="badge bg-success">Dibaca</span>';
+                    return '<span class="badge bg-secondary">Belum Dibaca</span>';
+                }
+                return '<span class="badge bg-secondary">-</span>';
             })
             ->addColumn('action', function($row) {
                 return '<a href="'.route('kotakmasuk.show', $row->id).'" class="btn btn-info btn-sm">Detail</a>';
@@ -47,11 +50,17 @@ class KotakMasukDataTable extends DataTable
 
     public function query(EntrySuratIsi $model): QueryBuilder
     {
-        return $model->with(['jenis','createdBy','tujuanSurat'])
-            ->whereHas('tujuanSurat', function($q) {
+        return $model->with([
+            'jenis',
+            'createdBy',
+            'tujuanSurat' => function($q) {
                 $q->where('userid_tujuan', Auth::user()->id);
-            })
-            ->orderBy('tgl_surat','desc');
+            }
+        ])
+        ->whereHas('tujuanSurat', function($q) {
+            $q->where('userid_tujuan', Auth::user()->id);
+        })
+        ->orderBy('tgl_surat','desc');
     }
 
     public function html(): HtmlBuilder
