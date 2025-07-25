@@ -43,7 +43,64 @@ class DisposisiBaruDataTable extends DataTable
                 return $row->entrysurat->dari ?? '-';
             })
             ->addColumn('tujuan', function ($row) {
-                return $row->kepada_names;
+                $tahap = [];
+                $loginId = auth()->id();
+                // Ambil tujuan awal dari EntrySuratTujuan (urut created_at ASC)
+                $entry = $row->entrysurat;
+                $kepadaAwalArr = [];
+                if ($entry) {
+                    $tujuanList = $entry->tujuanSurat()->orderBy('created_at', 'asc')->get();
+                    if ($tujuanList->count()) {
+                        foreach ($tujuanList as $t) {
+                            $user = \App\Models\User::find($t->userid_tujuan);
+                            if ($user) {
+                                $nama = $user->fullname;
+                                if ($user->id == $loginId) {
+                                    $nama = '<b>' . $nama . ' (Anda)</b>';
+                                }
+                                $tahap[] = $nama;
+                            }
+                        }
+                    } elseif ($entry->kepada) {
+                        $kepadaAwalArr = array_unique(explode(',', $entry->kepada));
+                        foreach ($kepadaAwalArr as $uid) {
+                            $user = \App\Models\User::find($uid);
+                            if ($user) {
+                                $nama = $user->fullname;
+                                if ($user->id == $loginId) {
+                                    $nama = '<b>' . $nama . ' (Anda)</b>';
+                                }
+                                $tahap[] = $nama;
+                            }
+                        }
+                    }
+                }
+                // Lanjutkan dengan riwayat disposisi
+                $riwayat = \App\Models\DisposisiBaru::where('entrysurat_id', $row->entrysurat_id)
+                    ->orderBy('created_at', 'asc')->get();
+                foreach ($riwayat as $r) {
+                    $kepadaArr = array_unique(explode(',', $r->kepada));
+                    foreach ($kepadaArr as $uid) {
+                        $user = \App\Models\User::find($uid);
+                        if ($user) {
+                            $nama = $user->fullname;
+                            if ($user->id == $loginId) {
+                                $nama = '<b>' . $nama . ' (Anda)</b>';
+                            }
+                            $tahap[] = $nama;
+                        }
+                    }
+                }
+                // Tampilkan max 2 tahap awal, lalu ... jika lebih, dan tahap terakhir
+                $total = count($tahap);
+                if ($total > 4) {
+                    $tahapRingkas = array_slice($tahap, 0, 2);
+                    $tahapRingkas[] = '...';
+                    $tahapRingkas[] = $tahap[$total-1];
+                } else {
+                    $tahapRingkas = $tahap;
+                }
+                return implode(' <i class="fa fa-arrow-right"></i> ', $tahapRingkas);
             })
             ->addColumn('hal', function ($row) {
                 return $row->entrysurat->hal ?? '-';
@@ -99,7 +156,7 @@ class DisposisiBaruDataTable extends DataTable
                     $q->where('tgl_surat', 'like', "%{$keyword}%");
                 });
             })
-            ->rawColumns(['action'])
+            ->rawColumns(['tujuan','action'])
             ->setRowId('id');
     }
 

@@ -97,7 +97,45 @@
                                                 Tujuan
                                             </th>
                                             <td>
-                                                {{ $disposisi->kepada }}
+                                                @php
+                                                    $tahap = [];
+                                                    // Tujuan awal dari surat masuk
+                                                    if ($disposisi->kepada) {
+                                                        $kepadaAwalArr = array_unique(explode(',', $disposisi->kepada));
+                                                        foreach ($kepadaAwalArr as $uid) {
+                                                            $user = \App\Models\User::find($uid);
+                                                            $nama = $user ? $user->fullname : $uid;
+                                                            $waktu = $disposisi->created_at ? \Carbon\Carbon::parse($disposisi->created_at)->format('d-m-Y H:i') : '-';
+                                                            $tahap[] = $nama.'<br><span class="text-muted small">'.$waktu.'</span>';
+                                                        }
+                                                    }
+                                                    // Lanjutkan dengan riwayat disposisi
+                                                    $riwayat = \App\Models\DisposisiBaru::where('entrysurat_id', $disposisi->id)->orderBy('created_at', 'asc')->get();
+                                                    foreach ($riwayat as $r) {
+                                                        $kepadaArr = array_unique(explode(',', $r->kepada));
+                                                        foreach ($kepadaArr as $uid) {
+                                                            $user = \App\Models\User::find($uid);
+                                                            $nama = $user ? $user->fullname : $uid;
+                                                            $waktu = $r->created_at ? \Carbon\Carbon::parse($r->created_at)->format('d-m-Y H:i') : '-';
+                                                            $tahap[] = $nama.'<br><span class="text-muted small">'.$waktu.'</span>';
+                                                        }
+                                                    }
+                                                @endphp
+                                                <ol class="mb-0 ps-3">
+                                                    @php
+                                                        $total = count($tahap);
+                                                        if ($total > 4) {
+                                                            $tahapRingkas = array_slice($tahap, 0, 2);
+                                                            $tahapRingkas[] = '...';
+                                                            $tahapRingkas[] = $tahap[$total-1];
+                                                        } else {
+                                                            $tahapRingkas = $tahap;
+                                                        }
+                                                    @endphp
+                                                    @foreach($tahapRingkas as $t)
+                                                        <li>{!! $t !!}</li>
+                                                    @endforeach
+                                                </ol>
                                             </td>
                                         </tr>
                                         <tr>
