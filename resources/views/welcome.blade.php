@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="utf-8">
+<head>
+    <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>E-SMS Scomptec</title>
     <meta content="" name="description">
@@ -23,7 +23,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-            <style>
+    <style>
         :root {
             --primary: #6366f1;
             --secondary: #8b5cf6;
@@ -510,15 +510,16 @@
                 margin-top: 40px;
             }
         }
-            </style>
-    </head>
+    </style>
+</head>
 
 <body>
     <!-- Header -->
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
             <a class="logo text-decoration-none" href="/">
-                <img alt="#" src="{{ asset('assets/images/logo/esms.png') }}" style="height:48px; width:auto; max-width:180px; object-fit:contain; display:block;">
+                <img alt="#" src="{{ asset('assets/images/logo/esms.png') }}"
+                    style="height:48px; width:auto; max-width:180px; object-fit:contain; display:block;">
             </a>
             <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarNav">
@@ -541,22 +542,21 @@
                     <li class="nav-item">
                         @auth
                             <div class="dropdown">
-                                <a class="nav-link getstarted dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-person-circle me-2"></i>{{ auth()->user()->fullname ?? 'Hei! Mau kemanaa?? Sini balik' }}
+                                <a class="nav-link getstarted dropdown-toggle" href="#" role="button"
+                                    id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i
+                                        class="bi bi-person-circle me-2"></i>{{ auth()->user()->fullname ?? 'Hei! Mau kemanaa?? Sini balik' }}
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuLink">
-                                    <li><a class="dropdown-item" href="{{ route('dashboard') }}">
-                                        <i class="bi bi-speedometer2 me-2"></i>Dashboard
-                                    </a></li>
-                                    <!-- <li><hr class="dropdown-divider"></li> -->
-                                    <!-- <li>
-                                        <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="dropdown-item text-danger">
-                                                <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                            </button>
-                                        </form>
-                                    </li> -->
+                                    <ul>
+                                        <i class="bi me-2"></i>Game
+                                    </ul>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a class="dropdown-item" href="#" onclick="openScratchCard()">
+                                            <i class="bi bi-heart-fill me-2"></i>💕 Scratch Card
+                                        </a></li>
                                 </ul>
                             </div>
                         @else
@@ -618,7 +618,7 @@
                             <circle cx="380" cy="280" r="20" fill="rgba(255,255,255,0.2)" stroke="white"
                                 stroke-width="2" />
                             <circle cx="380" cy="280" r="10" fill="white" />
-                                    </svg>
+                        </svg>
                     </div>
                 </div>
             </div>
@@ -773,6 +773,320 @@
         </div>
     </footer>
 
+    <!-- Audio for Forever Young -->
+    <audio id="foreverYoungAudio" preload="auto" loop>
+        <!-- Forever Young MP3 -->
+        <source src="https://feeldreams.github.io/audio/foreveryoung.mp3" type="audio/wav">
+        <!-- Alternative romantic melody -->
+        <source src="https://actions.google.com/sounds/v1/ambiences/forest_birds.ogg" type="audio/ogg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Scratch Card Modal -->
+    <div class="modal fade" id="scratchCardModal" tabindex="-1" aria-labelledby="scratchCardModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 20px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white" id="scratchCardModalLabel">
+                        <i class="bi bi-heart-fill me-2"></i>💕 Surprise Card untuk Kamu
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <div id="gameContainer">
+                        <!-- Stage 1: Welcome -->
+                        <div id="stage1" class="game-stage">
+                            <div class="sticker-container mb-4">
+                                <img src="https://feeldreams.github.io/pandapanah.gif" class="game-sticker" />
+                            </div>
+                            <h2 class="text-white mb-3">Halo Kamu! 🫢</h2>
+                            <p class="text-white-50 mb-4">Aku ada sesuatu special buat kamu nih...</p>
+                            <button class="btn btn-light btn-lg rounded-pill px-4" onclick="nextStage(2)">
+                                <i class="bi bi-arrow-right me-2"></i>Lanjut
+                            </button>
+                        </div>
+
+                        <!-- Stage 2: Introduction -->
+                        <div id="stage2" class="game-stage d-none">
+                            <div class="sticker-container mb-4">
+                                <img src="https://feeldreams.github.io/pandahiya.gif" class="game-sticker" />
+                            </div>
+                            <h2 class="text-white mb-3">Ada Surprise buat Kamu! 🫣</h2>
+                            <p class="text-white-50 mb-4">Tapi harus main dulu nih... hihi</p>
+                            <button class="btn btn-light btn-lg rounded-pill px-4" onclick="nextStage(3)">
+                                <i class="bi bi-gift me-2"></i>Apa itu?
+                            </button>
+                        </div>
+
+                        <!-- Stage 3: Scratch Game -->
+                        <div id="stage3" class="game-stage d-none">
+                            <h2 class="text-white mb-3">Gosok Kartu Ini!</h2>
+                            <p class="text-white-50 mb-4">
+                                Awas kena <span style="color: #ff6b9d;">💣 Bom</span> yaa! 😆
+                            </p>
+                            <div class="scratch-game-board mx-auto mb-4">
+                                <div class="scratch-card" data-emoji="🫶"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="❤️"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="🥳"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="🫣"><canvas></canvas></div>
+
+                                <div class="scratch-card" data-emoji="🤍"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="😍"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="🥰"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="🩷"><canvas></canvas></div>
+
+                                <div class="scratch-card" data-emoji="💖"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="💕"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="💓"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="💗"><canvas></canvas></div>
+
+                                <div class="scratch-card" data-emoji="💝"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="💞"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="💘"><canvas></canvas></div>
+                                <div class="scratch-card" data-emoji="💣"><canvas></canvas></div>
+                            </div>
+                        </div>
+
+                        <!-- Stage 4: Result -->
+                        <div id="stage4" class="game-stage d-none">
+                            <div class="sticker-container mb-4">
+                                <img id="resultSticker" src="https://feeldreams.github.io/weee.gif"
+                                    class="game-sticker" />
+                            </div>
+                            <div id="resultText" class="text-white mb-4">
+                                <!-- Result text will be inserted here -->
+                            </div>
+                            <div id="loveAnimation" class="d-none">
+                                <div class="heart-rain"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Scratch Card CSS -->
+    <style>
+        .game-stage {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sticker-container {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-sticker {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            box-shadow: 0 4px 30px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            background: rgba(255, 255, 255, .2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .scratch-game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-gap: 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .scratch-card {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: cardAppear 0.5s ease forwards;
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        .scratch-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .scratch-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .scratch-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .scratch-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .scratch-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .scratch-card:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .scratch-card:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        .scratch-card:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
+        .scratch-card:nth-child(9) {
+            animation-delay: 0.9s;
+        }
+
+        .scratch-card:nth-child(10) {
+            animation-delay: 1.0s;
+        }
+
+        .scratch-card:nth-child(11) {
+            animation-delay: 1.1s;
+        }
+
+        .scratch-card:nth-child(12) {
+            animation-delay: 1.2s;
+        }
+
+        .scratch-card:nth-child(13) {
+            animation-delay: 1.3s;
+        }
+
+        .scratch-card:nth-child(14) {
+            animation-delay: 1.4s;
+        }
+
+        .scratch-card:nth-child(15) {
+            animation-delay: 1.5s;
+        }
+
+        .scratch-card:nth-child(16) {
+            animation-delay: 1.6s;
+        }
+
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .scratch-card canvas {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .scratch-card.revealed {
+            font-size: 1.5em;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            animation: cardReveal 0.5s ease;
+        }
+
+        @keyframes cardReveal {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .heart-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .heart-fall {
+            position: absolute;
+            color: #ff6b9d;
+            font-size: 20px;
+            animation: heartFall linear infinite;
+        }
+
+        @keyframes heartFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .type-animation {
+            border-right: 2px solid white;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            50% {
+                border-color: white;
+            }
+
+            51%,
+            100% {
+                border-color: transparent;
+            }
+        }
+    </style>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -863,7 +1177,282 @@
                 }, 2000);
             }, 2000);
         });
+
+        // Scratch Card Game Logic
+        let currentStage = 1;
+        let gameComplete = false;
+
+        function openScratchCard() {
+            const modal = new bootstrap.Modal(document.getElementById('scratchCardModal'));
+            modal.show();
+
+            // Auto-play Forever Young music
+            const audio = document.getElementById('foreverYoungAudio');
+            if (audio) {
+                audio.volume = 0.4; // Set volume to 40%
+
+                // Force play the audio
+                audio.play().then(() => {
+                    console.log('🎵 Forever Young started playing!');
+                }).catch((error) => {
+                    console.log('Audio blocked by browser, trying alternative method:', error);
+
+                    // Alternative method - play on any user interaction
+                    const forcePlay = () => {
+                        audio.play().then(() => {
+                            console.log('🎵 Forever Young started after interaction!');
+                        });
+                        // Remove event listeners after first play
+                        document.removeEventListener('click', forcePlay);
+                        document.removeEventListener('keydown', forcePlay);
+                        document.removeEventListener('touchstart', forcePlay);
+                    };
+
+                    // Add multiple event listeners to catch any user interaction
+                    document.addEventListener('click', forcePlay);
+                    document.addEventListener('keydown', forcePlay);
+                    document.addEventListener('touchstart', forcePlay);
+                });
+            }
+
+            resetGame();
+        }
+
+        // Stop music when modal is closed
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('scratchCardModal');
+            if (modal) {
+                modal.addEventListener('hidden.bs.modal', function() {
+                    const audio = document.getElementById('foreverYoungAudio');
+                    if (audio) {
+                        audio.pause();
+                        audio.currentTime = 0; // Reset to beginning
+                        console.log('🎵 Music stopped and reset');
+                    }
+                });
+            }
+        });
+
+        function resetGame() {
+            currentStage = 1;
+            gameComplete = false;
+            document.querySelectorAll('.game-stage').forEach(stage => stage.classList.add('d-none'));
+            document.getElementById('stage1').classList.remove('d-none');
+        }
+
+        function nextStage(stageNumber) {
+            document.getElementById(`stage${currentStage}`).classList.add('d-none');
+            document.getElementById(`stage${stageNumber}`).classList.remove('d-none');
+            currentStage = stageNumber;
+
+            if (stageNumber === 3) {
+                setTimeout(initScratchCards, 500);
+            }
+        }
+
+        function initScratchCards() {
+            const cards = document.querySelectorAll('.scratch-card');
+            cards.forEach(card => {
+                setupScratchCard(card);
+            });
+        }
+
+        function setupScratchCard(card) {
+            const canvas = card.querySelector('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 60;
+            canvas.height = 60;
+
+            // Fill canvas with gray overlay for scratching
+            ctx.fillStyle = 'rgba(255,255,255,0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let isScratching = false;
+            let revealed = false;
+
+            function handleScratch(e) {
+                if (gameComplete || revealed) return;
+
+                const rect = canvas.getBoundingClientRect();
+                const x = (e.type.includes('mouse') ? e.clientX : e.touches[0].clientX) - rect.left;
+                const y = (e.type.includes('mouse') ? e.clientY : e.touches[0].clientY) - rect.top;
+
+                // Scale coordinates to canvas size
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x * scaleX, y * scaleY, 15, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalCompositeOperation = 'source-over';
+
+                // Check if enough area is scratched
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                let transparentPixels = 0;
+                for (let i = 3; i < imageData.length; i += 4) {
+                    if (imageData[i] === 0) transparentPixels++;
+                }
+                const totalPixels = canvas.width * canvas.height;
+
+                if (transparentPixels / totalPixels > 0.15 && !revealed) {
+                    revealed = true;
+                    card.classList.add('revealed');
+                    card.textContent = card.dataset.emoji;
+                    canvas.style.display = 'none';
+
+                    if (card.dataset.emoji === '💣') {
+                        gameComplete = true;
+                        setTimeout(showResult, 800);
+                    }
+                }
+            }
+
+            canvas.addEventListener('mousedown', (e) => {
+                isScratching = true;
+                handleScratch(e);
+            });
+            canvas.addEventListener('mouseup', () => isScratching = false);
+            canvas.addEventListener('mousemove', (e) => {
+                if (isScratching) handleScratch(e);
+            });
+
+            // Touch events
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isScratching = true;
+                handleScratch(e);
+            });
+            canvas.addEventListener('touchend', () => isScratching = false);
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (isScratching) handleScratch(e);
+            });
+        }
+
+        function showResult() {
+            document.getElementById('stage3').classList.add('d-none');
+            document.getElementById('stage4').classList.remove('d-none');
+
+            const resultText = document.getElementById('resultText');
+            const resultSticker = document.getElementById('resultSticker');
+
+            // Change sticker to explosion
+            resultSticker.src = 'https://feeldreams.github.io/emawh.gif';
+
+            // Type animation for result text
+            const messages = [
+                "Yaahh kena Boom!! 💥😝",
+                "Kalau kamu kena boom...",
+                "Kamu harus jadi pacarku yaa! 😆😍🩷",
+                "Gaboleh nolak!! 😝🫣💐"
+            ];
+
+            let messageIndex = 0;
+
+            function typeMessage() {
+                if (messageIndex >= messages.length) {
+                    // Start love percentage animation
+                    setTimeout(startLoveAnimation, 1000);
+                    return;
+                }
+
+                const message = messages[messageIndex];
+                let charIndex = 0;
+                resultText.innerHTML = '<div class="type-animation"></div>';
+                const textElement = resultText.querySelector('.type-animation');
+
+                function typeChar() {
+                    if (charIndex < message.length) {
+                        textElement.textContent = message.substring(0, charIndex + 1);
+                        charIndex++;
+                        setTimeout(typeChar, 50);
+                    } else {
+                        textElement.classList.remove('type-animation');
+                        messageIndex++;
+                        setTimeout(() => {
+                            resultText.innerHTML += '<br><div class="type-animation"></div>';
+                            typeMessage();
+                        }, 800);
+                    }
+                }
+                typeChar();
+            }
+
+            typeMessage();
+        }
+
+        function startLoveAnimation() {
+            const resultText = document.getElementById('resultText');
+            const loveContainer = document.createElement('div');
+            loveContainer.style.marginTop = '20px';
+
+            // Love percentage animation
+            let percentage = 10;
+            const loveText = document.createElement('div');
+            loveText.className = 'type-animation';
+            loveText.style.fontSize = '1.2em';
+            loveText.style.color = '#ff6b9d';
+            loveContainer.appendChild(loveText);
+            resultText.appendChild(loveContainer);
+
+            function updatePercentage() {
+                if (percentage <= 100) {
+                    loveText.textContent = `I Love You ${percentage}% ❤️`;
+                    percentage += 10;
+                    setTimeout(updatePercentage, 200);
+                } else {
+                    loveText.classList.remove('type-animation');
+
+                    // Add final message
+                    setTimeout(() => {
+                        const finalMessage = document.createElement('div');
+                        finalMessage.innerHTML =
+                            '<br><strong style="color: #ff6b9d;">Makasii udah mau jadi pacarku! 😆🫣💐</strong>';
+                        loveContainer.appendChild(finalMessage);
+
+                        // Start heart rain
+                        startHeartRain();
+
+                        // Change sticker to love
+                        document.getElementById('resultSticker').src = 'https://htmlku.com/0/panda/terlope.gif';
+                    }, 500);
+                }
+            }
+            updatePercentage();
+        }
+
+        function startHeartRain() {
+            const heartRain = document.getElementById('loveAnimation');
+            heartRain.classList.remove('d-none');
+
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart-fall';
+                heart.innerHTML = ['❤️', '💕', '💖', '💗', '💘', '💝'][Math.floor(Math.random() * 6)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
+
+                document.querySelector('.heart-rain').appendChild(heart);
+
+                // Remove heart after animation
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.parentNode.removeChild(heart);
+                    }
+                }, 5000);
+            }
+
+            // Create hearts continuously
+            const heartInterval = setInterval(createHeart, 300);
+
+            // Stop after 10 seconds
+            setTimeout(() => {
+                clearInterval(heartInterval);
+            }, 10000);
+        }
     </script>
-    </body>
+</body>
 
 </html>
