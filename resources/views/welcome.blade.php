@@ -1029,15 +1029,37 @@
         }
 
         .scratch-card.revealed {
-            font-size: 2em !important;
-            color: #2c3e50 !important;
             background: rgba(255, 255, 255, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            line-height: 60px;
             animation: cardReveal 0.5s ease;
+        }
+
+        .revealed-brute-force {
+            width: 60px !important;
+            height: 60px !important;
+            background: white !important;
+            border: 3px solid #ff6b9d !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 2em !important;
+            color: #000 !important;
+            font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial, sans-serif !important;
+            text-align: center !important;
+            line-height: 1 !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+            z-index: 999 !important;
+            animation: revealPulse 0.5s ease !important;
+        }
+
+        @keyframes revealPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         @keyframes cardReveal {
@@ -1277,6 +1299,26 @@
             cursor: default;
         }
 
+        /* USE EXACT SAME CSS AS SUCCESSFUL SCRATCH CARD */
+        .memory-card.revealed-brute-force {
+            width: 60px !important;
+            height: 60px !important;
+            background: white !important;
+            border: 3px solid #4CAF50 !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 2em !important;
+            color: #000 !important;
+            font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial, sans-serif !important;
+            text-align: center !important;
+            line-height: 1 !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+            z-index: 999 !important;
+            animation: revealPulse 0.5s ease !important;
+        }
+
         .typing-container {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
@@ -1316,6 +1358,12 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scratch Game JS - File Terpisah -->
+    <script src="{{ asset('js/scratch-game.js') }}"></script>
+
+    <!-- Memory Game JS - File Terpisah -->  
+    <script src="{{ asset('js/memory-game.js') }}"></script>
 
     <script>
         // Navbar scroll effect
@@ -1405,591 +1453,11 @@
             }, 2000);
         });
 
-        // Scratch Card Game Logic
-        let currentStage = 1;
-        let gameComplete = false;
-
-
-        function openScratchCard() {
-            // Acak urutan emoji setiap kali modal dibuka
-            const emojis = [
-                "🫶", "❤️", "🥳", "🫣",
-                "🤍", "😍", "🥰", "🩷",
-                "💖", "💕", "💓", "💗",
-                "💝", "💞", "💘", "💣"
-            ];
-            // Fisher-Yates shuffle
-            for (let i = emojis.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [emojis[i], emojis[j]] = [emojis[j], emojis[i]];
-            }
-
-            // Render ulang scratch card dengan urutan baru
-            const board = document.querySelector('.scratch-game-board');
-            if (board) {
-                board.innerHTML = '';
-                emojis.forEach(emoji => {
-                    const card = document.createElement('div');
-                    card.className = 'scratch-card';
-                    card.setAttribute('data-emoji', emoji);
-                    const canvas = document.createElement('canvas');
-                    card.appendChild(canvas);
-                    board.appendChild(card);
-                });
-            }
-
-            const modal = new bootstrap.Modal(document.getElementById('scratchCardModal'));
-            modal.show();
-
-            // Auto-play Forever Young music
-            const audio = document.getElementById('foreverYoungAudio');
-            if (audio) {
-                audio.volume = 0.4; // Set volume to 40%
-
-                // Force play the audio
-                audio.play().then(() => {
-                    console.log('🎵 Forever Young started playing!');
-                }).catch((error) => {
-                    console.log('Audio blocked by browser, trying alternative method:', error);
-
-                    // Alternative method - play on any user interaction
-                    const forcePlay = () => {
-                        audio.play().then(() => {
-                            console.log('🎵 Forever Young started after interaction!');
-                        });
-                        // Remove event listeners after first play
-                        document.removeEventListener('click', forcePlay);
-                        document.removeEventListener('keydown', forcePlay);
-                        document.removeEventListener('touchstart', forcePlay);
-                    };
-
-                    // Add multiple event listeners to catch any user interaction
-                    document.addEventListener('click', forcePlay);
-                    document.addEventListener('keydown', forcePlay);
-                    document.addEventListener('touchstart', forcePlay);
-                });
-            }
-
-            resetGame();
-        }
-
-        // Stop music when modal is closed
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('scratchCardModal');
-            if (modal) {
-                modal.addEventListener('hidden.bs.modal', function() {
-                    const audio = document.getElementById('foreverYoungAudio');
-                    if (audio) {
-                        audio.pause();
-                        audio.currentTime = 0; // Reset to beginning
-                        console.log('🎵 Music stopped and reset');
-                    }
-                });
-            }
-        });
-
-        function resetGame() {
-            currentStage = 1;
-            gameComplete = false;
-            document.querySelectorAll('.game-stage').forEach(stage => stage.classList.add('d-none'));
-            document.getElementById('stage1').classList.remove('d-none');
-        }
-
-        function nextStage(stageNumber) {
-            document.getElementById(`stage${currentStage}`).classList.add('d-none');
-            document.getElementById(`stage${stageNumber}`).classList.remove('d-none');
-            currentStage = stageNumber;
-
-            if (stageNumber === 3) {
-                setTimeout(initScratchCards, 500);
-            }
-        }
-
-        function initScratchCards() {
-            const cards = document.querySelectorAll('.scratch-card');
-            cards.forEach(card => {
-                setupScratchCard(card);
-            });
-        }
-
-        function setupScratchCard(card) {
-            const canvas = card.querySelector('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 60;
-            canvas.height = 60;
-
-            // Fill canvas with gray overlay for scratching
-            ctx.fillStyle = 'rgba(255,255,255,0.8)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            let isScratching = false;
-            let revealed = false;
-
-            function handleScratch(e) {
-                if (gameComplete || revealed) return;
-
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.type.includes('mouse') ? e.clientX : e.touches[0].clientX) - rect.left;
-                const y = (e.type.includes('mouse') ? e.clientY : e.touches[0].clientY) - rect.top;
-
-                // Scale coordinates to canvas size
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.beginPath();
-                ctx.arc(x * scaleX, y * scaleY, 15, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalCompositeOperation = 'source-over';
-
-                // Check if enough area is scratched
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                let transparentPixels = 0;
-                for (let i = 3; i < imageData.length; i += 4) {
-                    if (imageData[i] === 0) transparentPixels++;
-                }
-                const totalPixels = canvas.width * canvas.height;
-
-                if (transparentPixels / totalPixels > 0.15 && !revealed) {
-                    revealed = true;
-                    card.classList.add('revealed');
-                    card.removeChild(canvas); // Hapus canvas dari DOM
-                    card.textContent = card.dataset.emoji; // Tampilkan emoji di tengah kartu
-
-                    if (card.dataset.emoji === '💣') {
-                        gameComplete = true;
-                        setTimeout(showResult, 800);
-                    }
-                }
-            }
-
-            canvas.addEventListener('mousedown', (e) => {
-                isScratching = true;
-                handleScratch(e);
-            });
-            canvas.addEventListener('mouseup', () => {
-                isScratching = false;
-            });
-            canvas.addEventListener('mouseleave', () => {
-                isScratching = false;
-            });
-            canvas.addEventListener('mousemove', (e) => {
-                if (isScratching) handleScratch(e);
-            });
-
-            // Touch events
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                isScratching = true;
-                handleScratch(e);
-            });
-            canvas.addEventListener('touchend', () => {
-                isScratching = false;
-            });
-            canvas.addEventListener('touchcancel', () => {
-                isScratching = false;
-            });
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (isScratching) handleScratch(e);
-            });
-        }
-
-        function showResult() {
-            document.getElementById('stage3').classList.add('d-none');
-            document.getElementById('stage4').classList.remove('d-none');
-
-            const resultText = document.getElementById('resultText');
-            const resultSticker = document.getElementById('resultSticker');
-
-            // Change sticker to explosion
-            resultSticker.src = 'https://feeldreams.github.io/emawh.gif';
-
-            // Type animation for result text
-            const messages = [
-                "Yaahh kena Boom!! 💥😝",
-                "Kalau kamu kena boom...",
-                "Kamu harus jadi pacarku yaa! 😆😍🩷",
-                "Gaboleh nolak!! 😝🫣💐"
-            ];
-
-            let messageIndex = 0;
-
-            function typeMessage() {
-                if (messageIndex >= messages.length) {
-                    // Start love percentage animation
-                    setTimeout(startLoveAnimation, 1000);
-                    return;
-                }
-
-                const message = messages[messageIndex];
-                let charIndex = 0;
-                resultText.innerHTML = '<div class="type-animation"></div>';
-                const textElement = resultText.querySelector('.type-animation');
-
-                function typeChar() {
-                    if (charIndex < message.length) {
-                        textElement.textContent = message.substring(0, charIndex + 1);
-                        charIndex++;
-                        setTimeout(typeChar, 50);
-                    } else {
-                        textElement.classList.remove('type-animation');
-                        messageIndex++;
-                        setTimeout(() => {
-                            resultText.innerHTML += '<br><div class="type-animation"></div>';
-                            typeMessage();
-                        }, 800);
-                    }
-                }
-                typeChar();
-            }
-
-            typeMessage();
-        }
-
-        function startLoveAnimation() {
-            const resultText = document.getElementById('resultText');
-            const loveContainer = document.createElement('div');
-            loveContainer.style.marginTop = '20px';
-
-            // Love percentage animation
-            let percentage = 10;
-            const loveText = document.createElement('div');
-            loveText.className = 'type-animation';
-            loveText.style.fontSize = '1.2em';
-            loveText.style.color = '#ff6b9d';
-            loveContainer.appendChild(loveText);
-            resultText.appendChild(loveContainer);
-
-            function updatePercentage() {
-                if (percentage <= 100) {
-                    loveText.textContent = `I Love You ${percentage}% ❤️`;
-                    percentage += 10;
-                    setTimeout(updatePercentage, 200);
-                } else {
-                    loveText.classList.remove('type-animation');
-
-                    // Add final message
-                    setTimeout(() => {
-                        const finalMessage = document.createElement('div');
-                        finalMessage.innerHTML =
-                            '<br><strong style="color: #ff6b9d;">Makasii udah mau jadi pacarku! 😆🫣💐</strong>';
-                        loveContainer.appendChild(finalMessage);
-
-                        // Start heart rain
-                        startHeartRain();
-
-                        // Change sticker to love
-                        document.getElementById('resultSticker').src = 'https://htmlku.com/0/panda/terlope.gif';
-                    }, 500);
-                }
-            }
-            updatePercentage();
-        }
-
-        function startHeartRain() {
-            const heartRain = document.getElementById('loveAnimation');
-            heartRain.classList.remove('d-none');
-
-            function createHeart() {
-                const heart = document.createElement('div');
-                heart.className = 'heart-fall';
-                heart.innerHTML = ['❤️', '💕', '💖', '💗', '💘', '💝'][Math.floor(Math.random() * 6)];
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
-
-                document.querySelector('.heart-rain').appendChild(heart);
-
-                // Remove heart after animation
-                setTimeout(() => {
-                    if (heart.parentNode) {
-                        heart.parentNode.removeChild(heart);
-                    }
-                }, 5000);
-            }
-
-            // Create hearts continuously
-            const heartInterval = setInterval(createHeart, 300);
-
-            // Stop after 10 seconds
-            setTimeout(() => {
-                clearInterval(heartInterval);
-            }, 10000);
-        }
-
-        // Memory Game Logic
-        let memoryCurrentStage = 1;
-        let memoryGameComplete = false;
-        let memoryCards = [];
-        let hasFlippedCard = false;
-        let lockBoard = false;
-        let firstCard, secondCard;
-        let matchedPairs = 0;
-
-        function openMemoryGame() {
-            // Reset game state
-            memoryCurrentStage = 1;
-            memoryGameComplete = false;
-            hasFlippedCard = false;
-            lockBoard = false;
-            firstCard = null;
-            secondCard = null;
-            matchedPairs = 0;
-
-            // Show stage 1 and hide others
-            document.getElementById('memoryStage1').classList.remove('d-none');
-            document.getElementById('memoryStage2').classList.add('d-none');
-            document.getElementById('memoryStage3').classList.add('d-none');
-            document.getElementById('memoryStage4').classList.add('d-none');
-
-            // Open modal
-            const modal = new bootstrap.Modal(document.getElementById('memoryGameModal'));
-            modal.show();
-
-            // Auto-play Forever Young music
-            const audio = document.getElementById('foreverYoungAudio');
-            if (audio) {
-                audio.play().catch(e => console.log('Audio play failed:', e));
-            }
-        }
-
-        function nextMemoryStage(stageNumber) {
-            document.getElementById(`memoryStage${memoryCurrentStage}`).classList.add('d-none');
-            document.getElementById(`memoryStage${stageNumber}`).classList.remove('d-none');
-            memoryCurrentStage = stageNumber;
-
-            if (stageNumber === 3) {
-                setTimeout(initMemoryGame, 500);
-            }
-        }
-
-        function initMemoryGame() {
-            memoryCards = document.querySelectorAll('.memory-card');
-            
-            // Reset all cards
-            memoryCards.forEach(card => {
-                card.classList.remove('flipped', 'matched');
-                card.textContent = '';
-                card.addEventListener('click', flipMemoryCard);
-            });
-
-            // Shuffle cards
-            shuffleMemoryCards();
-        }
-
-        function shuffleMemoryCards() {
-            const emojis = ['🫶', '💞', '🥳', '❤️‍🔥', '💐', '😍', '🥰', '🩷'];
-            const doubledEmojis = [...emojis, ...emojis]; // Create pairs
-            
-            // Fisher-Yates shuffle
-            for (let i = doubledEmojis.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [doubledEmojis[i], doubledEmojis[j]] = [doubledEmojis[j], doubledEmojis[i]];
-            }
-
-            // Assign shuffled emojis to cards
-            memoryCards.forEach((card, index) => {
-                card.dataset.emoji = doubledEmojis[index];
-            });
-        }
-
-        function flipMemoryCard() {
-            if (lockBoard) return;
-            if (this === firstCard) return;
-            if (this.classList.contains('matched')) return;
-
-            this.classList.add('flipped');
-            this.textContent = this.dataset.emoji;
-
-            if (!hasFlippedCard) {
-                hasFlippedCard = true;
-                firstCard = this;
-                return;
-            }
-
-            secondCard = this;
-            checkForMemoryMatch();
-        }
-
-        function checkForMemoryMatch() {
-            let isMatch = firstCard.dataset.emoji === secondCard.dataset.emoji;
-            isMatch ? disableMemoryCards() : unflipMemoryCards();
-        }
-
-        function disableMemoryCards() {
-            firstCard.removeEventListener('click', flipMemoryCard);
-            secondCard.removeEventListener('click', flipMemoryCard);
-            firstCard.classList.add('matched');
-            secondCard.classList.add('matched');
-
-            matchedPairs++;
-            if (matchedPairs === 8) {
-                endMemoryGame();
-            }
-
-            resetMemoryBoard();
-        }
-
-        function unflipMemoryCards() {
-            lockBoard = true;
-
-            setTimeout(() => {
-                firstCard.classList.remove('flipped');
-                secondCard.classList.remove('flipped');
-                firstCard.textContent = '';
-                secondCard.textContent = '';
-
-                resetMemoryBoard();
-            }, 1000);
-        }
-
-        function resetMemoryBoard() {
-            [hasFlippedCard, lockBoard] = [false, false];
-            [firstCard, secondCard] = [null, null];
-        }
-
-        function endMemoryGame() {
-            memoryGameComplete = true;
-            
-            setTimeout(() => {
-                // Hide game board and show success stage
-                document.getElementById('memoryStage3').classList.add('d-none');
-                document.getElementById('memoryStage4').classList.remove('d-none');
-
-                // Start typing animation after a delay
-                setTimeout(startMemoryTypingAnimation, 1000);
-
-                // Start heart rain
-                setTimeout(() => {
-                    document.getElementById('memoryLoveAnimation').classList.remove('d-none');
-                    startMemoryHeartRain();
-                }, 2000);
-
-            }, 1000);
-        }
-
-        function startMemoryTypingAnimation() {
-            const texts = [
-                "Di dunia, yang luas ini\nada 87% manusia~",
-                "Dan 70% air di dalamnya~", 
-                "Tapi kalau hatiku?? 🤔\n\n1000% isinya cuma kamuu 😆🫵"
-            ];
-
-            let currentTextIndex = 0;
-            const typingElement = document.getElementById('typingText');
-            
-            function typeText() {
-                if (currentTextIndex >= texts.length) {
-                    // Show final message
-                    setTimeout(showFinalMemoryMessage, 1000);
-                    return;
-                }
-
-                typingElement.innerHTML = '';
-                typingElement.classList.add('typing-effect');
-                
-                const text = texts[currentTextIndex];
-                let charIndex = 0;
-
-                function typeChar() {
-                    if (charIndex < text.length) {
-                        if (text[charIndex] === '\n') {
-                            typingElement.innerHTML += '<br>';
-                        } else {
-                            typingElement.innerHTML += text[charIndex];
-                        }
-                        charIndex++;
-                        setTimeout(typeChar, 50);
-                    } else {
-                        typingElement.classList.remove('typing-effect');
-                        setTimeout(() => {
-                            currentTextIndex++;
-                            setTimeout(typeText, 1000);
-                        }, 1500);
-                    }
-                }
-
-                typeChar();
-            }
-
-            document.getElementById('finalMessage').classList.remove('d-none');
-            typeText();
-        }
-
-        function showFinalMemoryMessage() {
-            const finalMessage = document.createElement('div');
-            finalMessage.className = 'mt-4 text-white';
-            finalMessage.innerHTML = `
-                <h3 style="color: #ff6b9d;">ᯓᡣ𐭩</h3>
-                <p><strong>Lopyuu ayangkuu</strong> tersayang,<br>
-                termanis, terlucu, terimuutttt<br>
-                <strong>semangat terus yaw 🫣😍😋💐</strong></p>
-            `;
-            
-            document.getElementById('memoryResultText').appendChild(finalMessage);
-            
-            // Change sticker to love
-            document.getElementById('memoryResultSticker').src = 'https://htmlku.com/0/panda/terlope2.gif';
-        }
-
-        function startMemoryHeartRain() {
-            const heartRain = document.querySelector('#memoryLoveAnimation .heart-rain');
-            
-            function createMemoryHeart() {
-                const heart = document.createElement('div');
-                heart.className = 'heart-fall';
-                heart.innerHTML = ['❤️', '💕', '💖', '💗', '💘', '💝', '🩷', '🫶'][Math.floor(Math.random() * 8)];
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
-
-                heartRain.appendChild(heart);
-
-                // Remove heart after animation
-                setTimeout(() => {
-                    if (heart.parentNode) {
-                        heart.parentNode.removeChild(heart);
-                    }
-                }, 5000);
-            }
-
-            // Create hearts continuously
-            const heartInterval = setInterval(createMemoryHeart, 300);
-
-            // Stop after 10 seconds
-            setTimeout(() => {
-                clearInterval(heartInterval);
-            }, 10000);
-        }
-
-        // Stop memory game music when modal is closed
-        document.addEventListener('DOMContentLoaded', function() {
-            const memoryModal = document.getElementById('memoryGameModal');
-            if (memoryModal) {
-                memoryModal.addEventListener('hidden.bs.modal', function () {
-                    const audio = document.getElementById('foreverYoungAudio');
-                    if (audio) {
-                        audio.pause();
-                        audio.currentTime = 0;
-                    }
-                });
-
-                // Add click effect for memory game
-                memoryModal.addEventListener('click', function(e) {
-                    const circle = document.createElement("div");
-                    circle.classList.add("memory-click-effect");
-                    circle.style.left = `${e.pageX}px`;
-                    circle.style.top = `${e.pageY}px`;
-
-                    document.body.appendChild(circle);
-
-                    circle.addEventListener("animationend", () => {
-                        circle.remove();
-                    });
-                });
-            }
-        });
+        // Scratch Card Game Logic - MOVED TO EXTERNAL FILE
+        // See: public/js/scratch-game.js
+
+        // Memory Game Logic - MOVED TO EXTERNAL FILE
+        // See: public/js/memory-game.js
     </script>
 </body>
 
