@@ -554,9 +554,16 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="#" onclick="openScratchCard()">
-                                            <i class="bi bi-heart-fill me-2"></i>💕 Scratch Card
-                                        </a></li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="openScratchCard()">
+                                            <i class="bi bi-heart-fill me-2"></i>💕 Kartu Keberuntungan
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="openMemoryGame()">
+                                            <i class="bi bi-grid-3x3-gap-fill me-2"></i>🧠 Memory Game
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         @else
@@ -928,7 +935,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0;
             border-radius: 12px;
             position: relative;
             overflow: hidden;
@@ -937,6 +943,10 @@
             animation: cardAppear 0.5s ease forwards;
             opacity: 0;
             transform: scale(0.5);
+        }
+
+        .scratch-card:not(.revealed) {
+            font-size: 0 !important;
         }
 
         .scratch-card:nth-child(1) {
@@ -1019,9 +1029,14 @@
         }
 
         .scratch-card.revealed {
-            font-size: 1.5em;
+            font-size: 2em !important;
+            color: #2c3e50 !important;
             background: rgba(255, 255, 255, 0.9);
-            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 60px;
             animation: cardReveal 0.5s ease;
         }
 
@@ -1083,6 +1098,218 @@
             51%,
             100% {
                 border-color: transparent;
+            }
+        }
+    </style>
+
+    <!-- Memory Game Modal -->
+    <div class="modal fade" id="memoryGameModal" tabindex="-1" aria-labelledby="memoryGameModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 20px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white" id="memoryGameModalLabel">
+                        <i class="bi bi-grid-3x3-gap-fill me-2"></i>🧠 Memory Game Challenge
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <div id="memoryGameContainer">
+                        <!-- Stage 1: Welcome -->
+                        <div id="memoryStage1" class="memory-stage">
+                            <div class="sticker-container mb-4">
+                                <img src="https://htmlku.com/0/panda/hiya.gif" class="game-sticker" />
+                            </div>
+                            <h2 class="text-white mb-3">Halo Kamu! 🫢</h2>
+                            <p class="text-white-50 mb-4">Mari bermain Memory Game bareng aku yuk!</p>
+                            <button class="btn btn-light btn-lg rounded-pill px-4" onclick="nextMemoryStage(2)">
+                                <i class="bi bi-arrow-right me-2"></i>Ayo Main!
+                            </button>
+                        </div>
+
+                        <!-- Stage 2: Introduction -->
+                        <div id="memoryStage2" class="memory-stage d-none">
+                            <div class="sticker-container mb-4">
+                                <img src="https://htmlku.com/0/panda/inicinta2.gif" class="game-sticker" />
+                            </div>
+                            <h2 class="text-white mb-3">Ada Sesuatu Nih 😝</h2>
+                            <p class="text-white-50 mb-4">Tapi harus selesaikan Memory Game dulu ya...</p>
+                            <button class="btn btn-light btn-lg rounded-pill px-4" onclick="nextMemoryStage(3)">
+                                <i class="bi bi-play me-2"></i>Mulai Game
+                            </button>
+                        </div>
+
+                        <!-- Stage 3: Memory Game -->
+                        <div id="memoryStage3" class="memory-stage d-none">
+                            <h2 class="text-white mb-3">Selesaikan <span style="color: #ff6b9d;">Memory Game</span></h2>
+                            <p class="text-white-50 mb-4">di Bawah Ini yaa! 😆🩷</p>
+                            <div class="memory-game-container mx-auto mb-4">
+                                <div class="memory-game-board">
+                                    <div class="memory-card" data-emoji="🫶"></div>
+                                    <div class="memory-card" data-emoji="💞"></div>
+                                    <div class="memory-card" data-emoji="🥳"></div>
+                                    <div class="memory-card" data-emoji="❤️‍🔥"></div>
+
+                                    <div class="memory-card" data-emoji="💐"></div>
+                                    <div class="memory-card" data-emoji="😍"></div>
+                                    <div class="memory-card" data-emoji="🥰"></div>
+                                    <div class="memory-card" data-emoji="🩷"></div>
+
+                                    <div class="memory-card" data-emoji="🫶"></div>
+                                    <div class="memory-card" data-emoji="❤️‍🔥"></div>
+                                    <div class="memory-card" data-emoji="💐"></div>
+                                    <div class="memory-card" data-emoji="🥰"></div>
+
+                                    <div class="memory-card" data-emoji="💞"></div>
+                                    <div class="memory-card" data-emoji="🩷"></div>
+                                    <div class="memory-card" data-emoji="🥳"></div>
+                                    <div class="memory-card" data-emoji="😍"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stage 4: Success -->
+                        <div id="memoryStage4" class="memory-stage d-none">
+                            <div class="sticker-container mb-4">
+                                <img id="memoryResultSticker" src="https://htmlku.com/0/panda/pusn3.gif" class="game-sticker" />
+                            </div>
+                            <div id="memoryResultText" class="text-white mb-4">
+                                <h2 class="mb-3">Yeaayy!! 🥳</h2>
+                                <p>Aku mau ngomong sesuatu nih 🫣</p>
+                                <p>Tunggu bentar yaa~ 😋🤏</p>
+                            </div>
+                            <div id="memoryLoveAnimation" class="d-none">
+                                <div class="heart-rain"></div>
+                            </div>
+                            <div id="finalMessage" class="mt-4 d-none">
+                                <div class="typing-container">
+                                    <p class="text-white" id="typingText"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memory Game CSS -->
+    <style>
+        .memory-stage {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .memory-game-container {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .memory-game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-gap: 15px;
+            margin: 0 auto;
+        }
+
+        .memory-card {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: memoryCardAppear 0.5s ease forwards;
+            opacity: 0;
+            transform: scale(0);
+            font-size: 0;
+        }
+
+        .memory-card:nth-child(1) { animation-delay: 0.1s; }
+        .memory-card:nth-child(2) { animation-delay: 0.2s; }
+        .memory-card:nth-child(3) { animation-delay: 0.3s; }
+        .memory-card:nth-child(4) { animation-delay: 0.4s; }
+        .memory-card:nth-child(5) { animation-delay: 0.5s; }
+        .memory-card:nth-child(6) { animation-delay: 0.6s; }
+        .memory-card:nth-child(7) { animation-delay: 0.7s; }
+        .memory-card:nth-child(8) { animation-delay: 0.8s; }
+        .memory-card:nth-child(9) { animation-delay: 0.9s; }
+        .memory-card:nth-child(10) { animation-delay: 1.0s; }
+        .memory-card:nth-child(11) { animation-delay: 1.1s; }
+        .memory-card:nth-child(12) { animation-delay: 1.2s; }
+        .memory-card:nth-child(13) { animation-delay: 1.3s; }
+        .memory-card:nth-child(14) { animation-delay: 1.4s; }
+        .memory-card:nth-child(15) { animation-delay: 1.5s; }
+        .memory-card:nth-child(16) { animation-delay: 1.6s; }
+
+        @keyframes memoryCardAppear {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .memory-card.flipped {
+            font-size: 1.8em !important;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            animation: memoryCardFlip 0.5s ease;
+        }
+
+        @keyframes memoryCardFlip {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .memory-card.matched {
+            background: rgba(144, 238, 144, 0.8);
+            cursor: default;
+        }
+
+        .typing-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .typing-effect::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        /* Memory Game Click Effect */
+        .memory-click-effect {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(1);
+            animation: memoryClickAnimation 0.3s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes memoryClickAnimation {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
             }
         }
     </style>
@@ -1182,7 +1409,35 @@
         let currentStage = 1;
         let gameComplete = false;
 
+
         function openScratchCard() {
+            // Acak urutan emoji setiap kali modal dibuka
+            const emojis = [
+                "🫶", "❤️", "🥳", "🫣",
+                "🤍", "😍", "🥰", "🩷",
+                "💖", "💕", "💓", "💗",
+                "💝", "💞", "💘", "💣"
+            ];
+            // Fisher-Yates shuffle
+            for (let i = emojis.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [emojis[i], emojis[j]] = [emojis[j], emojis[i]];
+            }
+
+            // Render ulang scratch card dengan urutan baru
+            const board = document.querySelector('.scratch-game-board');
+            if (board) {
+                board.innerHTML = '';
+                emojis.forEach(emoji => {
+                    const card = document.createElement('div');
+                    card.className = 'scratch-card';
+                    card.setAttribute('data-emoji', emoji);
+                    const canvas = document.createElement('canvas');
+                    card.appendChild(canvas);
+                    board.appendChild(card);
+                });
+            }
+
             const modal = new bootstrap.Modal(document.getElementById('scratchCardModal'));
             modal.show();
 
@@ -1298,8 +1553,8 @@
                 if (transparentPixels / totalPixels > 0.15 && !revealed) {
                     revealed = true;
                     card.classList.add('revealed');
-                    card.textContent = card.dataset.emoji;
-                    canvas.style.display = 'none';
+                    card.removeChild(canvas); // Hapus canvas dari DOM
+                    card.textContent = card.dataset.emoji; // Tampilkan emoji di tengah kartu
 
                     if (card.dataset.emoji === '💣') {
                         gameComplete = true;
@@ -1312,7 +1567,12 @@
                 isScratching = true;
                 handleScratch(e);
             });
-            canvas.addEventListener('mouseup', () => isScratching = false);
+            canvas.addEventListener('mouseup', () => {
+                isScratching = false;
+            });
+            canvas.addEventListener('mouseleave', () => {
+                isScratching = false;
+            });
             canvas.addEventListener('mousemove', (e) => {
                 if (isScratching) handleScratch(e);
             });
@@ -1323,7 +1583,12 @@
                 isScratching = true;
                 handleScratch(e);
             });
-            canvas.addEventListener('touchend', () => isScratching = false);
+            canvas.addEventListener('touchend', () => {
+                isScratching = false;
+            });
+            canvas.addEventListener('touchcancel', () => {
+                isScratching = false;
+            });
             canvas.addEventListener('touchmove', (e) => {
                 e.preventDefault();
                 if (isScratching) handleScratch(e);
@@ -1452,6 +1717,279 @@
                 clearInterval(heartInterval);
             }, 10000);
         }
+
+        // Memory Game Logic
+        let memoryCurrentStage = 1;
+        let memoryGameComplete = false;
+        let memoryCards = [];
+        let hasFlippedCard = false;
+        let lockBoard = false;
+        let firstCard, secondCard;
+        let matchedPairs = 0;
+
+        function openMemoryGame() {
+            // Reset game state
+            memoryCurrentStage = 1;
+            memoryGameComplete = false;
+            hasFlippedCard = false;
+            lockBoard = false;
+            firstCard = null;
+            secondCard = null;
+            matchedPairs = 0;
+
+            // Show stage 1 and hide others
+            document.getElementById('memoryStage1').classList.remove('d-none');
+            document.getElementById('memoryStage2').classList.add('d-none');
+            document.getElementById('memoryStage3').classList.add('d-none');
+            document.getElementById('memoryStage4').classList.add('d-none');
+
+            // Open modal
+            const modal = new bootstrap.Modal(document.getElementById('memoryGameModal'));
+            modal.show();
+
+            // Auto-play Forever Young music
+            const audio = document.getElementById('foreverYoungAudio');
+            if (audio) {
+                audio.play().catch(e => console.log('Audio play failed:', e));
+            }
+        }
+
+        function nextMemoryStage(stageNumber) {
+            document.getElementById(`memoryStage${memoryCurrentStage}`).classList.add('d-none');
+            document.getElementById(`memoryStage${stageNumber}`).classList.remove('d-none');
+            memoryCurrentStage = stageNumber;
+
+            if (stageNumber === 3) {
+                setTimeout(initMemoryGame, 500);
+            }
+        }
+
+        function initMemoryGame() {
+            memoryCards = document.querySelectorAll('.memory-card');
+            
+            // Reset all cards
+            memoryCards.forEach(card => {
+                card.classList.remove('flipped', 'matched');
+                card.textContent = '';
+                card.addEventListener('click', flipMemoryCard);
+            });
+
+            // Shuffle cards
+            shuffleMemoryCards();
+        }
+
+        function shuffleMemoryCards() {
+            const emojis = ['🫶', '💞', '🥳', '❤️‍🔥', '💐', '😍', '🥰', '🩷'];
+            const doubledEmojis = [...emojis, ...emojis]; // Create pairs
+            
+            // Fisher-Yates shuffle
+            for (let i = doubledEmojis.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [doubledEmojis[i], doubledEmojis[j]] = [doubledEmojis[j], doubledEmojis[i]];
+            }
+
+            // Assign shuffled emojis to cards
+            memoryCards.forEach((card, index) => {
+                card.dataset.emoji = doubledEmojis[index];
+            });
+        }
+
+        function flipMemoryCard() {
+            if (lockBoard) return;
+            if (this === firstCard) return;
+            if (this.classList.contains('matched')) return;
+
+            this.classList.add('flipped');
+            this.textContent = this.dataset.emoji;
+
+            if (!hasFlippedCard) {
+                hasFlippedCard = true;
+                firstCard = this;
+                return;
+            }
+
+            secondCard = this;
+            checkForMemoryMatch();
+        }
+
+        function checkForMemoryMatch() {
+            let isMatch = firstCard.dataset.emoji === secondCard.dataset.emoji;
+            isMatch ? disableMemoryCards() : unflipMemoryCards();
+        }
+
+        function disableMemoryCards() {
+            firstCard.removeEventListener('click', flipMemoryCard);
+            secondCard.removeEventListener('click', flipMemoryCard);
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+
+            matchedPairs++;
+            if (matchedPairs === 8) {
+                endMemoryGame();
+            }
+
+            resetMemoryBoard();
+        }
+
+        function unflipMemoryCards() {
+            lockBoard = true;
+
+            setTimeout(() => {
+                firstCard.classList.remove('flipped');
+                secondCard.classList.remove('flipped');
+                firstCard.textContent = '';
+                secondCard.textContent = '';
+
+                resetMemoryBoard();
+            }, 1000);
+        }
+
+        function resetMemoryBoard() {
+            [hasFlippedCard, lockBoard] = [false, false];
+            [firstCard, secondCard] = [null, null];
+        }
+
+        function endMemoryGame() {
+            memoryGameComplete = true;
+            
+            setTimeout(() => {
+                // Hide game board and show success stage
+                document.getElementById('memoryStage3').classList.add('d-none');
+                document.getElementById('memoryStage4').classList.remove('d-none');
+
+                // Start typing animation after a delay
+                setTimeout(startMemoryTypingAnimation, 1000);
+
+                // Start heart rain
+                setTimeout(() => {
+                    document.getElementById('memoryLoveAnimation').classList.remove('d-none');
+                    startMemoryHeartRain();
+                }, 2000);
+
+            }, 1000);
+        }
+
+        function startMemoryTypingAnimation() {
+            const texts = [
+                "Di dunia, yang luas ini\nada 87% manusia~",
+                "Dan 70% air di dalamnya~", 
+                "Tapi kalau hatiku?? 🤔\n\n1000% isinya cuma kamuu 😆🫵"
+            ];
+
+            let currentTextIndex = 0;
+            const typingElement = document.getElementById('typingText');
+            
+            function typeText() {
+                if (currentTextIndex >= texts.length) {
+                    // Show final message
+                    setTimeout(showFinalMemoryMessage, 1000);
+                    return;
+                }
+
+                typingElement.innerHTML = '';
+                typingElement.classList.add('typing-effect');
+                
+                const text = texts[currentTextIndex];
+                let charIndex = 0;
+
+                function typeChar() {
+                    if (charIndex < text.length) {
+                        if (text[charIndex] === '\n') {
+                            typingElement.innerHTML += '<br>';
+                        } else {
+                            typingElement.innerHTML += text[charIndex];
+                        }
+                        charIndex++;
+                        setTimeout(typeChar, 50);
+                    } else {
+                        typingElement.classList.remove('typing-effect');
+                        setTimeout(() => {
+                            currentTextIndex++;
+                            setTimeout(typeText, 1000);
+                        }, 1500);
+                    }
+                }
+
+                typeChar();
+            }
+
+            document.getElementById('finalMessage').classList.remove('d-none');
+            typeText();
+        }
+
+        function showFinalMemoryMessage() {
+            const finalMessage = document.createElement('div');
+            finalMessage.className = 'mt-4 text-white';
+            finalMessage.innerHTML = `
+                <h3 style="color: #ff6b9d;">ᯓᡣ𐭩</h3>
+                <p><strong>Lopyuu ayangkuu</strong> tersayang,<br>
+                termanis, terlucu, terimuutttt<br>
+                <strong>semangat terus yaw 🫣😍😋💐</strong></p>
+            `;
+            
+            document.getElementById('memoryResultText').appendChild(finalMessage);
+            
+            // Change sticker to love
+            document.getElementById('memoryResultSticker').src = 'https://htmlku.com/0/panda/terlope2.gif';
+        }
+
+        function startMemoryHeartRain() {
+            const heartRain = document.querySelector('#memoryLoveAnimation .heart-rain');
+            
+            function createMemoryHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart-fall';
+                heart.innerHTML = ['❤️', '💕', '💖', '💗', '💘', '💝', '🩷', '🫶'][Math.floor(Math.random() * 8)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
+
+                heartRain.appendChild(heart);
+
+                // Remove heart after animation
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.parentNode.removeChild(heart);
+                    }
+                }, 5000);
+            }
+
+            // Create hearts continuously
+            const heartInterval = setInterval(createMemoryHeart, 300);
+
+            // Stop after 10 seconds
+            setTimeout(() => {
+                clearInterval(heartInterval);
+            }, 10000);
+        }
+
+        // Stop memory game music when modal is closed
+        document.addEventListener('DOMContentLoaded', function() {
+            const memoryModal = document.getElementById('memoryGameModal');
+            if (memoryModal) {
+                memoryModal.addEventListener('hidden.bs.modal', function () {
+                    const audio = document.getElementById('foreverYoungAudio');
+                    if (audio) {
+                        audio.pause();
+                        audio.currentTime = 0;
+                    }
+                });
+
+                // Add click effect for memory game
+                memoryModal.addEventListener('click', function(e) {
+                    const circle = document.createElement("div");
+                    circle.classList.add("memory-click-effect");
+                    circle.style.left = `${e.pageX}px`;
+                    circle.style.top = `${e.pageY}px`;
+
+                    document.body.appendChild(circle);
+
+                    circle.addEventListener("animationend", () => {
+                        circle.remove();
+                    });
+                });
+            }
+        });
     </script>
 </body>
 
