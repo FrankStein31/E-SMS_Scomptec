@@ -554,9 +554,16 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="#" onclick="openScratchCard()">
-                                            <i class="bi bi-heart-fill me-2"></i>💕 Scratch Card
-                                        </a></li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="openScratchCard()">
+                                            <i class="bi bi-heart-fill me-2"></i>💕 Kartu Keberuntungan
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="openMemoryGame()">
+                                            <i class="bi bi-grid-3x3-gap-fill me-2"></i>🧠 Memory Game
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         @else
@@ -928,7 +935,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0;
             border-radius: 12px;
             position: relative;
             overflow: hidden;
@@ -937,6 +943,10 @@
             animation: cardAppear 0.5s ease forwards;
             opacity: 0;
             transform: scale(0.5);
+        }
+
+        .scratch-card:not(.revealed) {
+            font-size: 0 !important;
         }
 
         .scratch-card:nth-child(1) {
@@ -1019,10 +1029,37 @@
         }
 
         .scratch-card.revealed {
-            font-size: 1.5em;
             background: rgba(255, 255, 255, 0.9);
-            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             animation: cardReveal 0.5s ease;
+        }
+
+        .revealed-brute-force {
+            width: 60px !important;
+            height: 60px !important;
+            background: white !important;
+            border: 3px solid #ff6b9d !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 2em !important;
+            color: #000 !important;
+            font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial, sans-serif !important;
+            text-align: center !important;
+            line-height: 1 !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+            z-index: 999 !important;
+            animation: revealPulse 0.5s ease !important;
+        }
+
+        @keyframes revealPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         @keyframes cardReveal {
@@ -1087,8 +1124,246 @@
         }
     </style>
 
+    <!-- Memory Game Modal -->
+    <div class="modal fade" id="memoryGameModal" tabindex="-1" aria-labelledby="memoryGameModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 20px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white" id="memoryGameModalLabel">
+                        <i class="bi bi-grid-3x3-gap-fill me-2"></i>🧠 Memory Game Challenge
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-4">
+                    <div id="memoryGameContainer">
+                        <!-- Stage 1: Welcome -->
+                        <div id="memoryStage1" class="memory-stage">
+                            <div class="sticker-container mb-4">
+                                <img src="https://htmlku.com/0/panda/hiya.gif" class="game-sticker" />
+                            </div>
+                            <h2 class="text-white mb-3">Halo Kamu! 🫢</h2>
+                            <p class="text-white-50 mb-4">Mari bermain Memory Game bareng aku yuk!</p>
+                            <button class="btn btn-light btn-lg rounded-pill px-4" onclick="nextMemoryStage(2)">
+                                <i class="bi bi-arrow-right me-2"></i>Ayo Main!
+                            </button>
+                        </div>
+
+                        <!-- Stage 2: Introduction -->
+                        <div id="memoryStage2" class="memory-stage d-none">
+                            <div class="sticker-container mb-4">
+                                <img src="https://htmlku.com/0/panda/inicinta2.gif" class="game-sticker" />
+                            </div>
+                            <h2 class="text-white mb-3">Ada Sesuatu Nih 😝</h2>
+                            <p class="text-white-50 mb-4">Tapi harus selesaikan Memory Game dulu ya...</p>
+                            <button class="btn btn-light btn-lg rounded-pill px-4" onclick="nextMemoryStage(3)">
+                                <i class="bi bi-play me-2"></i>Mulai Game
+                            </button>
+                        </div>
+
+                        <!-- Stage 3: Memory Game -->
+                        <div id="memoryStage3" class="memory-stage d-none">
+                            <h2 class="text-white mb-3">Selesaikan <span style="color: #ff6b9d;">Memory Game</span></h2>
+                            <p class="text-white-50 mb-4">di Bawah Ini yaa! 😆🩷</p>
+                            <div class="memory-game-container mx-auto mb-4">
+                                <div class="memory-game-board">
+                                    <div class="memory-card" data-emoji="🫶"></div>
+                                    <div class="memory-card" data-emoji="💞"></div>
+                                    <div class="memory-card" data-emoji="🥳"></div>
+                                    <div class="memory-card" data-emoji="❤️‍🔥"></div>
+
+                                    <div class="memory-card" data-emoji="💐"></div>
+                                    <div class="memory-card" data-emoji="😍"></div>
+                                    <div class="memory-card" data-emoji="🥰"></div>
+                                    <div class="memory-card" data-emoji="🩷"></div>
+
+                                    <div class="memory-card" data-emoji="🫶"></div>
+                                    <div class="memory-card" data-emoji="❤️‍🔥"></div>
+                                    <div class="memory-card" data-emoji="💐"></div>
+                                    <div class="memory-card" data-emoji="🥰"></div>
+
+                                    <div class="memory-card" data-emoji="💞"></div>
+                                    <div class="memory-card" data-emoji="🩷"></div>
+                                    <div class="memory-card" data-emoji="🥳"></div>
+                                    <div class="memory-card" data-emoji="😍"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Stage 4: Success -->
+                        <div id="memoryStage4" class="memory-stage d-none">
+                            <div class="sticker-container mb-4">
+                                <img id="memoryResultSticker" src="https://htmlku.com/0/panda/pusn3.gif" class="game-sticker" />
+                            </div>
+                            <div id="memoryResultText" class="text-white mb-4">
+                                <h2 class="mb-3">Yeaayy!! 🥳</h2>
+                                <p>Aku mau ngomong sesuatu nih 🫣</p>
+                                <p>Tunggu bentar yaa~ 😋🤏</p>
+                            </div>
+                            <div id="memoryLoveAnimation" class="d-none">
+                                <div class="heart-rain"></div>
+                            </div>
+                            <div id="finalMessage" class="mt-4 d-none">
+                                <div class="typing-container">
+                                    <p class="text-white" id="typingText"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Memory Game CSS -->
+    <style>
+        .memory-stage {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .memory-game-container {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .memory-game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 60px);
+            grid-gap: 15px;
+            margin: 0 auto;
+        }
+
+        .memory-card {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: memoryCardAppear 0.5s ease forwards;
+            opacity: 0;
+            transform: scale(0);
+            font-size: 0;
+        }
+
+        .memory-card:nth-child(1) { animation-delay: 0.1s; }
+        .memory-card:nth-child(2) { animation-delay: 0.2s; }
+        .memory-card:nth-child(3) { animation-delay: 0.3s; }
+        .memory-card:nth-child(4) { animation-delay: 0.4s; }
+        .memory-card:nth-child(5) { animation-delay: 0.5s; }
+        .memory-card:nth-child(6) { animation-delay: 0.6s; }
+        .memory-card:nth-child(7) { animation-delay: 0.7s; }
+        .memory-card:nth-child(8) { animation-delay: 0.8s; }
+        .memory-card:nth-child(9) { animation-delay: 0.9s; }
+        .memory-card:nth-child(10) { animation-delay: 1.0s; }
+        .memory-card:nth-child(11) { animation-delay: 1.1s; }
+        .memory-card:nth-child(12) { animation-delay: 1.2s; }
+        .memory-card:nth-child(13) { animation-delay: 1.3s; }
+        .memory-card:nth-child(14) { animation-delay: 1.4s; }
+        .memory-card:nth-child(15) { animation-delay: 1.5s; }
+        .memory-card:nth-child(16) { animation-delay: 1.6s; }
+
+        @keyframes memoryCardAppear {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .memory-card.flipped {
+            font-size: 1.8em !important;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            animation: memoryCardFlip 0.5s ease;
+        }
+
+        @keyframes memoryCardFlip {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .memory-card.matched {
+            background: rgba(144, 238, 144, 0.8);
+            cursor: default;
+        }
+
+        /* USE EXACT SAME CSS AS SUCCESSFUL SCRATCH CARD */
+        .memory-card.revealed-brute-force {
+            width: 60px !important;
+            height: 60px !important;
+            background: white !important;
+            border: 3px solid #4CAF50 !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 2em !important;
+            color: #000 !important;
+            font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial, sans-serif !important;
+            text-align: center !important;
+            line-height: 1 !important;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+            z-index: 999 !important;
+            animation: revealPulse 0.5s ease !important;
+        }
+
+        .typing-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .typing-effect::after {
+            content: '|';
+            animation: blink 1s infinite;
+        }
+
+        /* Memory Game Click Effect */
+        .memory-click-effect {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(1);
+            animation: memoryClickAnimation 0.3s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes memoryClickAnimation {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Scratch Game JS - File Terpisah -->
+    <script src="{{ asset('js/scratch-game.js') }}"></script>
+
+    <!-- Memory Game JS - File Terpisah -->  
+    <script src="{{ asset('js/memory-game.js') }}"></script>
 
     <script>
         // Navbar scroll effect
@@ -1178,280 +1453,11 @@
             }, 2000);
         });
 
-        // Scratch Card Game Logic
-        let currentStage = 1;
-        let gameComplete = false;
+        // Scratch Card Game Logic - MOVED TO EXTERNAL FILE
+        // See: public/js/scratch-game.js
 
-        function openScratchCard() {
-            const modal = new bootstrap.Modal(document.getElementById('scratchCardModal'));
-            modal.show();
-
-            // Auto-play Forever Young music
-            const audio = document.getElementById('foreverYoungAudio');
-            if (audio) {
-                audio.volume = 0.4; // Set volume to 40%
-
-                // Force play the audio
-                audio.play().then(() => {
-                    console.log('🎵 Forever Young started playing!');
-                }).catch((error) => {
-                    console.log('Audio blocked by browser, trying alternative method:', error);
-
-                    // Alternative method - play on any user interaction
-                    const forcePlay = () => {
-                        audio.play().then(() => {
-                            console.log('🎵 Forever Young started after interaction!');
-                        });
-                        // Remove event listeners after first play
-                        document.removeEventListener('click', forcePlay);
-                        document.removeEventListener('keydown', forcePlay);
-                        document.removeEventListener('touchstart', forcePlay);
-                    };
-
-                    // Add multiple event listeners to catch any user interaction
-                    document.addEventListener('click', forcePlay);
-                    document.addEventListener('keydown', forcePlay);
-                    document.addEventListener('touchstart', forcePlay);
-                });
-            }
-
-            resetGame();
-        }
-
-        // Stop music when modal is closed
-        document.addEventListener('DOMContentLoaded', function() {
-            const modal = document.getElementById('scratchCardModal');
-            if (modal) {
-                modal.addEventListener('hidden.bs.modal', function() {
-                    const audio = document.getElementById('foreverYoungAudio');
-                    if (audio) {
-                        audio.pause();
-                        audio.currentTime = 0; // Reset to beginning
-                        console.log('🎵 Music stopped and reset');
-                    }
-                });
-            }
-        });
-
-        function resetGame() {
-            currentStage = 1;
-            gameComplete = false;
-            document.querySelectorAll('.game-stage').forEach(stage => stage.classList.add('d-none'));
-            document.getElementById('stage1').classList.remove('d-none');
-        }
-
-        function nextStage(stageNumber) {
-            document.getElementById(`stage${currentStage}`).classList.add('d-none');
-            document.getElementById(`stage${stageNumber}`).classList.remove('d-none');
-            currentStage = stageNumber;
-
-            if (stageNumber === 3) {
-                setTimeout(initScratchCards, 500);
-            }
-        }
-
-        function initScratchCards() {
-            const cards = document.querySelectorAll('.scratch-card');
-            cards.forEach(card => {
-                setupScratchCard(card);
-            });
-        }
-
-        function setupScratchCard(card) {
-            const canvas = card.querySelector('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 60;
-            canvas.height = 60;
-
-            // Fill canvas with gray overlay for scratching
-            ctx.fillStyle = 'rgba(255,255,255,0.8)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            let isScratching = false;
-            let revealed = false;
-
-            function handleScratch(e) {
-                if (gameComplete || revealed) return;
-
-                const rect = canvas.getBoundingClientRect();
-                const x = (e.type.includes('mouse') ? e.clientX : e.touches[0].clientX) - rect.left;
-                const y = (e.type.includes('mouse') ? e.clientY : e.touches[0].clientY) - rect.top;
-
-                // Scale coordinates to canvas size
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-
-                ctx.globalCompositeOperation = 'destination-out';
-                ctx.beginPath();
-                ctx.arc(x * scaleX, y * scaleY, 15, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.globalCompositeOperation = 'source-over';
-
-                // Check if enough area is scratched
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-                let transparentPixels = 0;
-                for (let i = 3; i < imageData.length; i += 4) {
-                    if (imageData[i] === 0) transparentPixels++;
-                }
-                const totalPixels = canvas.width * canvas.height;
-
-                if (transparentPixels / totalPixels > 0.15 && !revealed) {
-                    revealed = true;
-                    card.classList.add('revealed');
-                    card.textContent = card.dataset.emoji;
-                    canvas.style.display = 'none';
-
-                    if (card.dataset.emoji === '💣') {
-                        gameComplete = true;
-                        setTimeout(showResult, 800);
-                    }
-                }
-            }
-
-            canvas.addEventListener('mousedown', (e) => {
-                isScratching = true;
-                handleScratch(e);
-            });
-            canvas.addEventListener('mouseup', () => isScratching = false);
-            canvas.addEventListener('mousemove', (e) => {
-                if (isScratching) handleScratch(e);
-            });
-
-            // Touch events
-            canvas.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                isScratching = true;
-                handleScratch(e);
-            });
-            canvas.addEventListener('touchend', () => isScratching = false);
-            canvas.addEventListener('touchmove', (e) => {
-                e.preventDefault();
-                if (isScratching) handleScratch(e);
-            });
-        }
-
-        function showResult() {
-            document.getElementById('stage3').classList.add('d-none');
-            document.getElementById('stage4').classList.remove('d-none');
-
-            const resultText = document.getElementById('resultText');
-            const resultSticker = document.getElementById('resultSticker');
-
-            // Change sticker to explosion
-            resultSticker.src = 'https://feeldreams.github.io/emawh.gif';
-
-            // Type animation for result text
-            const messages = [
-                "Yaahh kena Boom!! 💥😝",
-                "Kalau kamu kena boom...",
-                "Kamu harus jadi pacarku yaa! 😆😍🩷",
-                "Gaboleh nolak!! 😝🫣💐"
-            ];
-
-            let messageIndex = 0;
-
-            function typeMessage() {
-                if (messageIndex >= messages.length) {
-                    // Start love percentage animation
-                    setTimeout(startLoveAnimation, 1000);
-                    return;
-                }
-
-                const message = messages[messageIndex];
-                let charIndex = 0;
-                resultText.innerHTML = '<div class="type-animation"></div>';
-                const textElement = resultText.querySelector('.type-animation');
-
-                function typeChar() {
-                    if (charIndex < message.length) {
-                        textElement.textContent = message.substring(0, charIndex + 1);
-                        charIndex++;
-                        setTimeout(typeChar, 50);
-                    } else {
-                        textElement.classList.remove('type-animation');
-                        messageIndex++;
-                        setTimeout(() => {
-                            resultText.innerHTML += '<br><div class="type-animation"></div>';
-                            typeMessage();
-                        }, 800);
-                    }
-                }
-                typeChar();
-            }
-
-            typeMessage();
-        }
-
-        function startLoveAnimation() {
-            const resultText = document.getElementById('resultText');
-            const loveContainer = document.createElement('div');
-            loveContainer.style.marginTop = '20px';
-
-            // Love percentage animation
-            let percentage = 10;
-            const loveText = document.createElement('div');
-            loveText.className = 'type-animation';
-            loveText.style.fontSize = '1.2em';
-            loveText.style.color = '#ff6b9d';
-            loveContainer.appendChild(loveText);
-            resultText.appendChild(loveContainer);
-
-            function updatePercentage() {
-                if (percentage <= 100) {
-                    loveText.textContent = `I Love You ${percentage}% ❤️`;
-                    percentage += 10;
-                    setTimeout(updatePercentage, 200);
-                } else {
-                    loveText.classList.remove('type-animation');
-
-                    // Add final message
-                    setTimeout(() => {
-                        const finalMessage = document.createElement('div');
-                        finalMessage.innerHTML =
-                            '<br><strong style="color: #ff6b9d;">Makasii udah mau jadi pacarku! 😆🫣💐</strong>';
-                        loveContainer.appendChild(finalMessage);
-
-                        // Start heart rain
-                        startHeartRain();
-
-                        // Change sticker to love
-                        document.getElementById('resultSticker').src = 'https://htmlku.com/0/panda/terlope.gif';
-                    }, 500);
-                }
-            }
-            updatePercentage();
-        }
-
-        function startHeartRain() {
-            const heartRain = document.getElementById('loveAnimation');
-            heartRain.classList.remove('d-none');
-
-            function createHeart() {
-                const heart = document.createElement('div');
-                heart.className = 'heart-fall';
-                heart.innerHTML = ['❤️', '💕', '💖', '💗', '💘', '💝'][Math.floor(Math.random() * 6)];
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                heart.style.fontSize = (Math.random() * 10 + 15) + 'px';
-
-                document.querySelector('.heart-rain').appendChild(heart);
-
-                // Remove heart after animation
-                setTimeout(() => {
-                    if (heart.parentNode) {
-                        heart.parentNode.removeChild(heart);
-                    }
-                }, 5000);
-            }
-
-            // Create hearts continuously
-            const heartInterval = setInterval(createHeart, 300);
-
-            // Stop after 10 seconds
-            setTimeout(() => {
-                clearInterval(heartInterval);
-            }, 10000);
-        }
+        // Memory Game Logic - MOVED TO EXTERNAL FILE
+        // See: public/js/memory-game.js
     </script>
 </body>
 
