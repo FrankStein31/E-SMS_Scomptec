@@ -24,7 +24,7 @@
                                     <h2 class="counter">{{ $total_entry_surat }}</h2>
                                 </div>
                                 <div class="avatar-45 b-r-10 bg-dark">
-                                    <i class="iconoir-document f-s-22"></i> {{-- Ganti icon jika perlu --}}
+                                    <i class="iconoir-document f-s-22"></i> 
                                 </div>
                             </div>
                         </div>
