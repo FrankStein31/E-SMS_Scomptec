@@ -564,6 +564,11 @@
                                             <i class="bi bi-grid-3x3-gap-fill me-2"></i>🧠 Memory Game
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="dropdown-item" href="#" onclick="openLoveLetterGame()">
+                                            <i class="bi bi-heart-arrow me-2"></i>� Lihat Ini Ya
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         @else
@@ -1217,6 +1222,89 @@
         </div>
     </div>
 
+    <!-- Love Letter Game Modal -->
+    <div class="modal fade" id="loveLetterGameModal" tabindex="-1" aria-labelledby="loveLetterGameModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content" style="background: linear-gradient(135deg, #ff9aad 0%, #ed7fca 100%); border: none; border-radius: 20px; overflow: hidden;">
+                <!-- Cover Screen -->
+                <div id="loveCoverScreen" class="position-absolute w-100 h-100" style="background: rgba(0,0,0,0.9); z-index: 9999;">
+                    <div class="d-flex flex-column justify-content-center align-items-center h-100 text-white">
+                        <p style="font-size: 17px; font-weight: 700;">Sentuh untuk Mulai</p>
+                        <div id="loveCoverButton" class="mt-3 px-4 py-3 text-white" style="font-size: 16px; background: rgba(0,0,0,.5); border: 1px solid #fff; border-radius: 20px; cursor: pointer; display: flex; align-items: center;">
+                            <i class="bi bi-search me-3"></i>
+                            <span>💌 Love Letter Game</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white" id="loveLetterGameModalLabel">
+                        <i class="bi bi-envelope-heart me-2"></i>💌 Love Letter Game
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body text-center p-4 position-relative">
+                    <!-- Background Animation -->
+                    <div id="loveBackgroundAnimation" class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 1;">
+                        <div class="love-box">
+                            <div></div><div></div><div></div><div></div><div></div>
+                            <div></div><div></div><div></div><div></div><div></div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="position-relative" style="z-index: 2;">
+                        <!-- Envelope Animation -->
+                        <div id="loveEnvelopeWrapper" class="envelope-wrapper">
+                            <div id="loveEnvelope" class="love-envelope close">
+                                <div class="love-flap"></div>
+                                <div class="love-pocket"></div>
+                                <div class="love-letter">
+                                    <div class="love-letter-corner corner-tl"></div>
+                                    <div class="love-letter-corner corner-br"></div>
+                                    <div class="love-message">
+                                        <p>Alooo Kamuu! 🩷</p>
+                                        <p>......</p>
+                                    </div>
+                                </div>
+                                <div class="love-hearts">
+                                    <div class="love-heart a1"></div>
+                                    <div class="love-heart a2"></div>
+                                    <div class="love-heart a3"></div>
+                                </div>
+                                <div class="love-sparkles">
+                                    <div class="love-sparkle s1"></div>
+                                    <div class="love-sparkle s2"></div>
+                                    <div class="love-sparkle s3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Open Button -->
+                        <div id="loveOpenButton" class="love-reset">
+                            <button id="loveOpenBtn" class="btn btn-light btn-lg rounded-pill px-4">
+                                Buka Surat 🩷
+                            </button>
+                        </div>
+
+                        <!-- Letter Content -->
+                        <div id="loveLetterContent" class="love-container d-none">
+                            <div class="love-sticker mb-4">
+                                <img id="loveMainSticker" src="https://htmlku.com/0/panda/pusn.gif" style="width: 80px; height: 80px; border-radius: 50%; padding: 10px; background: rgba(255,255,255,0.7); border: 2px solid rgba(255,255,255,0.3);" />
+                            </div>
+                            <div class="love-text-container">
+                                <p class="love-title-text"><b>Alooo Kamuu! 🫣💗</b></p>
+                                <p class="love-message-text"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Memory Game CSS -->
     <style>
         .memory-stage {
@@ -1380,6 +1468,361 @@
                 opacity: 0;
             }
         }
+
+        /* Love Letter Game CSS */
+        .envelope-wrapper {
+            height: 210px;
+            margin-top: 50px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .love-envelope {
+            position: relative;
+            width: 160px;
+            height: 110px;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+            margin: 0 auto;
+            background-color: #ff8da1;
+            box-shadow: 0 4px 20px rgba(0,0,0,.1);
+        }
+
+        .love-flap {
+            position: absolute;
+            width: 0;
+            height: 0;
+            z-index: 3;
+            border-left: 80px solid transparent;
+            border-right: 80px solid transparent;
+            border-bottom: 55px solid transparent;
+            border-top: 55px solid #ff8da1;
+            transform-origin: top;
+            pointer-events: none;
+        }
+
+        .love-pocket {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 80px solid #FFB7C5;
+            border-right: 80px solid #FFB7C5;
+            border-bottom: 55px solid #ff9aad;
+            border-top: 55px solid transparent;
+            border-bottom-left-radius: 6px;
+            border-bottom-right-radius: 6px;
+        }
+
+        .love-letter {
+            position: relative;
+            background-color: #e0d9dd;
+            width: 90%;
+            margin: 0 auto;
+            height: 95%;
+            top: 5%;
+            border-radius: 6px;
+            box-shadow: 0 2px 26px rgba(0,0,0,.08);
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .love-letter:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-image: linear-gradient(180deg, rgba(255,255,255,0) 25%, rgba(255,231,236,.7) 55%, rgba(255,231,236,1) 100%);
+        }
+
+        .love-message {
+            position: relative;
+            z-index: 2;
+            font-family: 'Handlee', cursive;
+            color: #d46a84;
+            text-align: center;
+            line-height: 1;
+            padding-top: 0;
+        }
+
+        .love-message p {
+            margin: 10px 0;
+            font-size: 1.4em;
+            text-shadow: 0 2px 3px rgba(0,0,0,.1);
+        }
+
+        .love-letter-corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 1px solid #ffd1dc;
+            border-radius: 2.5px;
+            z-index: 3;
+        }
+
+        .corner-tl {
+            top: 5px;
+            left: 5px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-br {
+            bottom: 5px;
+            right: 5px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .love-hearts, .love-sparkles {
+            position: absolute;
+            top: 55px;
+            left: 0;
+            right: 0;
+            z-index: 2;
+        }
+
+        .love-heart, .love-sparkle {
+            position: absolute;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .love-heart:before, .love-heart:after {
+            content: "";
+            position: absolute;
+            left: 12.5px;
+            top: 0;
+            width: 12.5px;
+            height: 25px;
+            background: #ff85a2;
+            border-radius: 12.5px 12.5px 0 0;
+            transform: rotate(-45deg);
+            transform-origin: 0 100%;
+        }
+
+        .love-heart:after {
+            left: 0;
+            transform: rotate(45deg);
+            transform-origin: 100% 100%;
+        }
+
+        .love-sparkle {
+            width: 4px;
+            height: 4px;
+            background: #fff;
+            border-radius: 50%;
+            animation: sparkleTwinkle 1s infinite;
+        }
+
+        .close .love-heart, .close .love-sparkle {
+            opacity: 0;
+            animation: none;
+        }
+
+        .a1 {
+            left: 20%;
+            transform: scale(0.6);
+            animation: slideUp 4s linear infinite, sideSway 2s ease-in-out infinite alternate;
+        }
+
+        .a2 {
+            left: 55%;
+            animation: slideUp 5s linear infinite, sideSway 4s ease-in-out infinite alternate;
+        }
+
+        .a3 {
+            left: 10%;
+            transform: scale(0.8);
+            animation: slideUp 7s linear infinite, sideSway 2s ease-in-out infinite alternate;
+        }
+
+        .s1 {
+            left: 30%;
+            animation: sparkleUp 3s linear infinite;
+        }
+
+        .s2 {
+            left: 60%;
+            animation: sparkleUp 4s linear infinite;
+        }
+
+        .s3 {
+            left: 45%;
+            animation: sparkleUp 5s linear infinite;
+        }
+
+        @keyframes slideUp {
+            0% { top: 0; }
+            100% { top: -600px; }
+        }
+
+        @keyframes sideSway {
+            0% { margin-left: 0; }
+            50% { margin-left: 50px; }
+            100% { margin-left: 0; }
+        }
+
+        @keyframes sparkleUp {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-500px) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes sparkleTwinkle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.5); }
+        }
+
+        .love-reset {
+            position: relative;
+            text-align: center;
+            margin-top: 100px;
+        }
+
+        .love-reset button {
+            font-family: "Sriracha", serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background-color: #ff9aad;
+            border: 2px solid #ff9aad;
+            border-radius: 20px;
+            color: white;
+            text-shadow: 0px 2px 2px rgba(0,0,0,.5);
+            padding: 6px 14px;
+            margin: 10px;
+            font-size: 16px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .love-reset button:hover {
+            background-color: #FFB7C5;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 7px 25px rgba(0,0,0,0.2);
+        }
+
+        .open .love-flap {
+            transform: rotateX(180deg);
+            transition: transform .4s ease, z-index .6s;
+            z-index: 1;
+        }
+
+        .close .love-flap {
+            transform: rotateX(0deg);
+            transition: transform .4s .6s ease, z-index 1s;
+            z-index: 5;
+        }
+
+        .close .love-letter {
+            transform: translateY(0);
+            transition: transform .4s ease, z-index 1s;
+            z-index: 1;
+        }
+
+        .open .love-letter {
+            transform: translateY(-55px) rotate(-2deg);
+            transition: transform .4s .2s ease, z-index .6s;
+            z-index: 2;
+        }
+
+        .love-container {
+            width: 80%;
+            margin: 20px auto;
+            min-height: 300px;
+            background-color: rgba(0,0,0,.4);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            border: 2px solid white;
+            border-radius: 30px;
+            padding: 15px 25px;
+            color: white;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.7s ease;
+        }
+
+        .love-container.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .love-title-text {
+            font-size: 17px !important;
+            margin-bottom: 14px;
+            font-family: "Itim", cursive;
+            font-weight: bold;
+        }
+
+        .love-message-text {
+            font-family: "Itim", cursive;
+            font-size: 16px;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .love-sticker {
+            margin-top: -70px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform: scale(0);
+            transition: all .75s ease;
+        }
+
+        .love-sticker.show {
+            transform: scale(1);
+        }
+
+        /* Background Animation */
+        .love-box div {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            background-color: transparent;
+            border: 6px solid rgba(255,255,255,.6);
+            border-radius: 50%;
+            z-index: -10;
+        }
+
+        .love-box div:nth-child(1) { top: 12%; left: 42%; animation: loveFloat 10s linear infinite; }
+        .love-box div:nth-child(2) { top: 70%; left: 50%; animation: loveFloat 7s linear infinite; }
+        .love-box div:nth-child(3) { top: 17%; left: 6%; animation: loveFloat 9s linear infinite; }
+        .love-box div:nth-child(4) { top: 20%; left: 60%; animation: loveFloat 10s linear infinite; }
+        .love-box div:nth-child(5) { top: 67%; left: 10%; animation: loveFloat 6s linear infinite; }
+        .love-box div:nth-child(6) { top: 80%; left: 70%; animation: loveFloat 12s linear infinite; }
+        .love-box div:nth-child(7) { top: 60%; left: 80%; animation: loveFloat 15s linear infinite; }
+        .love-box div:nth-child(8) { top: 32%; left: 25%; animation: loveFloat 16s linear infinite; }
+        .love-box div:nth-child(9) { top: 90%; left: 25%; animation: loveFloat 9s linear infinite; }
+        .love-box div:nth-child(10) { top: 20%; left: 80%; animation: loveFloat 5s linear infinite; }
+
+        @keyframes loveFloat {
+            0% { transform: scale(0) translateY(0) rotate(0); opacity: .8; }
+            100% { transform: scale(1.3) translateY(-90px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Love Game Click Effect */
+        .love-click-effect {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(1);
+            animation: loveClickAnimation 0.3s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes loveClickAnimation {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
     </style>
 
     <!-- Bootstrap JS -->
@@ -1484,7 +1927,13 @@
 
         // Memory Game Logic - MOVED TO EXTERNAL FILE
         // See: public/js/memory-game.js
+
+        // Love Letter Game Logic - MOVED TO EXTERNAL FILE
+        // See: public/js/love-letter-game.js
     </script>
+
+    <!-- External JavaScript Files -->
+    <script src="{{ asset('js/love-letter-game.js') }}"></script>
 </body>
 
 </html>
