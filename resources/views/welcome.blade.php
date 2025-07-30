@@ -1255,6 +1255,10 @@
             opacity: 0;
             transform: scale(0);
             font-size: 0;
+            color: transparent;
+            pointer-events: auto;
+            position: relative;
+            z-index: 1;
         }
 
         .memory-card:nth-child(1) { animation-delay: 0.1s; }
@@ -1278,14 +1282,28 @@
             to {
                 opacity: 1;
                 transform: scale(1);
+                pointer-events: auto;
             }
         }
 
         .memory-card.flipped {
-            font-size: 1.8em !important;
-            background: rgba(255, 255, 255, 0.9);
-            color: #2c3e50;
+            font-size: 2em !important;
+            background: white !important;
+            color: #000 !important;
+            border: 3px solid #4CAF50 !important;
             animation: memoryCardFlip 0.5s ease;
+            font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial, sans-serif !important;
+            text-align: center !important;
+            line-height: 1 !important;
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.5) !important;
+            z-index: 999 !important;
+            opacity: 1 !important;
+            transform: scale(1) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 60px !important;
+            height: 60px !important;
         }
 
         @keyframes memoryCardFlip {
@@ -1295,8 +1313,16 @@
         }
 
         .memory-card.matched {
-            background: rgba(144, 238, 144, 0.8);
+            background: rgba(144, 238, 144, 0.9) !important;
             cursor: default;
+            font-size: 2em !important;
+            color: #000 !important;
+            border: 3px solid #4CAF50 !important;
+            font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial, sans-serif !important;
+            text-align: center !important;
+            line-height: 1 !important;
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.8) !important;
+            z-index: 999 !important;
         }
 
         /* USE EXACT SAME CSS AS SUCCESSFUL SCRATCH CARD */
