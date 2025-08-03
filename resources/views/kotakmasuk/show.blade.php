@@ -146,7 +146,7 @@
                                         </button>
                                         <div class="text-danger mt-2 small">Anda merupakan posisi paling bawah, tidak dapat mendisposisikan surat</div>
                                     @else
-                                        <a href="{{ route('kotakmasuk.disposisi', $data->id) }}" class="btn btn-info btn-sm b-r-22">Disposisi</a>
+                                <a href="{{ route('kotakmasuk.disposisi', $data->id) }}" class="btn btn-info btn-sm b-r-22">Disposisi</a>
                                     @endif
                                 @endif
                                 <!-- {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Riw. Surat</a> --}}

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('disposisis_baru_tindakans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('disposisis_baru_id')->constrained('disposisis_baru')->onDelete('cascade');
-            $table->string('tindakan_id');
+            $table->ulid('tindakan_id');
             $table->foreign('tindakan_id')->references('id')->on('master_tindakan_disposisis')->onDelete('cascade');
             $table->timestamps();
         });

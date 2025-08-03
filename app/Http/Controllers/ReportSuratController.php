@@ -57,7 +57,7 @@ class ReportSuratController extends Controller
 
     public static function getStatistik($userid, $jenisid, $tahun)
     {
-        $user = DB::table('users')
+       $user = DB::table('users')
             ->select('satkerid', 'usergroupid')
             ->where('id', $userid)
             ->first();

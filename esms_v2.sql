@@ -121,12 +121,14 @@ DROP TABLE IF EXISTS `disposisis_baru_tindakans`;
 CREATE TABLE `disposisis_baru_tindakans` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `disposisis_baru_id` bigint unsigned NOT NULL,
-  `tindakan_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tindakan_id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `disposisis_baru_tindakans_disposisis_baru_id_foreign` (`disposisis_baru_id`),
-  CONSTRAINT `disposisis_baru_tindakans_disposisis_baru_id_foreign` FOREIGN KEY (`disposisis_baru_id`) REFERENCES `disposisis_baru` (`id`) ON DELETE CASCADE
+  KEY `disposisis_baru_tindakans_tindakan_id_foreign` (`tindakan_id`),
+  CONSTRAINT `disposisis_baru_tindakans_disposisis_baru_id_foreign` FOREIGN KEY (`disposisis_baru_id`) REFERENCES `disposisis_baru` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `disposisis_baru_tindakans_tindakan_id_foreign` FOREIGN KEY (`tindakan_id`) REFERENCES `master_tindakan_disposisis` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `disposisis_baru_tindakans` */
@@ -3803,11 +3805,12 @@ insert  into `master_satkers`(`id`,`satkerid`,`kodesatker`,`satker`,`eselon`,`us
 DROP TABLE IF EXISTS `master_tindakan_disposisis`;
 
 CREATE TABLE `master_tindakan_disposisis` (
-  `id` char(26) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tindakan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `satkerid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` char(26) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tindakan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satkerid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `master_tindakan_disposisis` */
@@ -3824,7 +3827,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `migrations` */
 
@@ -3849,7 +3852,9 @@ insert  into `migrations`(`id`,`migration`,`batch`) values
 (18,'2025_07_20_191940_create_draft_surats_table',2),
 (19,'2025_07_23_033746_create_disposisis_baru_table',3),
 (20,'2025_07_23_033747_create_disposisis_baru_table',4),
-(21,'2025_07_24_000001_add_dari_id_to_disposisis_baru_table',5);
+(21,'2025_07_24_000001_add_dari_id_to_disposisis_baru_table',5),
+(22,'2025_08_03_144759_create_master_tindakan_disposisis_table_fixed',6),
+(23,'2025_07_23_034122_create_disposisis_baru_tindakans_table',7);
 
 /*Table structure for table `password_reset_tokens` */
 
