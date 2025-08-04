@@ -17,10 +17,14 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        if (Auth::user()->jabatan == 'Administrator') {
-            return $this->adminDashboard();
+        try {
+            if (Auth::user()->jabatan == 'Administrator') {
+                return $this->adminDashboard();
+            }
+            return $this->userDashboard();
+        } catch (\Exception $e) {
+            return redirect()->route('login');
         }
-        return $this->userDashboard();
     }
 
     private function adminDashboard()

@@ -69,7 +69,9 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="mb-5 text-center text-lg-start">
-                                            <h2 class="text-primary-dark f-w-600">Welcome To Esms! </h2>
+                                            <a href="/">
+                                                <h2 class="text-primary-dark f-w-600">Welcome To Esms! </h2>
+                                            </a>
                                             <p>Sign in with your data that you enterd during your registration</p>
                                         </div>
                                     </div>

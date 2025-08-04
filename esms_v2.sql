@@ -3887,6 +3887,9 @@ CREATE TABLE `sessions` (
 
 /*Data for the table `sessions` */
 
+insert  into `sessions`(`id`,`user_id`,`ip_address`,`user_agent`,`payload`,`last_activity`) values 
+('jkhRB7wCLX7e6pm5zPunR3wybPbdx5YSs5P38FRC',3,'127.0.0.1','Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiU1JBRXF2MjlCcFBzZHVEVG5UdGQ1RWtLWEhXNDJGdXA2dTF0c09TaCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9kYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO30=',1754282195);
+
 /*Table structure for table `surat_keluar_isis` */
 
 DROP TABLE IF EXISTS `surat_keluar_isis`;
