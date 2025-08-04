@@ -14,7 +14,7 @@ class EntrySuratIsiSeeder extends Seeder
      */
     public function run(): void
     {
-        $data = DB::connection('mysql2')->table('entrysurat_isi')->limit(50)->get()->map(function ($q){
+        $data = DB::connection('mysql2')->table('entrysurat_isi')->get()->map(function ($q){
             $now = now();
             $tgl_surat = ($q->tgl_surat == '0000-00-00 00:00:00' || empty($q->tgl_surat)) ? $now : $q->tgl_surat;
             $tgl_diterima = ($q->tgl_terima == '0000-00-00 00:00:00' || empty($q->tgl_terima)) ? $now : $q->tgl_terima;
