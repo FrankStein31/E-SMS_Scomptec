@@ -57,11 +57,6 @@ class User extends Authenticatable
         ];
     }
 
-    public function getAuthIdentifierName()
-    {
-        return 'username';
-    }
-
     public function masterSatker()
     {
         return $this->hasOne(MasterSatker::class, 'userid', 'id');

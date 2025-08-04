@@ -14,7 +14,7 @@
     <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="icon" type="image/x-icon">
     <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="shortcut icon" type="image/x-icon">
 
-    <title>axelit - Premium Admin Template</title>
+    <title>E-SMs Sistem Manajemen Surat</title>
 
     <!--font-awesome-css-->
     <link href="{{ asset('assets/vendor/fontawesome/css/all.css') }}" rel="stylesheet">
