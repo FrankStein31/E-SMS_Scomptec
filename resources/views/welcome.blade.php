@@ -718,7 +718,7 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="contact">
+    <!-- <section id="contact" class="contact">
         <div class="container">
             <div class="section-title animate-on-scroll">
                 <h2>Contact</h2>
@@ -775,12 +775,13 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p>&copy; 2024 <strong>E-SMS Scomptec</strong>. All Rights Reserved. Designed with ❤️ for better document
+            <p>&copy; 2025 <strong>E-SMS Sistem Manajemen Surat</strong>. All Rights Reserved. Designed with ❤️ for
+                better document
                 management.</p>
         </div>
     </footer>
