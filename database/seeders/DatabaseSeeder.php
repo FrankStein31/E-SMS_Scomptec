@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MasterSeeder::class,
             EntrySuratIsiSeeder::class,
-            MasterTindakanSeeder::class,
         ]);
     }
 }
