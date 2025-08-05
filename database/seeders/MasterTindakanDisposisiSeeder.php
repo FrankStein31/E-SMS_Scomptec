@@ -17,17 +17,31 @@ class MasterTindakanDisposisiSeeder extends Seeder
         // Membuat mapping ID untuk referensi di seeder lain
         $oldToNewIdMapping = [];
 
-        $data = DB::connection('mysql2')->table('master_tindakandisposisi')->get()->each(function ($q) use (&$oldToNewIdMapping) {
-            $newEntry = MasterTindakanDisposisi::create([
-                'tindakan' => $q->Tindakan,
-                'satkerid' => $q->SatkerID,
-            ]);
+        // Process dalam batch untuk menghemat memory
+        $batchSize = 1000;
+        $totalRecords = DB::connection('mysql2')->table('master_tindakandisposisi')->count();
+        $processedRecords = 0;
+        
+        echo "Processing {$totalRecords} records in batches of {$batchSize}...\n";
 
-            // Simpan mapping ID lama ke ID baru
-            $oldToNewIdMapping[$q->TindakanID] = $newEntry->id;
+        DB::connection('mysql2')->table('master_tindakandisposisi')->orderBy('TindakanID')->chunk($batchSize, function ($records) use (&$oldToNewIdMapping, &$processedRecords, $totalRecords) {
+            foreach ($records as $q) {
+                $newEntry = MasterTindakanDisposisi::create([
+                    'tindakan' => $q->Tindakan,
+                    'satkerid' => $q->SatkerID,
+                ]);
+
+                // Simpan mapping ID lama ke ID baru
+                $oldToNewIdMapping[$q->TindakanID] = $newEntry->id;
+            }
+            
+            $processedRecords += count($records);
+            echo "Processed {$processedRecords}/{$totalRecords} records...\n";
         });
 
         // Simpan mapping ke cache untuk digunakan seeder lain
         cache(['master_tindakan_disposisi_id_mapping' => $oldToNewIdMapping], now()->addHours(1));
+        
+        echo "Completed processing all records.\n";
     }
 }

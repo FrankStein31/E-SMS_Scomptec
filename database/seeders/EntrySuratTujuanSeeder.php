@@ -26,7 +26,7 @@ class EntrySuratTujuanSeeder extends Seeder
         
         echo "Processing {$totalRecords} records in batches of {$batchSize}...\n";
         
-        DB::connection('mysql2')->table('entrysurat_tujuan')->chunk($batchSize, function ($records) use ($idMapping, &$processedRecords, $totalRecords) {
+        DB::connection('mysql2')->table('entrysurat_tujuan')->orderBy('entrysurat_id')->chunk($batchSize, function ($records) use ($idMapping, &$processedRecords, $totalRecords) {
             $insertData = [];
             
             foreach ($records as $q) {
