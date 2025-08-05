@@ -18,50 +18,62 @@ class MasterSeeder extends Seeder
      */
     public function run(): void
     {
-        MasterJenisSurat::create([
-            'last_id' => '0',
-            'name' => 'Surat Masuk',
-        ]);
-        DB::connection('mysql2')->table('master_jenissurat')->get()->map(function ($q) {
-            MasterJenisSurat::create([
-                'last_id' => $q->jenis_id,
-                'name' => $q->jenis,
-            ]);
+        // Import Master Jenis Surat
+        echo "Importing Master Jenis Surat...\n";
+        DB::connection('mysql2')->table('master_jenissurat')->orderBy('jenis_id')->chunk(1000, function ($records) {
+            foreach ($records as $q) {
+                MasterJenisSurat::create([
+                    'last_id' => $q->jenis_id,
+                    'name' => $q->jenis,
+                ]);
+            }
         });
 
-        DB::connection('mysql2')->table('master_klasifikasi')->get()->map(function ($q) {
-            MasterKlasifikasi::create([
-                'kodeklasifikasi' => $q->kodeklasifikasi,
-                'klasifikasi' => $q->klasifikasi,
-                'retensi_aktif' => $q->retensi_aktif,
-                'retensi_inaktif' => $q->retensi_inaktif,
-                'keterangan' => $q->keterangan,
-                'retensi' => $q->retensi,
-                'parent' => $q->parent,
-            ]);
+        // Import Master Klasifikasi
+        echo "Importing Master Klasifikasi...\n";
+        DB::connection('mysql2')->table('master_klasifikasi')->orderBy('kodeklasifikasi')->chunk(1000, function ($records) {
+            foreach ($records as $q) {
+                MasterKlasifikasi::create([
+                    'kodeklasifikasi' => $q->kodeklasifikasi,
+                    'klasifikasi' => $q->klasifikasi,
+                    'retensi_aktif' => $q->retensi_aktif,
+                    'retensi_inaktif' => $q->retensi_inaktif,
+                    'keterangan' => $q->keterangan,
+                    'retensi' => $q->retensi,
+                    'parent' => $q->parent,
+                ]);
+            }
         });
 
-        DB::connection('mysql2')->table('master_instansi')->get()->map(function ($q) {
-            MasterInstansi::create([
-                'last_id' => $q->instansiid,
-                'instansi' => $q->instansi,
-                'kepala' => $q->kepala,
-                'alamat' => $q->alamat,
-                'kota' => $q->kota,
-                'telp' => $q->telp,
-            ]);
+        // Import Master Instansi
+        echo "Importing Master Instansi...\n";
+        DB::connection('mysql2')->table('master_instansi')->orderBy('instansiid')->chunk(1000, function ($records) {
+            foreach ($records as $q) {
+                MasterInstansi::create([
+                    'last_id' => $q->instansiid,
+                    'instansi' => $q->instansi,
+                    'kepala' => $q->kepala,
+                    'alamat' => $q->alamat,
+                    'kota' => $q->kota,
+                    'telp' => $q->telp,
+                ]);
+            }
         });
 
-        DB::connection('mysql2')->table('master_satker')->get()->map(function ($q) {
-            MasterSatker::create([
-                'satkerid' => $q->satkerid,
-                'kodesatker' => $q->kodesatker,
-                'satker' => $q->satker,
-                'eselon' => $q->eselon,
-                'userid' => User::find($q->userid)->id ?? null,
-            ]);
+        // Import Master Satker
+        echo "Importing Master Satker...\n";
+        DB::connection('mysql2')->table('master_satker')->orderBy('satkerid')->chunk(1000, function ($records) {
+            foreach ($records as $q) {
+                MasterSatker::create([
+                    'satkerid' => $q->satkerid,
+                    'kodesatker' => $q->kodesatker,
+                    'satker' => $q->satker,
+                    'eselon' => $q->eselon,
+                    'userid' => User::find($q->userid)->id ?? null,
+                ]);
+            }
         });
 
-
+        echo "Master data imported successfully!\n";
     }
 }
