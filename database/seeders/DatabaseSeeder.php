@@ -17,7 +17,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             MasterSeeder::class,
+            MasterTindakanDisposisiSeeder::class,
             EntrySuratIsiSeeder::class,
+            EntrySuratLampiranSeeder::class,
+            EntrySuratTujuanSeeder::class,
+            EntrySuratScanSeeder::class,
+            DisposisiSeeder::class,
         ]);
     }
 }

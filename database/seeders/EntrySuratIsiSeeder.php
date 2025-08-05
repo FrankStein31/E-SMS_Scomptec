@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\EntrySuratIsi;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -14,13 +15,35 @@ class EntrySuratIsiSeeder extends Seeder
      */
     public function run(): void
     {
-        $data = DB::connection('mysql2')->table('entrysurat_isi')->get()->map(function ($q){
+        // Membuat mapping ID untuk referensi di seeder lain
+        $oldToNewIdMapping = [];
+
+        $data = DB::connection('mysql2')->table('entrysurat_isi')->get()->each(function ($q) use (&$oldToNewIdMapping) {
             $now = now();
             $tgl_surat = ($q->tgl_surat == '0000-00-00 00:00:00' || empty($q->tgl_surat)) ? $now : $q->tgl_surat;
             $tgl_diterima = ($q->tgl_terima == '0000-00-00 00:00:00' || empty($q->tgl_terima)) ? $now : $q->tgl_terima;
             $tgl_diarahkan = ($q->tgl_diarahkan == '0000-00-00 00:00:00' || empty($q->tgl_diarahkan)) ? $now : $q->tgl_diarahkan;
             $tgl_update = ($q->tgl_update == '0000-00-00 00:00:00' || empty($q->tgl_update)) ? $now : $q->tgl_update;
-            $insert = EntrySuratIsi::create([
+
+            // Map user ID dari database lama ke database baru
+            $created_by = null;
+            if ($q->userid_pembuat) {
+                $user = User::find($q->userid_pembuat);
+                $created_by = $user ? $user->id : null;
+            }
+
+            $updated_by = null;
+            if ($q->userid_update && $q->userid_update != 0) {
+                $user = User::find($q->userid_update);
+                $updated_by = $user ? $user->id : null;
+            }
+
+            // Skip jika created_by null karena foreign key constraint
+            if (!$created_by) {
+                return;
+            }
+
+            $newEntry = EntrySuratIsi::create([
                 'jenis_id' => $q->jenis_id,
                 'nomor_surat' => $q->nosurat,
                 'kode_klasifikasi' => $q->kodeklasifikasi,
@@ -35,16 +58,22 @@ class EntrySuratIsiSeeder extends Seeder
                 'isi' => $q->isi,
                 'tembusan' => $q->tembusan,
                 'isfinal' => $q->isfinal,
-                'created_by' => $q->userid_pembuat,
+                'created_by' => $created_by,
                 'satkerid_pembuat' => $q->satkerid_pembuat,
                 'jumlah_lampiran' => $q->jml_lampiran,
                 'referensi_id' => $q->referensi_id,
                 'noagenda' => $q->noagenda,
                 'tgl_update' => $tgl_update,
-                'updated_by' => null,
+                'updated_by' => $updated_by,
                 'satkerid_update' => $q->satkerid_update,
                 'terdisposisi' => $q->terdisposisi,
             ]);
+
+            // Simpan mapping ID lama ke ID baru
+            $oldToNewIdMapping[$q->entrysurat_id] = $newEntry->id;
         });
+
+        // Simpan mapping ke cache untuk digunakan seeder lain
+        cache(['entrysurat_id_mapping' => $oldToNewIdMapping], now()->addHours(1));
     }
 }
