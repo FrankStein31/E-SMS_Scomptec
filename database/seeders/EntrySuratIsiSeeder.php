@@ -52,6 +52,7 @@ class EntrySuratIsiSeeder extends Seeder
                 }
 
                 $newEntry = EntrySuratIsi::create([
+                    'last_id' => $q->entrysurat_id,
                     'jenis_id' => $q->jenis_id,
                     'nomor_surat' => $q->nosurat,
                     'kode_klasifikasi' => $q->kodeklasifikasi,

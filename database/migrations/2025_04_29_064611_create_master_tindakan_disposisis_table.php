@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('master_tindakan_disposisis', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->integer('last_id')->nullable()->unique()->comment('ID lama dari database esms');
             $table->string('tindakan');
             $table->string('satkerid');
             $table->timestamps();

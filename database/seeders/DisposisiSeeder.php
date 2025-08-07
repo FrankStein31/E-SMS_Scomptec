@@ -55,6 +55,7 @@ class DisposisiSeeder extends Seeder
                 $parent_id = $q->parent_id != 0 ? $q->parent_id : null;
                 
                 $newEntry = Disposisi::create([
+                    'last_id' => $q->disposisi_id,
                     'entrysurat_id' => $entrySuratIdMapping[$q->entrysurat_id],
                     'parent_id' => null, // Akan diupdate nanti
                     'kodeklasifikasi' => $q->kodeklasifikasi,

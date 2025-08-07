@@ -50,6 +50,7 @@ class DisposisiBaruSeeder extends Seeder
                 }
                 
                 $newEntry = DisposisiBaru::create([
+                    'last_id' => $q->disposisi_id,
                     'entrysurat_id' => $entrySuratIdMapping[$q->entrysurat_id],
                     'dari_id' => $dari_id,
                     'kepada' => $q->kepada,

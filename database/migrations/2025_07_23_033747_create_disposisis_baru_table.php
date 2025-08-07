@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('disposisis_baru', function (Blueprint $table) {
             $table->id();
+            $table->integer('last_id')->nullable()->unique()->comment('ID lama dari database esms');
             $table->ulid('entrysurat_id');
             $table->foreign('entrysurat_id')->references('id')->on('entry_surat_isis')->onDelete('cascade');
             $table->text('kepada'); // multi user, id user dipisah koma
