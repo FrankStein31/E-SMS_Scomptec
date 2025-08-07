@@ -590,7 +590,7 @@
                         teknologi digital terdepan</h2>
                     @auth
                         <a href="{{ route('dashboard') }}" class="hero-btn animate-on-scroll">
-                            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                            <i class="bi bi-speedometer2 me-2"></i>Balik kerja yukkk, Klik disini yaa !!!
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="hero-btn animate-on-scroll">
