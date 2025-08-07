@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('entry_surat_isis', function (Blueprint $table) {
             $table->ulid('id')->primary();
+            $table->integer('last_id')->nullable()->unique()->comment('ID lama dari database esms');
             $table->string('jenis_id')->default(0)->comment('ini table dari master_jenissurat_join');
             $table->string('nomor_surat')->nullable();
             $table->string('kode_klasifikasi')->nullable();

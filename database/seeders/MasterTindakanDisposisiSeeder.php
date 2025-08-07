@@ -27,6 +27,7 @@ class MasterTindakanDisposisiSeeder extends Seeder
         DB::connection('mysql2')->table('master_tindakandisposisi')->orderBy('TindakanID')->chunk($batchSize, function ($records) use (&$oldToNewIdMapping, &$processedRecords, $totalRecords) {
             foreach ($records as $q) {
                 $newEntry = MasterTindakanDisposisi::create([
+                    'last_id' => $q->TindakanID,
                     'tindakan' => $q->Tindakan,
                     'satkerid' => $q->SatkerID,
                 ]);
