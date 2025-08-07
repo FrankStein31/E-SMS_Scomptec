@@ -536,9 +536,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#features">Features</a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="#contact">Contact</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         @auth
                             <div class="dropdown">
