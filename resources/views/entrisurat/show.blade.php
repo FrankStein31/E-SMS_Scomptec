@@ -330,7 +330,7 @@
                                             Jenis
                                         </th>
                                         <td>
-                                            {{ $data->jenis->name }}
+                                            {{ $data->jenis->name ?? '-' }}
                                         </td>
                                     </tr>
                                     <tr>
