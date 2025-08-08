@@ -32,7 +32,80 @@
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    
 
+    <!-- Fix untuk tabel DataTables agar bisa di-klik dan di-select -->
+    <style>
+        .dataTables_wrapper table,
+        .dataTables_wrapper table tbody,
+        .dataTables_wrapper table tbody tr,
+        .dataTables_wrapper table tbody tr td {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            pointer-events: auto !important;
+            cursor: text !important;
+        }
+
+        .dataTables_wrapper table tbody tr:hover {
+            background-color: #f8f9fa !important;
+            cursor: pointer !important;
+        }
+
+        .dataTables_wrapper table tbody tr td {
+            cursor: text !important;
+        }
+
+        /* Pastikan link dan button tetap bisa di-klik */
+        .dataTables_wrapper table tbody tr td a,
+        .dataTables_wrapper table tbody tr td button,
+        .dataTables_wrapper table tbody tr td .btn {
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            user-select: none !important;
+        }
+
+        /* Override untuk elemen yang seharusnya tidak bisa di-select */
+        .dataTables_wrapper .dataTables_length,
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_info,
+        .dataTables_wrapper .dataTables_paginate {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+        }
+
+        /* Fix untuk semua tabel di aplikasi */
+        .table,
+        .table tbody,
+        .table tbody tr,
+        .table tbody tr td {
+            user-select: text !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            pointer-events: auto !important;
+        }
+
+        .table tbody tr:hover {
+            background-color: #f8f9fa !important;
+        }
+
+        .table tbody tr td {
+            cursor: text !important;
+        }
+
+        /* Pastikan elemen interaktif tetap berfungsi */
+        .table tbody tr td a,
+        .table tbody tr td button,
+        .table tbody tr td .btn {
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            user-select: none !important;
+        }
+    </style>
 
     <title>E-SMS Sistem Manajemen Surat</title>
 
