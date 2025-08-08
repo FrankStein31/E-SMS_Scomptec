@@ -24,20 +24,20 @@ class UserSeeder extends Seeder
         
         DB::connection('mysql2')->table('master_user')->orderBy('userid')->chunk($batchSize, function ($records) use (&$processedRecords, $totalRecords) {
             foreach ($records as $q) {
-                User::create([
-                    'id' => $q->userid,
-                    'username' => $q->username,
-                    'fullname' => $q->fullname,
-                    'jabatan' => $q->jabatan,
-                    'satkerid' => $q->satkerid,
-                    'nip' => $q->nip,
-                    'usergroupid' => $q->usergroupid,
-                    'email' => $q->email,
-                    'email_verified_at' => null,
-                    'last_notif' => $q->last_notif,
-                    'pangkat' => $q->pangkat,
-                    'password' => Hash::make("password"),
-                ]);
+            User::create([
+                'id' => $q->userid,
+                'username' => $q->username,
+                'fullname' => $q->fullname,
+                'jabatan' => $q->jabatan,
+                'satkerid' => $q->satkerid,
+                'nip' => $q->nip,
+                'usergroupid' => $q->usergroupid,
+                'email' => $q->email,
+                'email_verified_at' => null,
+                'last_notif' => $q->last_notif,
+                'pangkat' => $q->pangkat,
+                'password' => Hash::make("password"),
+            ]);
             }
             
             $processedRecords += count($records);

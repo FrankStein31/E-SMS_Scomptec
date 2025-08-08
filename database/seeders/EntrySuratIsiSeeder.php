@@ -27,11 +27,11 @@ class EntrySuratIsiSeeder extends Seeder
 
         DB::connection('mysql2')->table('entrysurat_isi')->orderBy('entrysurat_id')->chunk($batchSize, function ($records) use (&$oldToNewIdMapping, &$processedRecords, $totalRecords) {
             foreach ($records as $q) {
-                $now = now();
-                $tgl_surat = ($q->tgl_surat == '0000-00-00 00:00:00' || empty($q->tgl_surat)) ? $now : $q->tgl_surat;
-                $tgl_diterima = ($q->tgl_terima == '0000-00-00 00:00:00' || empty($q->tgl_terima)) ? $now : $q->tgl_terima;
-                $tgl_diarahkan = ($q->tgl_diarahkan == '0000-00-00 00:00:00' || empty($q->tgl_diarahkan)) ? $now : $q->tgl_diarahkan;
-                $tgl_update = ($q->tgl_update == '0000-00-00 00:00:00' || empty($q->tgl_update)) ? $now : $q->tgl_update;
+            $now = now();
+            $tgl_surat = ($q->tgl_surat == '0000-00-00 00:00:00' || empty($q->tgl_surat)) ? $now : $q->tgl_surat;
+            $tgl_diterima = ($q->tgl_terima == '0000-00-00 00:00:00' || empty($q->tgl_terima)) ? $now : $q->tgl_terima;
+            $tgl_diarahkan = ($q->tgl_diarahkan == '0000-00-00 00:00:00' || empty($q->tgl_diarahkan)) ? $now : $q->tgl_diarahkan;
+            $tgl_update = ($q->tgl_update == '0000-00-00 00:00:00' || empty($q->tgl_update)) ? $now : $q->tgl_update;
 
                 // Map user ID dari database lama ke database baru
                 $created_by = null;
@@ -53,30 +53,30 @@ class EntrySuratIsiSeeder extends Seeder
 
                 $newEntry = EntrySuratIsi::create([
                     'last_id' => $q->entrysurat_id,
-                    'jenis_id' => $q->jenis_id,
-                    'nomor_surat' => $q->nosurat,
-                    'kode_klasifikasi' => $q->kodeklasifikasi,
-                    'hal' => $q->hal,
-                    'kepada' => $q->kepada,
-                    'dari' => $q->dari,
-                    'alamat' => $q->alamat,
-                    'tgl_surat' => $tgl_surat,
-                    'tgl_diterima' => $tgl_diterima,
-                    'tgl_diarahkan' => $tgl_diarahkan,
-                    'sifat' => $q->sifat,
-                    'isi' => $q->isi,
-                    'tembusan' => $q->tembusan,
-                    'isfinal' => $q->isfinal,
+                'jenis_id' => $q->jenis_id,
+                'nomor_surat' => $q->nosurat,
+                'kode_klasifikasi' => $q->kodeklasifikasi,
+                'hal' => $q->hal,
+                'kepada' => $q->kepada,
+                'dari' => $q->dari,
+                'alamat' => $q->alamat,
+                'tgl_surat' => $tgl_surat,
+                'tgl_diterima' => $tgl_diterima,
+                'tgl_diarahkan' => $tgl_diarahkan,
+                'sifat' => $q->sifat,
+                'isi' => $q->isi,
+                'tembusan' => $q->tembusan,
+                'isfinal' => $q->isfinal,
                     'created_by' => $created_by,
-                    'satkerid_pembuat' => $q->satkerid_pembuat,
-                    'jumlah_lampiran' => $q->jml_lampiran,
-                    'referensi_id' => $q->referensi_id,
-                    'noagenda' => $q->noagenda,
-                    'tgl_update' => $tgl_update,
+                'satkerid_pembuat' => $q->satkerid_pembuat,
+                'jumlah_lampiran' => $q->jml_lampiran,
+                'referensi_id' => $q->referensi_id,
+                'noagenda' => $q->noagenda,
+                'tgl_update' => $tgl_update,
                     'updated_by' => $updated_by,
-                    'satkerid_update' => $q->satkerid_update,
-                    'terdisposisi' => $q->terdisposisi,
-                ]);
+                'satkerid_update' => $q->satkerid_update,
+                'terdisposisi' => $q->terdisposisi,
+            ]);
 
                 // Simpan mapping ID lama ke ID baru
                 $oldToNewIdMapping[$q->entrysurat_id] = $newEntry->id;

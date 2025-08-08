@@ -22,10 +22,10 @@ class MasterSeeder extends Seeder
         echo "Importing Master Jenis Surat...\n";
         DB::connection('mysql2')->table('master_jenissurat')->orderBy('jenis_id')->chunk(1000, function ($records) {
             foreach ($records as $q) {
-                MasterJenisSurat::create([
-                    'last_id' => $q->jenis_id,
-                    'name' => $q->jenis,
-                ]);
+            MasterJenisSurat::create([
+                'last_id' => $q->jenis_id,
+                'name' => $q->jenis,
+            ]);
             }
         });
 
@@ -33,15 +33,15 @@ class MasterSeeder extends Seeder
         echo "Importing Master Klasifikasi...\n";
         DB::connection('mysql2')->table('master_klasifikasi')->orderBy('kodeklasifikasi')->chunk(1000, function ($records) {
             foreach ($records as $q) {
-                MasterKlasifikasi::create([
-                    'kodeklasifikasi' => $q->kodeklasifikasi,
-                    'klasifikasi' => $q->klasifikasi,
-                    'retensi_aktif' => $q->retensi_aktif,
-                    'retensi_inaktif' => $q->retensi_inaktif,
-                    'keterangan' => $q->keterangan,
-                    'retensi' => $q->retensi,
-                    'parent' => $q->parent,
-                ]);
+            MasterKlasifikasi::create([
+                'kodeklasifikasi' => $q->kodeklasifikasi,
+                'klasifikasi' => $q->klasifikasi,
+                'retensi_aktif' => $q->retensi_aktif,
+                'retensi_inaktif' => $q->retensi_inaktif,
+                'keterangan' => $q->keterangan,
+                'retensi' => $q->retensi,
+                'parent' => $q->parent,
+            ]);
             }
         });
 
@@ -49,14 +49,14 @@ class MasterSeeder extends Seeder
         echo "Importing Master Instansi...\n";
         DB::connection('mysql2')->table('master_instansi')->orderBy('instansiid')->chunk(1000, function ($records) {
             foreach ($records as $q) {
-                MasterInstansi::create([
-                    'last_id' => $q->instansiid,
-                    'instansi' => $q->instansi,
-                    'kepala' => $q->kepala,
-                    'alamat' => $q->alamat,
-                    'kota' => $q->kota,
-                    'telp' => $q->telp,
-                ]);
+            MasterInstansi::create([
+                'last_id' => $q->instansiid,
+                'instansi' => $q->instansi,
+                'kepala' => $q->kepala,
+                'alamat' => $q->alamat,
+                'kota' => $q->kota,
+                'telp' => $q->telp,
+            ]);
             }
         });
 
@@ -64,13 +64,13 @@ class MasterSeeder extends Seeder
         echo "Importing Master Satker...\n";
         DB::connection('mysql2')->table('master_satker')->orderBy('satkerid')->chunk(1000, function ($records) {
             foreach ($records as $q) {
-                MasterSatker::create([
-                    'satkerid' => $q->satkerid,
-                    'kodesatker' => $q->kodesatker,
-                    'satker' => $q->satker,
-                    'eselon' => $q->eselon,
-                    'userid' => User::find($q->userid)->id ?? null,
-                ]);
+            MasterSatker::create([
+                'satkerid' => $q->satkerid,
+                'kodesatker' => $q->kodesatker,
+                'satker' => $q->satker,
+                'eselon' => $q->eselon,
+                'userid' => User::find($q->userid)->id ?? null,
+            ]);
             }
         });
 

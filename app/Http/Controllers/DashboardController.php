@@ -21,6 +21,9 @@ class DashboardController extends Controller
             if (Auth::user()->jabatan == 'Administrator') {
                 return $this->adminDashboard();
             }
+            // if (Auth::user()->jabatan == 'Operator') {
+            //     return $this->operatorDashboard();
+            // }
             return $this->userDashboard();
         } catch (\Exception $e) {
             return redirect()->route('login');
@@ -101,6 +104,25 @@ class DashboardController extends Controller
             // 'latest_surat_masuk' => $latest_surat_masuk,
             // 'latest_surat_keluar' => $latest_surat_keluar,
             // 'latest_draft' => $latest_draft
+        ]);
+    }
+
+    private function operatorDashboard()
+    {
+        $userId = Auth::user()->id;
+
+        $total_entry_surat = EntrySuratIsi::count();
+
+        $total_disposisi = \App\Models\DisposisiBaru::with('tindakans', 'entrysurat')
+            ->where(function ($query) use ($userId) {
+                $query->whereRaw("FIND_IN_SET(?, kepada)", [$userId]);
+            })
+            ->latest()
+            ->count();
+
+        return view('dashboard.operator', [
+            'total_disposisi' => $total_disposisi,
+            'total_entry_surat' => $total_entry_surat,
         ]);
     }
 }

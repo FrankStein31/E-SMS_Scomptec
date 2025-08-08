@@ -29,17 +29,17 @@ class EntrySuratLampiranSeeder extends Seeder
             $insertData = [];
             
             foreach ($records as $q) {
-                // Gunakan mapping ID yang sudah disimpan
-                if (isset($idMapping[$q->entrysurat_id])) {
-                    $tgl_upload = ($q->tgl_upload == '0000-00-00 00:00:00' || empty($q->tgl_upload)) ? now() : $q->tgl_upload;
-                    
+            // Gunakan mapping ID yang sudah disimpan
+            if (isset($idMapping[$q->entrysurat_id])) {
+                $tgl_upload = ($q->tgl_upload == '0000-00-00 00:00:00' || empty($q->tgl_upload)) ? now() : $q->tgl_upload;
+                
                     $insertData[] = [
                         'id' => \Illuminate\Support\Str::ulid(),
-                        'entrysurat_id' => $idMapping[$q->entrysurat_id],
-                        'nama_lampiran' => $q->nama_lampiran,
-                        'nama_file' => $q->nama_file,
-                        'size' => $q->size,
-                        'tgl_upload' => $tgl_upload,
+                    'entrysurat_id' => $idMapping[$q->entrysurat_id],
+                    'nama_lampiran' => $q->nama_lampiran,
+                    'nama_file' => $q->nama_file,
+                    'size' => $q->size,
+                    'tgl_upload' => $tgl_upload,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];

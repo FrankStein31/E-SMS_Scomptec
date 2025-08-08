@@ -51,7 +51,7 @@ class EntrySuratIsiDataTable extends DataTable
      */
     public function query(EntrySuratIsi $model): QueryBuilder
     {
-        $query = $model->newQuery();
+        $query = $model->newQuery()->with('createdBy');
         // Filter sifat
         $sifat = $this->request->get('sifat');
         if ($sifat !== null && $sifat !== '') {
