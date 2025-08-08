@@ -108,7 +108,12 @@ class EntriSuratController extends Controller
     {
         $userId = Auth::user()->id;
         if ($request->ajax()) {
-            $request->merge(['unit_pengentri' => $userId]);
+            // Jika tidak ada filter unit_pengentri yang dipilih, maka tampilkan semua
+            // Atau jika Anda ingin membatasi hanya entri surat milik user yang login, 
+            // uncomment baris berikut:
+            // if (!$request->has('unit_pengentri') || $request->get('unit_pengentri') == '') {
+            //     $request->merge(['unit_pengentri' => $userId]);
+            // }
             return $dataTable->ajax();
         }
         return $dataTable->render('entrisurat.index');

@@ -70,7 +70,7 @@ class EntrySuratIsiDataTable extends DataTable
         // Filter tujuan
         $tujuan = $this->request->get('tujuan');
         if ($tujuan !== null && $tujuan !== '') {
-            $query->where('kepada', $tujuan);
+            $query->where('kepada', 'LIKE', '%' . $tujuan . '%');
         }
         return $query;
     }
