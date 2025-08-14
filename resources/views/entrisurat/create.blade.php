@@ -4,7 +4,7 @@
     <main>
         <div class="container-fluid">
             <!-- Breadcrumb start -->
-            <div class="row m-1">
+            <!-- <div class="row m-1">
                 <div class="col-12 ">
                     <h5 class="main-title">Entri Surat</h5>
                     <ul class="app-line-breadcrumbs mb-3">
@@ -20,7 +20,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
             <!-- Breadcrumb end -->
 
             @include('layout.alert')
