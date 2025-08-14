@@ -6,7 +6,7 @@
             <!-- Breadcrumb start -->
             <!-- <div class="row m-1">
                 <div class="col-12 ">
-                    <h5 class="main-title">Entri Surat</h5>
+                    <h5 class="main-title">Edit Entri Surat</h5>
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">
                             <a class="f-s-14 f-w-500" href="#">
@@ -15,8 +15,11 @@
                                 </span>
                             </a>
                         </li>
+                        <li class="">
+                            <a class="f-s-14 f-w-500" href="{{ route('entrisurat.index') }}">Entri Surat</a>
+                        </li>
                         <li class="active">
-                            <a class="f-s-14 f-w-500" href="#">Entri Surat</a>
+                            <a class="f-s-14 f-w-500" href="#">Edit</a>
                         </li>
                     </ul>
                 </div>
@@ -25,7 +28,7 @@
 
             @include('layout.alert')
 
-            <!-- Blank start -->
+            <!-- Edit Form start -->
             <div class="row">
                 <!-- Default Card start -->
                 <div class="col-md-12">
@@ -33,7 +36,7 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
-                                    <h5>Form Entri Surat</h5>
+                                    <h5>Form Edit Entri Surat</h5>
                                 </div>
                                 <div class="col text-end">
                                     <a href="{{ route('entrisurat.index') }}" class="btn btn-info btn-sm">Daftar Entri
@@ -42,14 +45,26 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('entrisurat.store') }}" class="app-form" method="post">
+                        <!-- Debug data
+                            <div class="alert alert-info">
+                                <small>
+                                    Debug: klasifikasi = {{ $data->kode_klasifikasi }}<br>
+                                    Debug: selectedKepada = {{ json_encode($selectedKepada) }}<br>
+                                    Debug: sifat = {{ $data->sifat }}<br>
+                                    Debug: jenis_id = {{ $data->jenis_id }}
+                                </small>
+                            </div> -->
+                            
+                            <form action="{{ route('entrisurat.update', $data->id) }}" class="app-form" method="post">
                                 @csrf
+                                @method('PUT')
                                 <div class="row mb-2">
                                     <div class="col-md-2">
                                         <label class="form-label">No. Surat</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm" name="no_surat" type="text">
+                                        <input class="form-control form-control-sm" name="no_surat" type="text" 
+                                               value="{{ old('no_surat', $data->nomor_surat ?? '') }}">
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -57,7 +72,8 @@
                                         <label class="form-label">Hal</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm" name="hal" type="text">
+                                        <input class="form-control form-control-sm" name="hal" type="text" 
+                                               value="{{ old('hal', $data->hal ?? '') }}">
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -69,8 +85,10 @@
                                             name="klasifikasi">
                                             <option value="">Pilih Jenis Klasifikasi</option>
                                             @foreach ($klasifikasi as $item)
-                                                <option value="{{ $item->id }}">{{ $item->kodeklasifikasi }} -
-                                                    {{ $item->klasifikasi }}</option>
+                                                <option value="{{ $item->id }}" 
+                                                    {{ old('klasifikasi', $data->kode_klasifikasi) == $item->id ? 'selected' : '' }}>
+                                                    {{ $item->kodeklasifikasi }} - {{ $item->klasifikasi }}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -84,8 +102,10 @@
                                             <option value="">Pilih Kepada</option>
                                             @foreach ($users as $item)
                                                 @if (strtolower($item['Jabatan2']) != 'administrator')
-                                                    <option value="{{ $item['id'] }}">{{ $item['FullName'] }} -
-                                                        {{ $item['Jabatan2'] }}</option>
+                                                    <option value="{{ $item['id'] }}" 
+                                                        {{ in_array($item['id'], $selectedKepada) ? 'selected' : '' }}>
+                                                        {{ $item['FullName'] }} - {{ $item['Jabatan2'] }}
+                                                    </option>
                                                 @endif
                                             @endforeach
                                         </select>
@@ -96,7 +116,8 @@
                                         <label class="form-label">Dari</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm" name="dari" type="text">
+                                        <input class="form-control form-control-sm" name="dari" type="text" 
+                                               value="{{ old('dari', $data->dari ?? '') }}">
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -104,7 +125,7 @@
                                         <label class="form-label">Alamat</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <textarea class="form-control" id="alamat" name="alamat" placeholder="...." rows="1"></textarea>
+                                        <textarea class="form-control" id="alamat" name="alamat" placeholder="...." rows="1">{{ old('alamat', $data->alamat ?? '') }}</textarea>
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -114,11 +135,12 @@
                                     <div class="col-md-9">
                                         <div class="row">
                                             <div class="col">
-                                                <input class="form-control form-control-sm" type="date" name="tgl_surat">
+                                                <input class="form-control form-control-sm" type="date" name="tgl_surat" 
+                                                       value="{{ old('tgl_surat', $data->tgl_surat ?? '') }}">
                                             </div>
                                             <div class="col">
-                                                <input class="form-control form-control-sm" type="date"
-                                                    name="tgl_terima">
+                                                <input class="form-control form-control-sm" type="date" name="tgl_terima" 
+                                                       value="{{ old('tgl_terima', $data->tgl_diterima ?? '') }}">
                                             </div>
                                         </div>
                                     </div>
@@ -133,7 +155,7 @@
                                             <option disabled>Pilih Jenis Surat</option>
                                             @foreach ($jenisSurat as $item)
                                                 <option value="{{ $item->last_id }}"
-                                                    {{ $item->last_id == $default_jenis_surat_last_id ? 'selected' : '' }}>
+                                                    {{ old('jenis_surat', $data->jenis_id ?? '') == $item->last_id ? 'selected' : '' }}>
                                                     {{ $item->name }}
                                                 </option>
                                             @endforeach
@@ -150,7 +172,8 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default1"
-                                                        name="sifat" checked value="1" type="radio">
+                                                        name="sifat" value="1" type="radio" 
+                                                        {{ old('sifat', $data->sifat ?? '') == '1' ? 'checked' : '' }}>
                                                     <label class="form-check-label" for="radio_default1">
                                                         Penting
                                                     </label>
@@ -159,7 +182,8 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default2"
-                                                        name="sifat" value="2" type="radio">
+                                                        name="sifat" value="2" type="radio" 
+                                                        {{ old('sifat', $data->sifat ?? '') == '2' ? 'checked' : '' }}>
                                                     <label class="form-check-label" for="radio_default2">
                                                         Rahasia
                                                     </label>
@@ -168,7 +192,8 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default13"
-                                                        name="sifat" value="3" type="radio">
+                                                        name="sifat" value="3" type="radio" 
+                                                        {{ old('sifat', $data->sifat ?? '') == '3' ? 'checked' : '' }}>
                                                     <label class="form-check-label" for="radio_default13">
                                                         Biasa
                                                     </label>
@@ -177,7 +202,8 @@
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input f-s-18 mb-1 m-1" id="radio_default14"
-                                                        name="sifat" value="4" type="radio">
+                                                        name="sifat" value="4" type="radio" 
+                                                        {{ old('sifat', $data->sifat ?? '') == '4' ? 'checked' : '' }}>
                                                     <label class="form-check-label" for="radio_default14">
                                                         Pribadi
                                                     </label>
@@ -191,7 +217,8 @@
                                         <label class="form-label">Lampiran</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm" name="lampiran" type="text">
+                                        <input class="form-control form-control-sm" name="lampiran" type="text" 
+                                               value="{{ old('lampiran', $data->jumlah_lampiran ?? '') }}">
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -199,7 +226,8 @@
                                         <label class="form-label">Ringkasan</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm" name="ringkasan" type="text">
+                                        <input class="form-control form-control-sm" name="ringkasan" type="text" 
+                                               value="{{ old('ringkasan', $data->isi ?? '') }}">
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -207,7 +235,8 @@
                                         <label class="form-label">Tembusan</label>
                                     </div>
                                     <div class="col-md-9">
-                                        <input class="form-control form-control-sm" name="tembusan" type="text">
+                                        <input class="form-control form-control-sm" name="tembusan" type="text" 
+                                               value="{{ old('tembusan', $data->tembusan ?? '') }}">
                                     </div>
                                 </div>
                                 <div class="row mb-2">
@@ -215,17 +244,35 @@
                                         <label class="form-label"></label>
                                     </div>
                                     <div class="col-md-9">
-                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                        <a href="{{ route('entrisurat.index') }}" class="btn btn-secondary">Batal</a>
                                     </div>
                                 </div>
                             </form>
                         </div>
                     </div>
                 </div>
-
                 <!-- Default Card end -->
             </div>
-            <!-- Blank end -->
+            <!-- Edit Form end -->
         </div>
     </main>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            // Initialize Select2 for multiple select
+            $('.select-1').select2({
+                placeholder: "Pilih Kepada",
+                allowClear: true,
+                width: '100%'
+            });
+            
+            // Initialize Select2 for single select
+            $('.select-basic').select2({
+                width: '100%'
+            });
+        });
+    </script>
+@endpush

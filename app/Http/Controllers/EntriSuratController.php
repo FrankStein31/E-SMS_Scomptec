@@ -226,7 +226,50 @@ class EntriSuratController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $data = EntrySuratIsi::with('FileScan', 'tujuanSurat')->find($id);
+        
+        if (!$data) {
+            return redirect()->route('entrisurat.index')->with('error', 'Data tidak ditemukan');
+        }
+        
+        // Debug data
+        // dd($data->toArray());
+        
+        $users = User::select([
+            'id',
+            'FullName',
+            'Jabatan as Jabatan2',
+            'UserName',
+            DB::raw("
+                CASE 
+                    WHEN (SELECT COUNT(b.userid) FROM master_satkers b WHERE b.userid = users.id) = 0 
+                    THEN users.FullName 
+                    ELSE users.Jabatan 
+                END AS Jabatan
+            ")
+        ])->get();
+        
+        $klasifikasi = MasterKlasifikasi::all();
+        $jenisSurat = MasterJenisSurat::all();
+        $default_jenis_surat = MasterJenisSurat::where('name', 'Surat Masuk')->first();
+        $default_jenis_surat_last_id = $default_jenis_surat ? $default_jenis_surat->last_id : 0;
+        
+        // Get selected kepada users
+        $selectedKepada = [];
+        if ($data->tujuanSurat && count($data->tujuanSurat) > 0) {
+            foreach ($data->tujuanSurat as $tujuan) {
+                $selectedKepada[] = $tujuan->userid_tujuan;
+            }
+        }
+        
+        return view('entrisurat.edit', compact(
+            'data',
+            'users',
+            'klasifikasi', 
+            'jenisSurat',
+            'default_jenis_surat_last_id',
+            'selectedKepada'
+        ));
     }
 
     /**
@@ -234,7 +277,70 @@ class EntriSuratController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = EntrySuratIsi::find($id);
+        
+        if (!$data) {
+            return redirect()->route('entrisurat.index')->with('error', 'Data tidak ditemukan');
+        }
+        
+        DB::beginTransaction();
+        try {
+            $updateData = [
+                'nomor_surat' => $request->no_surat,
+                'tgl_surat' => $request->tgl_surat,
+                'tgl_diterima' => $request->tgl_terima,
+                'updated_by' => Auth::user()->id ?? 190,
+                'hal' => $request->hal,
+                'dari' => $request->dari,
+                'alamat' => $request->alamat,
+                'sifat' => $request->sifat,
+                'isi' => $request->ringkasan,
+                'tembusan' => $request->tembusan,
+                'jumlah_lampiran' => $request->lampiran,
+                'jenis_id' => $request->jenis_surat,
+                'kode_klasifikasi' => $request->klasifikasi,
+            ];
+
+            // Update kepada
+            if ($request->kepada) {
+                $kepada = "";
+                foreach ($request->kepada as $key => $value) {
+                    $user = User::find($value);
+                    if ($user) {
+                        $kepada .= $user->fullname . ",";
+                    }
+                }
+                $updateData['kepada'] = rtrim($kepada, ',');
+                
+                // Delete existing tujuan and recreate
+                EntrySuratTujuan::where('entrysurat_id', $id)->delete();
+                
+                foreach ($request->kepada as $key => $value) {
+                    $user = User::find($value);
+                    if ($user) {
+                        $satker = MasterSatker::where('userid', $user->id)->first();
+                        if ($satker) {
+                            EntrySuratTujuan::create([
+                                'satkerid_tujuan' => $satker->satkerid,
+                                'dibaca' => 0,
+                                'is_tembusan' => 0,
+                                'entrysurat_id' => $id,
+                                'userid_tujuan' => $user->id,
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            $data->update($updateData);
+            
+            DB::commit();
+            return redirect()->route('entrisurat.index')->with('success', 'Data berhasil diupdate');
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -242,6 +348,35 @@ class EntriSuratController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $data = EntrySuratIsi::find($id);
+        
+        if (!$data) {
+            return redirect()->route('entrisurat.index')->with('error', 'Data tidak ditemukan');
+        }
+        
+        DB::beginTransaction();
+        try {
+            // Delete related file scans
+            $fileScans = EntrySuratScan::where('entrysurat_id', $id)->get();
+            foreach ($fileScans as $scan) {
+                if ($scan->file_path && Storage::disk('public')->exists($scan->file_path)) {
+                    Storage::disk('public')->delete($scan->file_path);
+                }
+                $scan->delete();
+            }
+            
+            // Delete related tujuan
+            EntrySuratTujuan::where('entrysurat_id', $id)->delete();
+            
+            // Delete main record
+            $data->delete();
+            
+            DB::commit();
+            return redirect()->route('entrisurat.index')->with('success', 'Data berhasil dihapus');
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('entrisurat.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }

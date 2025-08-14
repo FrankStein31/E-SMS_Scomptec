@@ -37,10 +37,7 @@ class EntrySuratIsiDataTable extends DataTable
             ->addColumn('unit_pengentri', function($row) {
                 return $row->createdBy ? $row->createdBy->fullname : '-';
             })
-            ->addColumn('action', function($row) {
-                return '<a href="/entrisurat/'.$row->id.'" class="btn btn-info btn-sm">Detail</a> ';
-            })
-            ->rawColumns(['action', 'sifat_label'])
+            ->rawColumns(['sifat_label'])
             ->setRowId('id');
     }
 
@@ -84,7 +81,24 @@ class EntrySuratIsiDataTable extends DataTable
                     ->setTableId('entrysuratisi-table')
                     ->columns($this->getColumns())
                     // ->minifiedAjax()
-                    ->orderBy(1);
+                    ->orderBy(1)
+                    ->dom('rt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
+                    ->parameters([
+                        'scrollY' => '60vh',
+                        'scrollX' => true,
+                        'scrollCollapse' => true,
+                        'autoWidth' => false,
+                        'paging' => true,
+                        'pageLength' => 25,
+                        'lengthChange' => false,
+                        'language' => [
+                            'paginate' => [
+                                'previous' => 'Previous',
+                                'next' => 'Next'
+                            ]
+                        ]
+                    ])
+                    ->addTableClass('table-striped table-bordered');
                     // ->selectStyleSingle()
                     // ->buttons([
                     //     Button::make('excel'),
@@ -111,11 +125,6 @@ class EntrySuratIsiDataTable extends DataTable
             Column::make('hal'),
             Column::make('unit_pengentri')->title('Unit Pengentri'),
             Column::make('tgl_surat')->title('Tanggal'),
-            Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(80)
-                  ->addClass('text-center'),
         ];
     }
 

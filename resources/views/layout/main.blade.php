@@ -14,6 +14,7 @@
         content="admin template, axelit admin template, dashboard template, flat admin template, responsive admin template, web app"
         name="keywords">
     <meta content="la-themes" name="author">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="icon" type="image/x-icon">
     <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="shortcut icon" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
