@@ -22,23 +22,28 @@ class EntrySuratIsiDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('jenis', function($row) {
+            ->addColumn('jenis', function ($row) {
                 return $row->jenis ? $row->jenis->name : '-';
             })
-            ->addColumn('sifat_label', function($row) {
+            ->addColumn('sifat_label', function ($row) {
                 switch ($row->sifat) {
-                    case 1: return '<span class="badge bg-danger">Penting</span>';
-                    case 2: return '<span class="badge bg-warning">Rahasia</span>';
-                    case 3: return '<span class="badge bg-info">Biasa</span>';
-                    case 4: return '<span class="badge bg-secondary">Pribadi</span>';
-                    default: return '-';
+                    case 1:
+                        return '<span class="badge bg-danger">Penting</span>';
+                    case 2:
+                        return '<span class="badge bg-warning">Rahasia</span>';
+                    case 3:
+                        return '<span class="badge bg-info">Biasa</span>';
+                    case 4:
+                        return '<span class="badge bg-secondary">Pribadi</span>';
+                    default:
+                        return '-';
                 }
             })
-            ->addColumn('unit_pengentri', function($row) {
+            ->addColumn('unit_pengentri', function ($row) {
                 return $row->createdBy ? $row->createdBy->fullname : '-';
             })
-            ->addColumn('action', function($row) {
-                return '<a href="/entrisurat/'.$row->id.'" class="btn btn-info btn-sm">Detail</a> ';
+            ->addColumn('action', function ($row) {
+                return '<a href="/entrisurat/' . $row->id . '" class="btn btn-info btn-sm">Detail</a> ';
             })
             ->rawColumns(['action', 'sifat_label'])
             ->setRowId('id');
@@ -81,19 +86,19 @@ class EntrySuratIsiDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('entrysuratisi-table')
-                    ->columns($this->getColumns())
-                    // ->minifiedAjax()
-                    ->orderBy(1);
-                    // ->selectStyleSingle()
-                    // ->buttons([
-                    //     Button::make('excel'),
-                    //     Button::make('csv'),
-                    //     Button::make('pdf'),
-                    //     Button::make('print'),
-                    //     Button::make('reset'),
-                    //     Button::make('reload')
-                    // ]);
+            ->setTableId('entrysuratisi-table')
+            ->columns($this->getColumns())
+            // ->minifiedAjax()
+            ->orderBy(1);
+        // ->selectStyleSingle()
+        // ->buttons([
+        //     Button::make('excel'),
+        //     Button::make('csv'),
+        //     Button::make('pdf'),
+        //     Button::make('print'),
+        //     Button::make('reset'),
+        //     Button::make('reload')
+        // ]);
     }
 
     /**
@@ -112,10 +117,10 @@ class EntrySuratIsiDataTable extends DataTable
             Column::make('unit_pengentri')->title('Unit Pengentri'),
             Column::make('tgl_surat')->title('Tanggal'),
             Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(80)
-                  ->addClass('text-center'),
+                ->exportable(false)
+                ->printable(false)
+                ->width(80)
+                ->addClass('text-center'),
         ];
     }
 

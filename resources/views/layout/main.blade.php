@@ -32,7 +32,62 @@
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    
+
+    <!-- Poppins Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body,
+        html,
+        .app-wrapper,
+        .app-content,
+        .table,
+        .card,
+        .btn,
+        .form-control,
+        .form-label,
+        .form-select,
+        .footer-text,
+        .navbar,
+        .dropdown-menu,
+        .modal-content,
+        .alert,
+        .dataTables_wrapper,
+        .select2-container,
+        .select2-selection,
+        .select2-results__option {
+            font-family: 'Poppins', Arial, sans-serif !important;
+            font-size: 0.95rem !important;
+            font-weight: 400;
+        }
+
+        .table th,
+        .table td,
+        .form-label,
+        .form-control,
+        .form-select,
+        .btn,
+        .card-header,
+        .card-title,
+        .navbar,
+        .dropdown-menu,
+        .modal-content,
+        .alert,
+        .footer-text,
+        .select2-selection__rendered,
+        .select2-results__option {
+            font-family: 'Poppins', Arial, sans-serif !important;
+            font-size: 0.95rem !important;
+            font-weight: 400;
+        }
+
+        .table th {
+            font-weight: 500 !important;
+        }
+
+        .fw-bold {
+            font-weight: 600 !important;
+        }
+    </style>
 
     <!-- Fix untuk tabel DataTables agar bisa di-klik dan di-select -->
     <style>

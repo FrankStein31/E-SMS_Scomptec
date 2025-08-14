@@ -262,26 +262,6 @@
                     <a href="{{ route('disposisi.riwayat', $data->id) }}" class="btn btn-info btn-sm mb-3">
                         <i class="iconoir-eye"></i> Riwayat Surat
                     </a>
-                    <h5 class="main-title">Detail Entri Surat</h5>
-                    <ul class="app-line-breadcrumbs mb-3">
-                        <li class="">
-                            <a class="f-s-14 f-w-500" href="#">
-                                <span>
-                                    Home
-                                </span>
-                            </a>
-                        </li>
-                        <li class="">
-                            <a class="f-s-14 f-w-500" href="#">
-                                <span>
-                                    Daftar Entri Surat
-                                </span>
-                            </a>
-                        </li>
-                        <li class="active">
-                            <a class="f-s-14 f-w-500" href="#">Detail</a>
-                        </li>
-                    </ul>
                 </div>
             </div>
 
@@ -299,86 +279,78 @@
                 <!-- Default Card start -->
                 <div class="col-md-12">
                     <div class="card">
-                        <div class="card-header">
-                            <div class="row">
-                                <div class="col">
-                                    <h5>Detail Entri Surat</h5>
-                                </div>
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">Detail Entri Surat</h5>
+                            </div>
+                            <div>
+                                <button class="btn btn-link px-0" type="button" id="toggleDetailBtn">
+                                    Tampilkan Detail Lainnya
+                                </button>
                             </div>
                         </div>
                         <div class="card-body">
                             <table class="table table-sm table-hover table-striped align-middle mb-0">
                                 <tbody>
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">
-                                            No. Agenda
-                                        </th>
-                                        <td>
-                                            {{ $data->noagenda }}
-                                        </td>
+                                        <th scope="col" class="px-6 py-3">No. Surat</th>
+                                        <td>{{ $data->nomor_surat }}</td>
                                     </tr>
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">
-                                            Sifat
-                                        </th>
-                                        <td>
-                                            {{ sifatSurat($data->sifat) }}
-                                        </td>
+                                        <th scope="col" class="px-6 py-3">Hal</th>
+                                        <td>{{ $data->hal }}</td>
                                     </tr>
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">
-                                            Jenis
-                                        </th>
-                                        <td>
-                                            {{ $data->jenis->name ?? '-' }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3">
-                                            No. Surat
-                                        </th>
-                                        <td>
-                                            {{ $data->nomor_surat }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3">
-                                            Dari
-                                        </th>
-                                        <td>
-                                            {{ $data->dari }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3">
-                                            Tujuan
-                                        </th>
-                                        <td>
-                                            {{ $data->kepada }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3">
-                                            Hal
-                                        </th>
-                                        <td>
-                                            {{ $data->hal }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3">
-                                            Unit Pengentri
-                                        </th>
-                                        <td>
-                                            {{ $data->createdBy->fullname }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3">
-                                            Tanggal
-                                        </th>
-                                        <td>
-                                            {{ $data->created_at->format('d-m-Y') }}
+                                        <td colspan="2" class="p-0">
+                                            <div class="collapse mt-2" id="detailCollapse" style="display:none;">
+                                                <table class="table table-sm table-borderless mb-0"
+                                                    style="margin-bottom:0;">
+                                                    <tr>
+                                                        <th class="fw-bold text-dark" style="width:180px;">Sifat</th>
+                                                        <td>{{ sifatSurat($data->sifat) }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">Jenis</th>
+                                                        <td>{{ $data->jenis ? $data->jenis->name : '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">No. Agenda</th>
+                                                        <td>{{ $data->noagenda }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">Tanggal surat</th>
+                                                        <td>{{ date('d-m-Y', strtotime($data->tgl_surat)) }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">Tanggal terima</th>
+                                                        <td>{{ date('d-m-Y', strtotime($data->tgl_diterima)) }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">Tembusan</th>
+                                                        <td>{{ $data->tembusan ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">Klasifikasi</th>
+                                                        <td>{{ $data->kode_klasifikasi }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">Alamat</th>
+                                                        <td>{{ !empty($data->alamat) ? $data->alamat : '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">Referensi</th>
+                                                        <td>{{ $data->referensi_id ?? '-' }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">Unit Pengentri</th>
+                                                        <td>{{ $data->createdBy->fullname }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="fw-bold text-dark">Lampiran</th>
+                                                        <td>{{ $data->lampiran ?? '-' }}</td>
+                                                    </tr>
+                                                </table>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -491,6 +463,20 @@
                     }
                 });
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var btn = document.getElementById('toggleDetailBtn');
+            var detail = document.getElementById('detailCollapse');
+            btn.addEventListener('click', function() {
+                if (detail.style.display === 'none') {
+                    detail.style.display = 'block';
+                    btn.textContent = 'Tutup Detail';
+                } else {
+                    detail.style.display = 'none';
+                    btn.textContent = 'Tampilkan Detail Lainnya';
+                }
+            });
         });
     </script>
 @endpush
