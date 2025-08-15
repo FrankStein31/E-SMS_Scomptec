@@ -70,6 +70,18 @@ class EntrySuratIsi extends Model
         return $this->hasMany(EntrySuratTujuan::class, 'entrysurat_id', 'id');
     }
 
+    public function tujuan(): HasMany
+    {
+        return $this->hasMany(EntrySuratTujuan::class, 'entrysurat_id', 'id');
+    }
+
+
+    // App\Models\EntrySuratIsi.php
+    public function klasifikasi(): BelongsTo
+    {
+        return $this->belongsTo(MasterKlasifikasi::class, 'kode_klasifikasi', 'kodeklasifikasi');
+    }
+
     /**
      * Get all of the comments for the EntrySuratIsi
      *

@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\DataTables\EntrySuratIsiDataTable;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 
 class EntriSuratController extends Controller
@@ -227,14 +230,14 @@ class EntriSuratController extends Controller
     public function edit(string $id)
     {
         $data = EntrySuratIsi::with('FileScan', 'tujuanSurat')->find($id);
-        
+
         if (!$data) {
             return redirect()->route('entrisurat.index')->with('error', 'Data tidak ditemukan');
         }
-        
+
         // Debug data
         // dd($data->toArray());
-        
+
         $users = User::select([
             'id',
             'FullName',
@@ -248,12 +251,12 @@ class EntriSuratController extends Controller
                 END AS Jabatan
             ")
         ])->get();
-        
+
         $klasifikasi = MasterKlasifikasi::all();
         $jenisSurat = MasterJenisSurat::all();
         $default_jenis_surat = MasterJenisSurat::where('name', 'Surat Masuk')->first();
         $default_jenis_surat_last_id = $default_jenis_surat ? $default_jenis_surat->last_id : 0;
-        
+
         // Get selected kepada users
         $selectedKepada = [];
         if ($data->tujuanSurat && count($data->tujuanSurat) > 0) {
@@ -261,11 +264,11 @@ class EntriSuratController extends Controller
                 $selectedKepada[] = $tujuan->userid_tujuan;
             }
         }
-        
+
         return view('entrisurat.edit', compact(
             'data',
             'users',
-            'klasifikasi', 
+            'klasifikasi',
             'jenisSurat',
             'default_jenis_surat_last_id',
             'selectedKepada'
@@ -278,11 +281,11 @@ class EntriSuratController extends Controller
     public function update(Request $request, string $id)
     {
         $data = EntrySuratIsi::find($id);
-        
+
         if (!$data) {
             return redirect()->route('entrisurat.index')->with('error', 'Data tidak ditemukan');
         }
-        
+
         DB::beginTransaction();
         try {
             $updateData = [
@@ -311,10 +314,10 @@ class EntriSuratController extends Controller
                     }
                 }
                 $updateData['kepada'] = rtrim($kepada, ',');
-                
+
                 // Delete existing tujuan and recreate
                 EntrySuratTujuan::where('entrysurat_id', $id)->delete();
-                
+
                 foreach ($request->kepada as $key => $value) {
                     $user = User::find($value);
                     if ($user) {
@@ -333,10 +336,9 @@ class EntriSuratController extends Controller
             }
 
             $data->update($updateData);
-            
+
             DB::commit();
             return redirect()->route('entrisurat.index')->with('success', 'Data berhasil diupdate');
-            
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -349,11 +351,11 @@ class EntriSuratController extends Controller
     public function destroy(string $id)
     {
         $data = EntrySuratIsi::find($id);
-        
+
         if (!$data) {
             return redirect()->route('entrisurat.index')->with('error', 'Data tidak ditemukan');
         }
-        
+
         DB::beginTransaction();
         try {
             // Delete related file scans
@@ -364,16 +366,15 @@ class EntriSuratController extends Controller
                 }
                 $scan->delete();
             }
-            
+
             // Delete related tujuan
             EntrySuratTujuan::where('entrysurat_id', $id)->delete();
-            
+
             // Delete main record
             $data->delete();
-            
+
             DB::commit();
             return redirect()->route('entrisurat.index')->with('success', 'Data berhasil dihapus');
-            
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->route('entrisurat.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -387,7 +388,7 @@ class EntriSuratController extends Controller
     {
         $data = EntrySuratIsi::with(['jenis', 'klasifikasi', 'createdBy', 'tujuan.user'])
             ->findOrFail($id);
-        
+
         return view('entrisurat.cetak.tanda-terima', compact('data'));
     }
 
@@ -398,7 +399,7 @@ class EntriSuratController extends Controller
     {
         $data = EntrySuratIsi::with(['jenis', 'klasifikasi', 'createdBy', 'tujuan.user', 'FileScan'])
             ->findOrFail($id);
-        
+
         return view('entrisurat.cetak.surat', compact('data'));
     }
 
@@ -409,7 +410,355 @@ class EntriSuratController extends Controller
     {
         $data = EntrySuratIsi::with(['jenis', 'klasifikasi', 'createdBy', 'tujuan.user', 'disposisi.tindakan'])
             ->findOrFail($id);
-        
+
         return view('entrisurat.cetak.disposisi', compact('data'));
+    }
+
+    /**
+     * Export Tanda Terima Surat ke Word
+     */
+    public function exportTandaTerimaWord($id)
+    {
+        $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
+
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $section = $phpWord->addSection([
+            'marginTop' => 600,
+            'marginLeft' => 600,
+            'marginRight' => 600,
+            'marginBottom' => 600,
+        ]);
+
+        // Header: Logo + Kop Surat
+        $headerTable = $section->addTable(['alignment' => 'center']);
+        $headerTable->addRow();
+        $logoPath = public_path('assets/images/logo.png');
+        if (file_exists($logoPath)) {
+            try {
+                $headerTable->addCell(1200)->addImage($logoPath, [
+                    'width' => 70,
+                    'height' => 70,
+                    'alignment' => 'center'
+                ]);
+            } catch (\Exception $e) {
+                $headerTable->addCell(1200)->addText('Logo gagal dimuat');
+            }
+        } else {
+            $headerTable->addCell(1200)->addText('Logo tidak ditemukan');
+        }
+        $kopCell = $headerTable->addCell(8000, ['borderBottomSize' => 12, 'borderBottomColor' => '000000']);
+        $kopCell->addText('PEMERINTAH PROVINSI JAWA TIMUR', ['bold' => true, 'size' => 16], ['alignment' => 'center']);
+        $kopCell->addText('SEKRETARIAT DAERAH', ['bold' => true, 'size' => 14], ['alignment' => 'center']);
+        $kopCell->addText('JL. Pahlawan 110, Surabaya, Jawa Timur', ['size' => 11], ['alignment' => 'center']);
+        $kopCell->addText('Telp (031) 3524001 - 11, Pswt 1467-1465-1489', ['size' => 11], ['alignment' => 'center']);
+        $section->addTextBreak(1);
+
+        // Judul
+        $section->addText('TANDA PENERIMAAN SURAT', ['bold' => true, 'size' => 14, 'underline' => 'single'], ['alignment' => 'center']);
+        $section->addTextBreak(1);
+
+        // Tabel info surat
+        $table = $section->addTable(['cellMargin' => 40]);
+        $table->addRow();
+        $table->addCell(3000)->addText('Telah Terima Surat dari');
+        $table->addCell(200)->addText(':');
+        $table->addCell(5000)->addText($data->dari);
+        $table->addRow();
+        $table->addCell(3000)->addText('Tanggal');
+        $table->addCell(200)->addText(':');
+        $table->addCell(5000)->addText(date('d/m/Y', strtotime($data->tgl_surat)));
+        $table->addRow();
+        $table->addCell(3000)->addText('Nomor Surat');
+        $table->addCell(200)->addText(':');
+        $table->addCell(5000)->addText($data->nomor_surat);
+        $table->addRow();
+        $table->addCell(3000)->addText('Perihal');
+        $table->addCell(200)->addText(':');
+        $table->addCell(5000)->addText($data->hal);
+        $table->addRow();
+        $table->addCell(3000)->addText('Diterima');
+        $table->addCell(200)->addText(':');
+        $table->addCell(5000)->addText(date('d-m-Y', strtotime($data->tgl_diterima)));
+
+        // Tanda tangan di kanan bawah
+        $section->addTextBreak(3);
+        $footerTable = $section->addTable(['alignment' => 'right']);
+        $footerTable->addRow();
+        $footerCell = $footerTable->addCell(5000);
+        $footerCell->addText('SURABAYA, ' . date('d-m-Y', strtotime($data->tgl_diterima)), [], ['alignment' => 'right']);
+        $footerCell->addText('PENERIMA', [], ['alignment' => 'right']);
+        $footerCell->addTextBreak(2);
+        $footerCell->addText($data->createdBy->fullname ?? '-', ['bold' => true, 'underline' => 'single'], ['alignment' => 'right']);
+        $footerCell->addText('NIP. ........................................', [], ['alignment' => 'right']);
+
+        $fileName = 'tanda-terima-' . $data->nomor_surat . '.docx';
+        $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    }
+
+
+
+    public function exportSuratWord($id)
+    {
+        $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
+
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        // Set default font for a cleaner look, as seen in the example image
+        $phpWord->setDefaultFontName('Times New Roman');
+        $phpWord->setDefaultFontSize(12);
+
+        $section = $phpWord->addSection([
+            'marginTop' => 900,
+            'marginLeft' => 1000,
+            'marginRight' => 900,
+            'marginBottom' => 900,
+        ]);
+
+        // Define table styles for consistency
+        $phpWord->addTableStyle('HeaderTable', [
+            'alignment' => 'center',
+            'cellMargin' => 60,
+            'borderSize' => 0,
+        ]);
+        $phpWord->addTableStyle('MainTable', [
+            'alignment' => 'left',
+            'cellMargin' => 80,
+            'borderSize' => 0,
+        ]);
+
+        // Header: Logo + Kop Surat
+        $headerTable = $section->addTable('HeaderTable');
+        $headerTable->addRow();
+
+        // Logo cell
+        $logoCell = $headerTable->addCell(1500, ['valign' => 'center']);
+        $logoPathCandidates = [
+            public_path('assets/images/logo.png'),
+            public_path('assets/images/logo.png'),
+            public_path('assets/images/logo.jpg'),
+        ];
+        $logoPlaced = false;
+        foreach ($logoPathCandidates as $logoPath) {
+            if (file_exists($logoPath)) {
+                try {
+                    $logoCell->addImage($logoPath, [
+                        'width' => 70,
+                        'height' => 70,
+                        'alignment' => 'center',
+                    ]);
+                    $logoPlaced = true;
+                    break;
+                } catch (\Exception $e) {
+                    // fallback to text if image fails
+                }
+            }
+        }
+        if (!$logoPlaced) {
+            $logoCell->addText('LOGO', ['bold' => true]);
+        }
+
+        // Kop surat cell
+        $kopCell = $headerTable->addCell(8500, [
+            'valign' => 'center',
+            'borderBottomSize' => 12,
+            'borderBottomColor' => '000000',
+        ]);
+        $kopCell->addText('PEMERINTAH PROVINSI JAWA TIMUR', ['bold' => true, 'size' => 16], ['alignment' => 'center', 'spaceAfter' => 0]);
+        $kopCell->addText('SEKRETARIAT DAERAH', ['bold' => true, 'size' => 14], ['alignment' => 'center', 'spaceAfter' => 0]);
+        $kopCell->addText('Jl. Rajawali 6 - 8, Surabaya 60176', ['size' => 11], ['alignment' => 'center', 'spaceAfter' => 0]);
+        $kopCell->addText('Telp (031) 3524001 - 11, Pswt 1467-1465-1489', ['size' => 11], ['alignment' => 'center', 'spaceAfter' => 0]);
+
+        // Garis tebal horizontal
+        $section->addLine([
+            'weight' => 2.5,
+            'width' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(16),
+            'color' => '000000',
+        ]);
+        $section->addTextBreak(1);
+
+        // --- Bagian Informasi Surat dan Alamat Tujuan ---
+        $mainTable = $section->addTable(['width' => 10000, 'unit' => 'dxa']);
+
+        // Baris 1: Nomor Surat & Tanggal di kanan
+        $mainTable->addRow();
+        $mainTable->addCell(5000)->addText('No Surat : ' . ($data->nomor_surat ?? '-'), null, ['spaceAfter' => 0]);
+        $mainTable->addCell(5000)->addText('Surabaya, ' . ($data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : date('d/m/Y')), null, ['alignment' => 'right', 'spaceAfter' => 0]);
+
+        // Baris 2: Klasifikasi & Kepada Yth.
+        $mainTable->addRow();
+        $mainTable->addCell(5000)->addText('Klasifikasi : ' . ($data->kode_klasifikasi ?? '-'), null, ['spaceAfter' => 0]);
+        $kepadaCell = $mainTable->addCell(5000, ['valign' => 'top']);
+        $kepadaCell->addText('Kepada Yth. ' . ($data->kepada ?? '-'), null, ['alignment' => 'right', 'spaceAfter' => 0]);
+
+        // Baris 3: Hal & di Tempat
+        $mainTable->addRow();
+        $mainTable->addCell(5000)->addText('Hal : ' . ($data->hal ?? '-'), null, ['spaceAfter' => 0]);
+        $diTempatCell = $mainTable->addCell(5000, ['valign' => 'top']);
+        $diTempatCell->addText('di Tempat', null, ['alignment' => 'right', 'spaceAfter' => 0]);
+
+        // Baris 4: Sifat Surat & Kosong
+        $mainTable->addRow();
+        $mainTable->addCell(5000)->addText('Sifat Surat : ' . ($data->sifat ?? '-'), null, ['spaceAfter' => 0]);
+        $mainTable->addCell(5000)->addText('');
+
+        // Baris 5: Dari & Kosong
+        $mainTable->addRow();
+        $mainTable->addCell(5000)->addText('Dari : ' . ($data->dari ?? '-'), null, ['spaceAfter' => 0]);
+        $mainTable->addCell(5000)->addText('');
+
+        // Baris 6: Kosong & Kosong
+        if (!empty($data->jumlah_lampiran)) {
+            $mainTable->addRow();
+            $mainTable->addCell(5000)->addText('Lampiran : ' . $data->jumlah_lampiran, null, ['spaceAfter' => 0]);
+            $mainTable->addCell(5000)->addText('');
+        }
+
+        $section->addTextBreak(1);
+
+        // Isi ringkas / konten utama
+        if (!empty($data->isi)) {
+            $section->addText($data->isi, [], ['alignment' => 'both', 'spaceAfter' => 200]);
+        }
+
+        $section->addTextBreak(3);
+
+        // Tembusan dan Tanda tangan
+        $footerTable = $section->addTable(['width' => 10000, 'unit' => 'dxa']);
+        $footerTable->addRow();
+
+        // Tembusan (kolom kiri)
+        $tembusanCell = $footerTable->addCell(5000);
+        if (!empty($data->tembusan)) {
+            $tembusanCell->addText('Tembusan', ['bold' => true]);
+            $items = preg_split('/\r\n|\r|\n|,|;/', (string) $data->tembusan);
+            if (is_array($items)) {
+                foreach ($items as $item) {
+                    $item = trim($item);
+                    if ($item !== '') {
+                        $tembusanCell->addText('- ' . $item);
+                    }
+                }
+            }
+        }
+
+        // Tanda tangan (kolom kanan)
+        $signCell = $footerTable->addCell(5000, ['valign' => 'top']);
+        $signCell->addText('Dari', ['bold' => true], ['alignment' => 'right']);
+        $signCell->addText('Komisi Informasi Prov Jawa Timur', ['underline' => 'single'], ['alignment' => 'right']);
+
+        $fileName = 'surat-' . ($data->nomor_surat ?? 'tanpa-nomor') . '.docx';
+        $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    }
+
+
+
+    public function exportSuratDisWord($id)
+    {
+        $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
+
+        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        // Set default font for a cleaner look
+        $phpWord->setDefaultFontName('Times New Roman');
+        $phpWord->setDefaultFontSize(12);
+
+        $section = $phpWord->addSection([
+            'marginTop' => 900,
+            'marginLeft' => 900,
+            'marginRight' => 900,
+            'marginBottom' => 900,
+        ]);
+
+        // Define table styles
+        $phpWord->addTableStyle('MainTable', [
+            'cellMargin' => 50,
+            'borderSize' => 6,
+            'borderColor' => '000000',
+        ]);
+
+        // Kop surat
+        $section->addText('PEMERINTAH PROVINSI JAWA TIMUR', ['bold' => true, 'size' => 12], ['alignment' => 'center', 'spaceAfter' => 0]);
+        $section->addText('SEKRETARIAT DAERAH', ['bold' => true, 'size' => 12], ['alignment' => 'center', 'spaceAfter' => 0]);
+
+        // Garis pemisah
+        $section->addLine([
+            'weight' => 2.5,
+            'width' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(16),
+            'color' => '000000',
+        ]);
+
+        $section->addText('LEMBAR DISPOSISI', ['bold' => true, 'size' => 14], ['alignment' => 'center', 'spaceAfter' => 200]);
+
+        // Main Disposisi Table
+        $table = $section->addTable('MainTable');
+
+        // First row: Surat dari & Klasifikasi
+        $table->addRow();
+        $table->addCell(4000)->addText('Surat dari', ['bold' => false]);
+        $table->addCell(200)->addText(':', ['bold' => false]);
+        $table->addCell(5000)->addText($data->dari ?? '-');
+        $table->addCell(4000)->addText('Klasifikasi', ['bold' => false], ['alignment' => 'right']);
+        $table->addCell(200)->addText(':', ['bold' => false]);
+        $table->addCell(2000)->addText('000 /     /     /2020', null, ['spaceAfter' => 0]);
+
+        // Second row: Tanggal surat & Diterima tanggal
+        $table->addRow();
+        $table->addCell(4000)->addText('Tanggal surat', ['bold' => false]);
+        $table->addCell(200)->addText(':', ['bold' => false]);
+        $table->addCell(5000)->addText($data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : '-');
+        $table->addCell(4000)->addText('Diterima tanggal', ['bold' => false], ['alignment' => 'right']);
+        $table->addCell(200)->addText(':', ['bold' => false]);
+        $table->addCell(2000)->addText(date('d/m/Y'));
+
+        // Third row: Nomor & Nomor Agenda
+        $table->addRow();
+        $table->addCell(4000)->addText('Nomor', ['bold' => false]);
+        $table->addCell(200)->addText(':', ['bold' => false]);
+        $table->addCell(5000)->addText($data->nomor_surat ?? '-');
+        $table->addCell(4000)->addText('Nomor Agenda', ['bold' => false], ['alignment' => 'right']);
+        $table->addCell(200)->addText(':', ['bold' => false]);
+        $table->addCell(2000)->addText('');
+
+        // Fourth row: Hal & Diteruskan kepada
+        $table->addRow();
+        $table->addCell(4000)->addText('Hal', ['bold' => false]);
+        $table->addCell(200)->addText(':', ['bold' => false]);
+        $table->addCell(5000)->addText($data->hal ?? '-');
+        $table->addCell(4000)->addText('Diteruskan kepada', ['bold' => false], ['alignment' => 'right']);
+        $table->addCell(200)->addText(':', ['bold' => false]);
+        $table->addCell(2000)->addText('1. Yth. Bp. Pj. Gubernur Jawa Timur,');
+
+        // Fifth row: Kosong & Daftar penerus
+        $table->addRow();
+        $table->addCell(5200)->addText('');
+        $table->addCell(200)->addText('2.');
+        $table->addCell(2000)->addText('');
+        $table->addCell(200)->addText('3.');
+        $table->addCell(2000)->addText('');
+        $table->addCell(200)->addText('4.');
+        $table->addCell(2000)->addText('');
+        $table->addCell(200)->addText('5.');
+        $table->addCell(2000)->addText('');
+
+        $section->addTextBreak(1);
+        $section->addText('ISI DISPOSISI', ['bold' => true, 'size' => 14], ['alignment' => 'center', 'spaceAfter' => 200]);
+
+        // ISI DISPOSISI Table
+        $isiDisposisiTable = $section->addTable(['width' => 10000, 'unit' => 'dxa', 'borderSize' => 6, 'borderColor' => '000000']);
+        $isiDisposisiTable->addRow(5000); // 5cm height
+        $isiDisposisiTable->addCell(10000)->addText('');
+
+        $fileName = 'disposisi-' . ($data->nomor_surat ?? 'tanpa-nomor') . '.docx';
+        $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
 }
