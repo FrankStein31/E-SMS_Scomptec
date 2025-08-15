@@ -14,10 +14,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             z-index: 9999;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
 
         .scan-loading .spinner {
@@ -27,6 +28,22 @@
             border-top: 5px solid #3498db;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        .scan-loading .loading-text {
+            color: white;
+            font-size: 16px;
+            text-align: center;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+
+        .scan-loading .loading-subtext {
+            color: #ccc;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 10px;
+            font-family: 'Poppins', Arial, sans-serif;
         }
 
         @keyframes spin {
@@ -87,6 +104,21 @@
             // Tampilkan loading
             document.getElementById('scanLoading').style.display = 'flex';
 
+            // Set timeout untuk deteksi software scanner
+            var scanTimeout = setTimeout(function() {
+                // Jika loading masih tampil setelah 8 detik, software kemungkinan belum terinstall
+                if (document.getElementById('scanLoading').style.display === 'flex') {
+                    // Sembunyikan loading
+                    document.getElementById('scanLoading').style.display = 'none';
+                    
+                    // Tampilkan modal peringatan
+                    showScannerInstallModal();
+                }
+            }, 8000); // 8 detik timeout
+
+            // Store timeout ID untuk bisa di-clear jika scan berhasil
+            window.currentScanTimeout = scanTimeout;
+
             scanRequest.source_name = sourceName;
             log("Attempts to scan with source = " + scanRequest.source_name + " ...");
             scanner.scan(handleScanResult, scanRequest);
@@ -94,6 +126,12 @@
 
         /** Checks response before parsing and performs fallback scanning if possible. */
         function handleScanResult(successful, mesg, response) {
+            // Clear timeout jika scan berhasil/selesai
+            if (window.currentScanTimeout) {
+                clearTimeout(window.currentScanTimeout);
+                window.currentScanTimeout = null;
+            }
+
             // Sembunyikan loading
             document.getElementById('scanLoading').style.display = 'none';
 
@@ -122,6 +160,8 @@
                     scan('select');
                 } else { // report final error here ...
                     log("Fatal error: Failed to scan (tried both default and select)", true);
+                    // Tampilkan modal jika error final
+                    showScannerInstallModal();
                 }
             } else {
                 log("Scan succeeds with source = " + scanRequest.source_name);
@@ -248,6 +288,22 @@
                 console.error('Slick/initImageSlider error:', e);
             }
         }
+
+        /** Show scanner install modal */
+        function showScannerInstallModal() {
+            // Buat modal menggunakan Bootstrap modal atau alert sederhana
+            var modal = document.getElementById('scannerInstallModal');
+            if (modal) {
+                // Jika menggunakan Bootstrap 5
+                var bootstrapModal = new bootstrap.Modal(modal);
+                bootstrapModal.show();
+            } else {
+                // Fallback dengan alert jika modal tidak ada
+                if (confirm('Software Scanner belum terinstall!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software tambahan terlebih dahulu.\n\nKlik OK untuk mendownload software scanner.')) {
+                    window.open('https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing', '_blank');
+                }
+            }
+        }
     </script>
 @endpush
 
@@ -368,6 +424,8 @@
                             <!-- Tambahkan elemen loading -->
                             <div id="scanLoading" class="scan-loading">
                                 <div class="spinner"></div>
+                                <div class="loading-text">Menghubungkan ke Scanner...</div>
+                                <div class="loading-subtext">Pastikan scanner/printer terhubung dan software scanner sudah terinstall</div>
                             </div>
 
                             <div class="container-fluid">
@@ -442,6 +500,46 @@
                 <!-- Default Card end -->
             </div>
             <!-- Blank end -->
+        </div>
+        
+        <!-- Modal untuk Scanner Install Warning -->
+        <div class="modal fade" id="scannerInstallModal" tabindex="-1" aria-labelledby="scannerInstallModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger">
+                        <h5 class="modal-title text-white" id="scannerInstallModalLabel">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Software Scanner Diperlukan
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-scanner fa-3x text-warning mb-3"></i>
+                            <h6 class="mb-3">Untuk menggunakan fitur scan, Anda perlu menginstall software tambahan</h6>
+                            <p class="text-muted">
+                                Software scanner diperlukan untuk menghubungkan aplikasi dengan mesin scanner/printer Anda.
+                                Silakan download dan install software berikut:
+                            </p>
+                        </div>
+                        <div class="alert alert-info">
+                            <small>
+                                <strong>Langkah instalasi:</strong><br>
+                                1. Download software dari link di bawah<br>
+                                2. Install software dengan hak administrator<br>
+                                3. Restart browser Anda<br>
+                                4. Coba fitur scan kembali
+                            </small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nanti Saja</button>
+                        <a href="https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing" 
+                           target="_blank" class="btn btn-primary">
+                            <i class="fas fa-download me-2"></i>Download Software Scanner
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 @endsection
