@@ -382,10 +382,26 @@
                                     <button type="button"
                                         class="btn btn-secondary btn-sm mb-3 d-lg-inline-flex align-items-center b-r-22"
                                         onclick="scan('default');" id="scan_btn">Scan File</button>
-                                    <button type="submit"
-                                        class="btn btn-warning btn-sm mb-3 d-lg-inline-flex align-items-center b-r-22">Simpan
-                                        File
-                                        Scan</button>
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <button type="submit"
+                                            class="btn btn-warning btn-sm d-lg-inline-flex align-items-center b-r-22">
+                                            <i class="fa fa-save me-1"></i>Simpan File Scan
+                                        </button>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ route('entrisurat.cetak.tanda.terima', $data->id) }}" 
+                                               class="btn btn-info btn-sm d-lg-inline-flex align-items-center b-r-22" target="_blank">
+                                                <i class="fa fa-receipt me-1"></i>Cetak Tanda Terima
+                                            </a>
+                                            <a href="{{ route('entrisurat.cetak', $data->id) }}" 
+                                               class="btn btn-success btn-sm d-lg-inline-flex align-items-center b-r-22" target="_blank">
+                                                <i class="fa fa-print me-1"></i>Cetak
+                                            </a>
+                                            <a href="{{ route('entrisurat.cetak.disposisi', $data->id) }}" 
+                                               class="btn btn-primary btn-sm d-lg-inline-flex align-items-center b-r-22" target="_blank">
+                                                <i class="fa fa-file-text me-1"></i>Cetak Disposisi
+                                            </a>
+                                        </div>
+                                    </div>
                                     <div class="app-form">
                                         <textarea id="textarea_logging" rows="4" class="form-control" placeholder="Write your thoughts here...">--- Logging ---</textarea>
                                     </div>
