@@ -297,8 +297,11 @@
                             <table class="table table-sm table-hover table-striped align-middle mb-0">
                                 <tbody>
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">Dari:</th>
-                                        <td>{{ $data->dari }}</td>
+                                        <th scope="col" class="px-6 py-3" style="width:80px; min-width:80px;">Dari:</th>
+                                        <td class="align-middle" style="width:70%">{{ $data->dari }}</td>
+                                        <td class="text-end align-middle" style="width:30%; white-space:nowrap;">
+                                            {{ date('d-m-Y', strtotime($data->tgl_diterima)) }}</td>
+                                    </tr>
                                     <tr>
                                         <td colspan="2" class="p-0">
                                             <div class="collapse mt-2" id="detailCollapse" style="display:none;">
