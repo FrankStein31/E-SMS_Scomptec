@@ -30,8 +30,6 @@
                         </div>
                     </div>
                 </div>
-
-
                 {{-- <div class="row">
                 <div class="col-sm-6 col-xl-3 col-12">
                     <div class="card">

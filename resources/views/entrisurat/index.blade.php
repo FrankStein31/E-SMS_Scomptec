@@ -18,6 +18,7 @@
                     </ul>
                 </div>
             </div> -->
+
             @include('layout.alert')
 
             <div class="row">
@@ -37,8 +38,9 @@
                         </div>
                         <div class="card-body">
                             <div class="row mb-3">
-                                <div class="col-md-2">
-                                    <select id="filterSifat" class="form-select form-select-sm" data-placeholder="-- Semua Sifat --">
+                                <div class="col-md-3">
+                                    <select id="filterSifat" class="form-select form-select-sm"
+                                        data-placeholder="-- Semua Sifat --">
                                         <option value="">-- Semua Sifat --</option>
                                         <option value="1">Penting</option>
                                         <option value="2">Rahasia</option>
@@ -46,33 +48,38 @@
                                         <option value="4">Pribadi</option>
                                     </select>
                                 </div>
-                                <div class="col-md-2">
-                                    <select id="filterJenis" class="form-select form-select-sm" data-placeholder="-- Semua Jenis --">
+                                <div class="col-md-3">
+                                    <select id="filterJenis" class="form-select form-select-sm"
+                                        data-placeholder="-- Semua Jenis --">
                                         <option value="">-- Semua Jenis --</option>
-                                        @foreach(App\Models\MasterJenisSurat::all() as $jenis)
+                                        @foreach (App\Models\MasterJenisSurat::all() as $jenis)
                                             <option value="{{ $jenis->last_id }}">{{ $jenis->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-2">
-                                    <select id="filterUnit" class="form-select form-select-sm" data-placeholder="-- Semua Unit Pengentri --">
+                                <div class="col-md-3">
+                                    <select id="filterUnit" class="form-select form-select-sm"
+                                        data-placeholder="-- Semua Unit Pengentri --">
                                         <option value="">-- Semua Unit Pengentri --</option>
-                                        @foreach(App\Models\User::orderBy('fullname')->get() as $user)
+                                        @foreach (App\Models\User::orderBy('fullname')->get() as $user)
                                             <option value="{{ $user->id }}">{{ $user->fullname }}</option>
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-2">
-                                    <select id="filterTujuan" class="form-select form-select-sm" data-placeholder="-- Semua Tujuan --">
+                                <div class="col-md-3">
+                                    <select id="filterTujuan" class="form-select form-select-sm"
+                                        data-placeholder="-- Semua Tujuan --">
                                         <option value="">-- Semua Tujuan --</option>
-                                        @foreach(App\Models\EntrySuratIsi::select('kepada')->distinct()->get() as $row)
-                                            @if($row->kepada)
+                                        @foreach (App\Models\EntrySuratIsi::select('kepada')->distinct()->get() as $row)
+                                            @if ($row->kepada)
                                                 <option value="{{ $row->kepada }}">{{ $row->kepada }}</option>
                                             @endif
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-8">
                                     <div class="input-group">
                                         <input type="text" id="customSearch" class="form-control form-control-sm" placeholder="Search...">
                                         <button class="btn btn-outline-secondary btn-sm" type="button" id="clearSearch">
