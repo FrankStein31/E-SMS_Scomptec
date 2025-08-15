@@ -284,8 +284,12 @@
                                 <h5 class="mb-0">Detail Entri Surat</h5>
                             </div>
                             <div>
-                                <button class="btn btn-link px-0" type="button" id="toggleDetailBtn">
-                                    Tampilkan Detail Lainnya
+                                <button
+                                    class="btn btn-primary btn-sm rounded-pill shadow-sm d-flex align-items-center gap-2"
+                                    type="button" id="toggleDetailBtn"
+                                    style="font-size:0.95rem; font-family:'Poppins',Arial,sans-serif;">
+                                    <i class="fa fa-chevron-down"></i>
+                                    <span>Detail Lainnya</span>
                                 </button>
                             </div>
                         </div>
@@ -293,18 +297,21 @@
                             <table class="table table-sm table-hover table-striped align-middle mb-0">
                                 <tbody>
                                     <tr>
-                                        <th scope="col" class="px-6 py-3">No. Surat</th>
-                                        <td>{{ $data->nomor_surat }}</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" class="px-6 py-3">Hal</th>
-                                        <td>{{ $data->hal }}</td>
-                                    </tr>
+                                        <th scope="col" class="px-6 py-3">Dari:</th>
+                                        <td>{{ $data->dari }}</td>
                                     <tr>
                                         <td colspan="2" class="p-0">
                                             <div class="collapse mt-2" id="detailCollapse" style="display:none;">
                                                 <table class="table table-sm table-borderless mb-0"
                                                     style="margin-bottom:0;">
+                                                    <tr>
+                                                        <th scope="col" class="px-6 py-3">No. Surat</th>
+                                                        <td>{{ $data->nomor_surat }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="col" class="px-6 py-3">Hal</th>
+                                                        <td>{{ $data->hal }}</td>
+                                                    </tr>
                                                     <tr>
                                                         <th class="fw-bold text-dark" style="width:180px;">Sifat</th>
                                                         <td>{{ sifatSurat($data->sifat) }}</td>
@@ -474,7 +481,7 @@
                     btn.textContent = 'Tutup Detail';
                 } else {
                     detail.style.display = 'none';
-                    btn.textContent = 'Tampilkan Detail Lainnya';
+                    btn.textContent = 'Detail Lainnya';
                 }
             });
         });
