@@ -379,4 +379,37 @@ class EntriSuratController extends Controller
             return redirect()->route('entrisurat.index')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Cetak tanda terima surat
+     */
+    public function cetakTandaTerima($id)
+    {
+        $data = EntrySuratIsi::with(['jenis', 'klasifikasi', 'createdBy', 'tujuan.user'])
+            ->findOrFail($id);
+        
+        return view('entrisurat.cetak.tanda-terima', compact('data'));
+    }
+
+    /**
+     * Cetak surat
+     */
+    public function cetakSurat($id)
+    {
+        $data = EntrySuratIsi::with(['jenis', 'klasifikasi', 'createdBy', 'tujuan.user', 'FileScan'])
+            ->findOrFail($id);
+        
+        return view('entrisurat.cetak.surat', compact('data'));
+    }
+
+    /**
+     * Cetak disposisi surat
+     */
+    public function cetakDisposisi($id)
+    {
+        $data = EntrySuratIsi::with(['jenis', 'klasifikasi', 'createdBy', 'tujuan.user', 'disposisi.tindakan'])
+            ->findOrFail($id);
+        
+        return view('entrisurat.cetak.disposisi', compact('data'));
+    }
 }

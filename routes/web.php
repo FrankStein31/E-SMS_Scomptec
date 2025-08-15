@@ -30,6 +30,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 Route::post('entrisurat/post/file/scan/{entri_surat_id}', [EntriSuratController::class, "scanfile"])->name('entrisurat.post.file.scan');
 Route::delete('/entrisurat/scan/{id}/delete', [EntriSuratController::class, 'deleteScan'])->name('entrisurat.scan.delete');
+Route::get('/entrisurat/{id}/cetak-tanda-terima', [EntriSuratController::class, 'cetakTandaTerima'])->name('entrisurat.cetak.tanda.terima');
+Route::get('/entrisurat/{id}/cetak', [EntriSuratController::class, 'cetakSurat'])->name('entrisurat.cetak');
+Route::get('/entrisurat/{id}/cetak-disposisi', [EntriSuratController::class, 'cetakDisposisi'])->name('entrisurat.cetak.disposisi');
 Route::resource('entrisurat', EntriSuratController::class);
 
 
