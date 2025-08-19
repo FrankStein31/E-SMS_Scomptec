@@ -16,8 +16,9 @@ class AktivitasDataTable extends DataTable
 {
     public function dataTable($query): DataTableAbstract
     {
-        return datatables()->of($query)
-            ->addColumn('action', function($row) {
+        return datatables()
+            ->of($query)
+            ->addColumn('action', function ($row) {
                 return '';
             })
             ->rawColumns(['action']);
@@ -40,10 +41,12 @@ class AktivitasDataTable extends DataTable
         // Ambil user id yang satu bagian satker parent
         $userIds = null;
         if (!$isOperator && $kodesatker) {
-            $userIds = \App\Models\User::whereHas('masterSatker', function($q) use ($kodesatker) {
-                $q->where('kodesatker', 'like', $kodesatker . '%')
-                  ->whereRaw('LENGTH(kodesatker) > ?', [strlen($kodesatker)]);
-            })->pluck('id')->toArray();
+            $userIds = \App\Models\User::whereHas('masterSatker', function ($q) use ($kodesatker) {
+                $q->where('kodesatker', 'like', $kodesatker . '%')->whereRaw('LENGTH(kodesatker) > ?', [strlen($kodesatker)]);
+            })
+                ->pluck('id')
+                ->toArray();
+
             // Tambahkan id user login agar bisa lihat aktivitas sendiri
             if (!in_array($loginUser->id, $userIds)) {
                 $userIds[] = $loginUser->id;
@@ -52,14 +55,7 @@ class AktivitasDataTable extends DataTable
 
         $entri = DB::table('entry_surat_isis')
             ->leftJoin('users as u1', 'entry_surat_isis.created_by', '=', 'u1.id')
-            ->select([
-                'entry_surat_isis.created_at as waktu',
-                'entry_surat_isis.created_by as user_id',
-                DB::raw("'Entri Surat Masuk' as aktivitas"),
-                'entry_surat_isis.nomor_surat as no_surat',
-                'entry_surat_isis.hal',
-                'u1.fullname as user_nama'
-            ])
+            ->select(['entry_surat_isis.created_at as waktu', 'entry_surat_isis.created_by as user_id', DB::raw("'Entri Surat Masuk' as aktivitas"), 'entry_surat_isis.nomor_surat as no_surat', 'entry_surat_isis.hal', 'u1.fullname as user_nama'])
             ->when($user, function ($q) use ($user) {
                 $q->where('entry_surat_isis.created_by', $user);
             })
@@ -72,14 +68,7 @@ class AktivitasDataTable extends DataTable
 
         $keluar = DB::table('surat_keluar_isis')
             ->leftJoin('users as u2', 'surat_keluar_isis.user_id_pembuat', '=', 'u2.id')
-            ->select([
-                'surat_keluar_isis.created_at as waktu',
-                'surat_keluar_isis.user_id_pembuat as user_id',
-                DB::raw("'Buat Surat Keluar' as aktivitas"),
-                'surat_keluar_isis.nosurat as no_surat',
-                'surat_keluar_isis.hal',
-                'u2.fullname as user_nama'
-            ])
+            ->select(['surat_keluar_isis.created_at as waktu', 'surat_keluar_isis.user_id_pembuat as user_id', DB::raw("'Buat Surat Keluar' as aktivitas"), 'surat_keluar_isis.nosurat as no_surat', 'surat_keluar_isis.hal', 'u2.fullname as user_nama'])
             ->when($user, function ($q) use ($user) {
                 $q->where('surat_keluar_isis.user_id_pembuat', $user);
             })
@@ -91,45 +80,41 @@ class AktivitasDataTable extends DataTable
             });
 
         if ($jenis == 'masuk') {
-            return $entri;
+            return DB::query()->fromSub($entri, 'aktivitas')->select('aktivitas.*');
         } elseif ($jenis == 'keluar') {
-            return $keluar;
+            return DB::query()->fromSub($keluar, 'aktivitas')->select('aktivitas.*');
         } else {
-            return $entri->unionAll($keluar);
+            $union = $entri->unionAll($keluar);
+
+            return DB::query()->fromSub($union, 'aktivitas')->select('aktivitas.*');
         }
     }
 
     public function html(): HtmlBuilder
     {
-        return $this->builder()
-            ->setTableId('aktivitas-table')
-            ->columns($this->getColumns())
-            ->minifiedAjax()
-            ->orderBy(0, 'desc');
-            // ->selectStyleSingle()
-            // ->buttons([
-            //     Button::make('excel'),
-            //     Button::make('csv'),
-            //     Button::make('pdf'),
-            //     Button::make('print'),
-            //     Button::make('reset'),
-            //     Button::make('reload')
-            // ]);
+        return $this->builder()->setTableId('aktivitas-table')->columns($this->getColumns())->minifiedAjax()->orderBy(0, 'desc');
+        // ->selectStyleSingle()
+        // ->buttons([
+        //     Button::make('excel'),
+        //     Button::make('csv'),
+        //     Button::make('pdf'),
+        //     Button::make('print'),
+        //     Button::make('reset'),
+        //     Button::make('reload')
+        // ]);
     }
 
     public function getColumns(): array
     {
-        return [
-            Column::make('waktu')->title('Waktu'),
-            Column::make('user_nama')->title('User'),
-            Column::make('aktivitas')->title('Aktivitas'),
-            Column::make('no_surat')->title('No Surat'),
-            Column::make('hal')->title('Perihal'),
-        ];
+        return [Column::make('waktu')->title('Waktu')->data('waktu')->name('waktu'),
+        Column::make('user_nama')->title('User')->data('user_nama')->name('user_nama'),
+        Column::make('aktivitas')->title('Aktivitas')->data('aktivitas')->name('aktivitas')->orderable(false)->searchable(false),
+        Column::make('no_surat')->title('No Surat')->data('no_surat')->name('no_surat'),
+        Column::make('hal')->title('Perihal')->data('hal')->name('hal')];
     }
 
     protected function filename(): string
     {
         return 'Aktivitas_' . date('YmdHis');
     }
-} 
+}
