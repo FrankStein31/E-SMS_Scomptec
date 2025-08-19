@@ -388,16 +388,19 @@
                                             <i class="fa fa-save me-1"></i>Simpan File Scan
                                         </button>
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('entrisurat.cetak.tanda.terima', $data->id) }}" 
-                                               class="btn btn-info btn-sm d-lg-inline-flex align-items-center b-r-22" target="_blank">
+                                            <a href="{{ route('entrisurat.exportWord', $data->id) }}"
+                                                class="btn btn-info btn-sm d-lg-inline-flex align-items-center b-r-22"
+                                                target="_blank">
                                                 <i class="fa fa-receipt me-1"></i>Cetak Tanda Terima
                                             </a>
-                                            <a href="{{ route('entrisurat.cetak', $data->id) }}" 
-                                               class="btn btn-success btn-sm d-lg-inline-flex align-items-center b-r-22" target="_blank">
+                                            <a href="{{ route('entrisurat.exportSuratWord', $data->id) }}"
+                                                class="btn btn-success btn-sm d-lg-inline-flex align-items-center b-r-22"
+                                                target="_blank">
                                                 <i class="fa fa-print me-1"></i>Cetak
                                             </a>
-                                            <a href="{{ route('entrisurat.cetak.disposisi', $data->id) }}" 
-                                               class="btn btn-primary btn-sm d-lg-inline-flex align-items-center b-r-22" target="_blank">
+                                            <a href="{{ route('entrisurat.exportSuratDisWord', $data->id) }}"
+                                                class="btn btn-primary btn-sm d-lg-inline-flex align-items-center b-r-22"
+                                                target="_blank">
                                                 <i class="fa fa-file-text me-1"></i>Cetak Disposisi
                                             </a>
                                         </div>

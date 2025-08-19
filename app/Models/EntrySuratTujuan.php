@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class EntrySuratTujuan extends Model
 {
     use HasUlids;
-    
+
     protected $fillable = [
         'satkerid_tujuan',
         'dibaca',
@@ -16,4 +16,9 @@ class EntrySuratTujuan extends Model
         'entrysurat_id',
         'userid_tujuan',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'userid_tujuan', 'id');
+    }
 }

@@ -104,3 +104,6 @@ Route::get('/disposisi/riwayat/{id}', [App\Http\Controllers\DisposisiController:
 
 Route::get('aktivitas', [ReportSuratController::class, 'aktivitas'])->name('aktivitas');
 Route::get('/report/cetak', [ReportSuratController::class, 'cetak'])->name('report.cetak');
+Route::get('entrisurat/{id}/export-word', [EntriSuratController::class, 'exportTandaTerimaWord'])->name('entrisurat.exportWord');
+Route::get('entrisurat/{id}/export-surat-word', [EntriSuratController::class, 'exportSuratWord'])->name('entrisurat.exportSuratWord');
+Route::get('entrisurat/{id}/export-surat-dis-word', [EntriSuratController::class, 'exportSuratDisWord'])->name('entrisurat.exportSuratDisWord');
