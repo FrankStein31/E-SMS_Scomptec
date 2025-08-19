@@ -74,6 +74,23 @@
         .slick-next:before {
             color: #000;
         }
+
+        /* Compact detail styles */
+        .detail-table th {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #495057;
+            background-color: #f8f9fa;
+        }
+        
+        .detail-table td {
+            font-size: 0.85rem;
+            color: #212529;
+        }
+        
+        .detail-table tr:hover {
+            background-color: #f5f5f5;
+        }
     </style>
 
     <script>
@@ -353,67 +370,66 @@
                             <table class="table table-sm table-hover table-striped align-middle mb-0">
                                 <tbody>
                                     <tr>
-                                        <th scope="col" class="px-6 py-3" style="width:80px; min-width:80px;">Dari:</th>
-                                        <td class="align-middle" style="width:70%">{{ $data->dari }}</td>
-                                        <td class="text-end align-middle" style="width:30%; white-space:nowrap;">
+                                        <th scope="col" class="px-3 py-2" style="width:80px; min-width:80px;">Dari:</th>
+                                        <td class="align-middle px-3 py-2" style="width:70%">{{ $data->dari }}</td>
+                                        <td class="text-end align-middle px-3 py-2" style="width:30%; white-space:nowrap;">
                                             {{ date('d-m-Y', strtotime($data->tgl_diterima)) }}</td>
                                     </tr>
                                     <tr>
-                                        <td colspan="2" class="p-0">
+                                        <td colspan="3" class="p-0">
                                             <div class="collapse mt-2" id="detailCollapse" style="display:none;">
-                                                <table class="table table-sm table-borderless mb-0"
-                                                    style="margin-bottom:0;">
+                                                <table class="table table-sm table-borderless mb-0 detail-table" style="margin-bottom:0;">
                                                     <tr>
-                                                        <th scope="col" class="px-6 py-3">No. Surat</th>
-                                                        <td>{{ $data->nomor_surat }}</td>
+                                                        <th class="px-3 py-1" style="width:140px;">No. Surat</th>
+                                                        <td class="px-3 py-1">{{ $data->nomor_surat }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th scope="col" class="px-6 py-3">Hal</th>
-                                                        <td>{{ $data->hal }}</td>
+                                                        <th class="px-3 py-1">Hal</th>
+                                                        <td class="px-3 py-1">{{ $data->hal }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark" style="width:180px;">Sifat</th>
-                                                        <td>{{ sifatSurat($data->sifat) }}</td>
+                                                        <th class="px-3 py-1">Sifat</th>
+                                                        <td class="px-3 py-1">{{ sifatSurat($data->sifat) }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">Jenis</th>
-                                                        <td>{{ $data->jenis ? $data->jenis->name : '-' }}</td>
+                                                        <th class="px-3 py-1">Jenis</th>
+                                                        <td class="px-3 py-1">{{ $data->jenis ? $data->jenis->name : '-' }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">No. Agenda</th>
-                                                        <td>{{ $data->noagenda }}</td>
+                                                        <th class="px-3 py-1">No. Agenda</th>
+                                                        <td class="px-3 py-1">{{ $data->noagenda }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">Tanggal surat</th>
-                                                        <td>{{ date('d-m-Y', strtotime($data->tgl_surat)) }}</td>
+                                                        <th class="px-3 py-1">Tanggal surat</th>
+                                                        <td class="px-3 py-1">{{ date('d-m-Y', strtotime($data->tgl_surat)) }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">Tanggal terima</th>
-                                                        <td>{{ date('d-m-Y', strtotime($data->tgl_diterima)) }}</td>
+                                                        <th class="px-3 py-1">Tanggal terima</th>
+                                                        <td class="px-3 py-1">{{ date('d-m-Y', strtotime($data->tgl_diterima)) }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">Tembusan</th>
-                                                        <td>{{ $data->tembusan ?? '-' }}</td>
+                                                        <th class="px-3 py-1">Tembusan</th>
+                                                        <td class="px-3 py-1">{{ $data->tembusan ?? '-' }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">Klasifikasi</th>
-                                                        <td>{{ $data->kode_klasifikasi }}</td>
+                                                        <th class="px-3 py-1">Klasifikasi</th>
+                                                        <td class="px-3 py-1">{{ $data->kode_klasifikasi }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">Alamat</th>
-                                                        <td>{{ !empty($data->alamat) ? $data->alamat : '-' }}</td>
+                                                        <th class="px-3 py-1">Alamat</th>
+                                                        <td class="px-3 py-1">{{ !empty($data->alamat) ? $data->alamat : '-' }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">Referensi</th>
-                                                        <td>{{ $data->referensi_id ?? '-' }}</td>
+                                                        <th class="px-3 py-1">Referensi</th>
+                                                        <td class="px-3 py-1">{{ $data->referensi_id ?? '-' }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">Unit Pengentri</th>
-                                                        <td>{{ $data->createdBy->fullname }}</td>
+                                                        <th class="px-3 py-1">Unit Pengentri</th>
+                                                        <td class="px-3 py-1">{{ $data->createdBy->fullname }}</td>
                                                     </tr>
                                                     <tr>
-                                                        <th class="fw-bold text-dark">Lampiran</th>
-                                                        <td>{{ $data->lampiran ?? '-' }}</td>
+                                                        <th class="px-3 py-1">Lampiran</th>
+                                                        <td class="px-3 py-1">{{ $data->lampiran ?? '-' }}</td>
                                                     </tr>
                                                 </table>
                                             </div>
