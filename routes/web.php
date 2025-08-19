@@ -30,9 +30,9 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 
 Route::post('entrisurat/post/file/scan/{entri_surat_id}', [EntriSuratController::class, "scanfile"])->name('entrisurat.post.file.scan');
 Route::delete('/entrisurat/scan/{id}/delete', [EntriSuratController::class, 'deleteScan'])->name('entrisurat.scan.delete');
-Route::get('/entrisurat/{id}/cetak-tanda-terima', [EntriSuratController::class, 'cetakTandaTerima'])->name('entrisurat.cetak.tanda.terima');
-Route::get('/entrisurat/{id}/cetak', [EntriSuratController::class, 'cetakSurat'])->name('entrisurat.cetak');
-Route::get('/entrisurat/{id}/cetak-disposisi', [EntriSuratController::class, 'cetakDisposisi'])->name('entrisurat.cetak.disposisi');
+Route::get('entrisurat/{id}/export-word', [EntriSuratController::class, 'exportTandaTerimaWord'])->name('entrisurat.exportWord');
+Route::get('entrisurat/{id}/export-surat-word', [EntriSuratController::class, 'exportSuratWord'])->name('entrisurat.exportSuratWord');
+Route::get('entrisurat/{id}/export-surat-dis-word', [EntriSuratController::class, 'exportSuratDisWord'])->name('entrisurat.exportSuratDisWord');
 Route::resource('entrisurat', EntriSuratController::class);
 
 
@@ -104,6 +104,3 @@ Route::get('/disposisi/riwayat/{id}', [App\Http\Controllers\DisposisiController:
 
 Route::get('aktivitas', [ReportSuratController::class, 'aktivitas'])->name('aktivitas');
 Route::get('/report/cetak', [ReportSuratController::class, 'cetak'])->name('report.cetak');
-Route::get('entrisurat/{id}/export-word', [EntriSuratController::class, 'exportTandaTerimaWord'])->name('entrisurat.exportWord');
-Route::get('entrisurat/{id}/export-surat-word', [EntriSuratController::class, 'exportSuratWord'])->name('entrisurat.exportSuratWord');
-Route::get('entrisurat/{id}/export-surat-dis-word', [EntriSuratController::class, 'exportSuratDisWord'])->name('entrisurat.exportSuratDisWord');
