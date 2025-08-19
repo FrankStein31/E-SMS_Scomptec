@@ -3,12 +3,14 @@
 namespace App\DataTables;
 
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
+use Illuminate\Database\Query\Builder as DatabaseQueryBuilder;
 use Yajra\DataTables\DataTableAbstract;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
 use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AktivitasDataTable extends DataTable
 {
@@ -21,13 +23,13 @@ class AktivitasDataTable extends DataTable
             ->rawColumns(['action']);
     }
 
-    public function query(): \Illuminate\Support\Collection
+    public function query(): DatabaseQueryBuilder
     {
         $user = $this->request->get('user');
         $tanggal = $this->request->get('tanggal');
         $jenis = $this->request->get('jenis');
 
-        $loginUser = auth()->user();
+        $loginUser = Auth::user();
         $isOperator = $loginUser->usergroupid == 1;
         $kodesatker = null;
         if (!$isOperator) {
@@ -49,23 +51,52 @@ class AktivitasDataTable extends DataTable
         }
 
         $entri = DB::table('entry_surat_isis')
-            ->select('created_at as waktu', 'created_by as user_id', DB::raw("'Entri Surat Masuk' as aktivitas"), 'nomor_surat as no_surat', 'hal', 'dari as user_nama')
-            ->when($user, function($q) use ($user) { $q->where('created_by', $user); })
-            ->when($tanggal, function($q) use ($tanggal) { $q->whereDate('created_at', $tanggal); })
-            ->when($userIds, function($q) use ($userIds) { $q->whereIn('created_by', $userIds); });
+            ->leftJoin('users as u1', 'entry_surat_isis.created_by', '=', 'u1.id')
+            ->select([
+                'entry_surat_isis.created_at as waktu',
+                'entry_surat_isis.created_by as user_id',
+                DB::raw("'Entri Surat Masuk' as aktivitas"),
+                'entry_surat_isis.nomor_surat as no_surat',
+                'entry_surat_isis.hal',
+                'u1.fullname as user_nama'
+            ])
+            ->when($user, function ($q) use ($user) {
+                $q->where('entry_surat_isis.created_by', $user);
+            })
+            ->when($tanggal, function ($q) use ($tanggal) {
+                $q->whereDate('entry_surat_isis.created_at', $tanggal);
+            })
+            ->when($userIds, function ($q) use ($userIds) {
+                $q->whereIn('entry_surat_isis.created_by', $userIds);
+            });
+
         $keluar = DB::table('surat_keluar_isis')
-            ->select('created_at as waktu', 'user_id_pembuat as user_id', DB::raw("'Buat Surat Keluar' as aktivitas"), 'nosurat as no_surat', 'hal', 'ttd_nama as user_nama')
-            ->when($user, function($q) use ($user) { $q->where('user_id_pembuat', $user); })
-            ->when($tanggal, function($q) use ($tanggal) { $q->whereDate('created_at', $tanggal); })
-            ->when($userIds, function($q) use ($userIds) { $q->whereIn('user_id_pembuat', $userIds); });
+            ->leftJoin('users as u2', 'surat_keluar_isis.user_id_pembuat', '=', 'u2.id')
+            ->select([
+                'surat_keluar_isis.created_at as waktu',
+                'surat_keluar_isis.user_id_pembuat as user_id',
+                DB::raw("'Buat Surat Keluar' as aktivitas"),
+                'surat_keluar_isis.nosurat as no_surat',
+                'surat_keluar_isis.hal',
+                'u2.fullname as user_nama'
+            ])
+            ->when($user, function ($q) use ($user) {
+                $q->where('surat_keluar_isis.user_id_pembuat', $user);
+            })
+            ->when($tanggal, function ($q) use ($tanggal) {
+                $q->whereDate('surat_keluar_isis.created_at', $tanggal);
+            })
+            ->when($userIds, function ($q) use ($userIds) {
+                $q->whereIn('surat_keluar_isis.user_id_pembuat', $userIds);
+            });
+
         if ($jenis == 'masuk') {
-            $query = $entri;
+            return $entri;
         } elseif ($jenis == 'keluar') {
-            $query = $keluar;
+            return $keluar;
         } else {
-            $query = $entri->unionAll($keluar);
+            return $entri->unionAll($keluar);
         }
-        return $query->orderBy('waktu', 'desc')->get();
     }
 
     public function html(): HtmlBuilder
@@ -73,8 +104,8 @@ class AktivitasDataTable extends DataTable
         return $this->builder()
             ->setTableId('aktivitas-table')
             ->columns($this->getColumns())
-            // ->minifiedAjax()
-            ->orderBy(0);
+            ->minifiedAjax()
+            ->orderBy(0, 'desc');
             // ->selectStyleSingle()
             // ->buttons([
             //     Button::make('excel'),
