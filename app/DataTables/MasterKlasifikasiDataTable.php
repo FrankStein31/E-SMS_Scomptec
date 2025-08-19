@@ -43,11 +43,13 @@ class MasterKlasifikasiDataTable extends DataTable
     public function query(MasterKlasifikasi $model): QueryBuilder
     {
         $query = $model->newQuery();
+        
         // Filter kolom kodeklasifikasi jika ada
-        $searchValue = $this->request->input('columns')[0]['search']['value'] ?? null;
-        if ($searchValue) {
-            $query->where('kodeklasifikasi', 'like', $searchValue.'%');
+        if ($this->request->has('filter_kode') && !empty($this->request->get('filter_kode'))) {
+            $filterValue = $this->request->get('filter_kode');
+            $query->where('kodeklasifikasi', 'like', $filterValue.'%');
         }
+        
         return $query->orderBy('kodeklasifikasi');
     }
 
@@ -59,17 +61,15 @@ class MasterKlasifikasiDataTable extends DataTable
         return $this->builder()
                     ->setTableId('masterklasifikasi-table')
                     ->columns($this->getColumns())
-                    // ->minifiedAjax()
-                    ->orderBy(0) ;
-                    // ->selectStyleSingle()
-                    // ->buttons([
-                    //     Button::make('excel'),
-                    //     Button::make('csv'),
-                    //     Button::make('pdf'),
-                    //     Button::make('print'),
-                    //     Button::make('reset'),
-                    //     Button::make('reload')
-                    // ]);
+                    ->minifiedAjax()
+                    ->orderBy(0)
+                    ->parameters([
+                        'responsive' => true,
+                        'autoWidth' => false,
+                        'language' => [
+                            'url' => asset('assets/datatables/id.json')
+                        ]
+                    ]);
     }
 
     /**

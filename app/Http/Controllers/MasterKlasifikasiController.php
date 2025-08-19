@@ -14,6 +14,7 @@ class MasterKlasifikasiController extends Controller
         if ($request->ajax()) {
             return $dataTable->ajax();
         }
+        
         $kodeUtama = MasterKlasifikasi::select('kodeklasifikasi', 'klasifikasi')
             ->orderBy('kodeklasifikasi')
             ->get()
@@ -23,6 +24,7 @@ class MasterKlasifikasiController extends Controller
             ->map(function($group) {
                 return $group->first();
             });
+            
         return $dataTable->render('klasifikasi.index', compact('kodeUtama'));
     }
 

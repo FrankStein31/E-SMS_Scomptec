@@ -17,7 +17,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                {{ $dataTable->table(['id' => 'table-masterklasifikasi-table']) }}
+                {{ $dataTable->table(['id' => 'masterklasifikasi-table']) }}
             </div>
         </div>
     </div>
@@ -82,16 +82,7 @@
 @push('scripts')
 {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 <script>
-    $(document).ready(function() {
-        var table = window.LaravelDataTables['table-id'];
-        $('#filterKodeUtama').on('change', function(){
-            var value = $(this).val();
-            table.column('kodeklasifikasi:name').search(value).draw();
-        });
-    });
-</script>
-<script>
-$(function(){
+$(document).ready(function(){
     // Inisialisasi select2 untuk dropdown filter
     $('#filterKodeUtama').select2({
         width: 'resolve',
@@ -100,17 +91,20 @@ $(function(){
         dropdownParent: $('.card-header')
     });
 
-    var table = $('#tabelKlasifikasi').DataTable();
-
-    // Filter kode utama (kolom ke-0 = kodeklasifikasi)
+    // Get the DataTable instance
+    var table = window.LaravelDataTables['masterklasifikasi-table'];
+    
+    // Filter kode utama
     $('#filterKodeUtama').on('change', function(){
-        var val = $(this).val();
-        var colIdx = 0; // kodeklasifikasi kolom ke-0
-        if(val) {
-            table.column(colIdx).search(val).draw();
-        } else {
-            table.column(colIdx).search('').draw();
-        }
+        var filterValue = $(this).val();
+        
+        // Use the built-in DataTable AJAX functionality with additional data
+        table.settings()[0].ajax.data = function(d) {
+            d.filter_kode = filterValue;
+            return d;
+        };
+        
+        table.ajax.reload();
     });
 
     // Tambah
@@ -120,6 +114,7 @@ $(function(){
         $('#klasifikasi_id').val('');
         $('#modalKlasifikasi').modal('show');
     });
+
     // Edit pakai event delegation
     $(document).on('click', '.btnEdit', function(){
         let id = $(this).data('id');
@@ -141,6 +136,7 @@ $(function(){
             }
         });
     });
+
     // Hapus pakai event delegation
     $(document).on('click', '.btnHapus', function(){
         if(confirm('Yakin hapus data?')){
@@ -175,6 +171,7 @@ $(function(){
             });
         }
     });
+
     // Simpan (tambah/edit)
     $('#formKlasifikasi').submit(function(e){
         e.preventDefault();
