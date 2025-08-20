@@ -11,8 +11,8 @@
         content="admin template, axelit admin template, dashboard template, flat admin template, responsive admin template, web app"
         name="keywords">
     <meta content="la-themes" name="author">
-    <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="icon" type="image/x-icon">
-    <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="shortcut icon" type="image/x-icon">
+    <!-- <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="icon" type="image/x-icon">
+    <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="shortcut icon" type="image/x-icon"> -->
 
     <title>E-SMs Sistem Manajemen Surat</title>
 
