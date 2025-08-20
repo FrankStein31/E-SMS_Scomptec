@@ -340,14 +340,32 @@
                             // If clicking the same selected row, deselect it
                             clickedRow.removeClass('selected');
                             $('#actionButtons').removeClass('show').hide();
+                            // Reset edit button visibility when deselecting
+                            $('#editBtn').show();
                             console.log('Row deselected');
                         } else {
                             // Clear all selections first, then select clicked row
                             $('#tabelEntriSurat tbody tr, #entrysuratisi-table tbody tr').removeClass('selected');
                             clickedRow.addClass('selected');
                             
+                            // Check status baca to determine if edit button should be shown
+                            var statusBacaCell = clickedRow.find('td').eq(8); // Kolom status_baca (index ke-8)
+                            var statusBacaText = statusBacaCell.text().trim();
+                            var sudahDibaca = statusBacaText.includes('Sudah Dibaca');
+                            
+                            console.log('Status baca:', statusBacaText, 'Sudah dibaca:', sudahDibaca);
+                            
                             // Show action buttons
                             $('#actionButtons').addClass('show').show();
+                            
+                            // Hide/show edit button based on read status
+                            if (sudahDibaca) {
+                                $('#editBtn').hide();
+                                console.log('Edit button hidden - surat sudah dibaca');
+                            } else {
+                                $('#editBtn').show();
+                                console.log('Edit button shown - surat belum dibaca');
+                            }
                             
                             // Store selected row ID for action buttons
                             $('#actionButtons').data('selectedId', rowId);
