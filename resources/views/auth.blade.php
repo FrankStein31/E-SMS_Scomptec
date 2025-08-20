@@ -11,13 +11,13 @@
         content="admin template, axelit admin template, dashboard template, flat admin template, responsive admin template, web app"
         name="keywords">
     <meta content="la-themes" name="author">
-    <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="icon" type="image/x-icon">
-    <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="shortcut icon" type="image/x-icon">
+    <!-- <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="icon" type="image/x-icon">
+    <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="shortcut icon" type="image/x-icon"> -->
 
     <title>E-SMs Sistem Manajemen Surat</title>
 
     <!--font-awesome-css-->
-    <link href="{{ asset('assets/vendor/fontawesome/css/all.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/" rel="preconnect">
@@ -139,8 +139,14 @@
     <!-- latest jquery-->
     <script src="{{ asset('assets/js/jquery-3.6.3.min.js') }}"></script>
 
+    <!-- Safe DOM utilities -->
+    <script src="{{ asset('assets/js/safe-dom.js') }}"></script>
+
     <!-- Bootstrap js-->
     <script src="{{ asset('assets/vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Auth specific js-->
+    <script src="{{ asset('assets/js/auth.js') }}"></script>
 
 </body>
 

@@ -180,20 +180,31 @@ $('.loader-wrapper').fadeOut('slow', function () {
 let calcScrollValue = () => {
   let scrollProgress = document.getElementsByClassName("go-top");
   let progressValue = document.getElementsByClassName("progress-value");
+  
+  // Check if element exists
+  if (!scrollProgress || scrollProgress.length === 0) {
+    return;
+  }
+  
   let pos = document.documentElement.scrollTop;
   let calcHeight =
     document.documentElement.scrollHeight -
     document.documentElement.clientHeight;
   let scrollValue = Math.round((pos * 100) / calcHeight);
+  
   if (pos > 100) {
     scrollProgress[0].style.display = 'grid';
   } else {
     scrollProgress[0].style.display = 'none';
   }
 
-  scrollProgress[0].addEventListener("click", () => {
-    document.documentElement.scrollTop = 0;
-  });
+  // Only add event listener once
+  if (!scrollProgress[0].hasAttribute('data-listener-added')) {
+    scrollProgress[0].addEventListener("click", () => {
+      document.documentElement.scrollTop = 0;
+    });
+    scrollProgress[0].setAttribute('data-listener-added', 'true');
+  }
 
   scrollProgress[0].style.background = `conic-gradient( rgba(var(--info),1),rgba(var(--primary),1),rgba(var(--danger),1),rgba(var(--info-dark),1),rgba(var(--primary-dark),1),rgba(var(--danger-dark),1),  ${scrollValue}%, rgba(var(--primary),.3) ${scrollValue}%)`;
 };
@@ -242,19 +253,26 @@ function myFunction() {
 
 // >>-- 11 Dark mode js --<<
 
-document.querySelector(".header-dark").addEventListener("click", () => {
-  document.querySelector(".sun-logo").classList.toggle("sun");
-  document.querySelector(".moon-logo").classList.toggle("moon");
-  if ($('body').hasClass("dark")) {
-    document.body.classList.remove("dark")
-    document.body.classList.add("light")
-    setLocalStorageItem('theme-mode', 'light')
-  } else {
-    document.body.classList.remove("light")
-    document.body.classList.add("dark")
-    setLocalStorageItem('theme-mode', 'dark')
-  }
-})
+const headerDark = document.querySelector(".header-dark");
+if (headerDark) {
+  headerDark.addEventListener("click", () => {
+    const sunLogo = document.querySelector(".sun-logo");
+    const moonLogo = document.querySelector(".moon-logo");
+    
+    if (sunLogo) sunLogo.classList.toggle("sun");
+    if (moonLogo) moonLogo.classList.toggle("moon");
+    
+    if ($('body').hasClass("dark")) {
+      document.body.classList.remove("dark")
+      document.body.classList.add("light")
+      setLocalStorageItem('theme-mode', 'light')
+    } else {
+      document.body.classList.remove("light")
+      document.body.classList.add("dark")
+      setLocalStorageItem('theme-mode', 'dark')
+    }
+  });
+}
 function appendHtml() {
   var div = document.getElementsByClassName('app-wrapper');
   div.innerHTML += '<p>This is some HTML code</p>';
@@ -302,22 +320,26 @@ $(document).on('keyup', '.search-filter', function (e) {
 
 // >>-- 14 CloseCollapse js --<<
 var closeCollaps = document.querySelectorAll('.main-nav li a[data-bs-toggle="collapse"]');
-closeCollaps.forEach(function (element) {
-  element.addEventListener('click', function () {
-    var parent = element.closest('.collapse');
-    var all = document.querySelectorAll('.collapse');
-    all.forEach(function (e) {
-      if (e !== parent) {
-        e.classList.remove('show');
-        var ariaexpand = e.previousElementSibling;
-        if (ariaexpand) ariaexpand.setAttribute('aria-expanded', 'false');
-      }
-    });
-    parent?.classList.add('show');
-    var ariaexpand = element;
-    if (ariaexpand) ariaexpand.setAttribute('aria-expanded', 'true');
+if (closeCollaps && closeCollaps.length > 0) {
+  closeCollaps.forEach(function (element) {
+    if (element) {
+      element.addEventListener('click', function () {
+        var parent = element.closest('.collapse');
+        var all = document.querySelectorAll('.collapse');
+        all.forEach(function (e) {
+          if (e !== parent) {
+            e.classList.remove('show');
+            var ariaexpand = e.previousElementSibling;
+            if (ariaexpand) ariaexpand.setAttribute('aria-expanded', 'false');
+          }
+        });
+        parent?.classList.add('show');
+        var ariaexpand = element;
+        if (ariaexpand) ariaexpand.setAttribute('aria-expanded', 'true');
+      });
+    }
   });
-});
+}
 
 // >>-- 15  Modal js --<<
 

@@ -15,21 +15,30 @@
         name="keywords">
     <meta content="la-themes" name="author">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="icon" type="image/x-icon">
-    <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="shortcut icon" type="image/x-icon">
+    <!-- <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="icon" type="image/x-icon">
+    <link href="{{ asset('assets/images/logo/favicon.png') }}" rel="shortcut icon" type="image/x-icon"> -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->
     <!-- Summernote CSS -->
     <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
+    
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="{{ asset('dist/plugins/codemirror/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/codemirror/theme/monokai.css') }}">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
     <!-- DataTables -->
     <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+    
+    <!-- DataTables Select Extension CSS - Local Bootstrap 4 version -->
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-select/css/select.bootstrap4.min.css') }}">
+    
     <!-- Theme style -->
-    <link rel="stylesheet" href="{{ asset('dist/dist/css/adminlte.min.css') }}">
+    <!-- <link rel="stylesheet" href="{{ asset('dist/dist/css/adminlte.min.css') }}"> -->
     <!-- Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -241,20 +250,35 @@
 
     @stack('js')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/app.js') }}"></script>
+    <!-- <script src="{{ asset('js/app.js') }}"></script> -->
     <!-- Summernote -->
     <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
+    
+    <!-- CodeMirror JS -->
+    <script src="{{ asset('dist/plugins/codemirror/codemirror.js') }}"></script>
+    <script src="{{ asset('dist/plugins/codemirror/mode/xml/xml.js') }}"></script>
+    <script src="{{ asset('dist/plugins/codemirror/mode/javascript/javascript.js') }}"></script>
+    <script src="{{ asset('dist/plugins/codemirror/mode/css/css.js') }}"></script>
+    <script src="{{ asset('dist/plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
+    
     @stack('scripts') {{-- PENTING! Untuk script dari child view, seperti TinyMCE --}}
     <script>
         $(function() {
-            // Summernote
-            $('#summernote').summernote()
+            // Summernote - only if element exists
+            if ($('#summernote').length) {
+                $('#summernote').summernote();
+            }
 
-            // CodeMirror
-            CodeMirror.fromTextArea(document.getElementById("codeMirrorDemo"), {
-                mode: "htmlmixed",
-                theme: "monokai"
-            });
+            // CodeMirror - only if element exists
+            if (document.getElementById("codeMirrorDemo")) {
+                SafeDOM.codeMirror("codeMirrorDemo", {
+                    mode: "htmlmixed",
+                    theme: "monokai",
+                    lineNumbers: true,
+                    autoCloseTags: true,
+                    lineWrapping: true
+                });
+            }
         })
     </script>
 
@@ -271,30 +295,15 @@
     <script src="{{ asset('dist/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('dist/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
     <script src="{{ asset('dist/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+    
+    <!-- DataTables Select Extension - Local version -->
+    <script src="{{ asset('dist/plugins/datatables-select/js/dataTables.select.min.js') }}"></script>
+    
     <!-- AdminLTE App -->
     <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="{{ asset('dist/js/demo.js') }}"></script>
-    <!-- Page specific script -->
-    <script>
-        $(function() {
-            $("#example1").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            $('#example2').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-            });
-        });
-    </script>
+    <!-- Page specific script - now handled by plugin-init.js -->
 
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

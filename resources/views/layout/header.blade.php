@@ -22,8 +22,7 @@
                             id="profilecanvasRight" tabindex="-1" style="width: 300px;">
                             <div class="offcanvas-body p-0">
                                 <div class="bg-primary p-4 text-center text-white">
-                                    <img alt="" class="img-fluid rounded-circle mb-3" width="100"
-                                        src="{{ asset('assets/images/avatar.png') }}">
+                                    <i class="fas fa-user-circle fa-5x mb-3 text-white"></i>
                                     <h5 class="mb-1">{{ Auth::user()->fullname }}</h5>
                                     <p class="mb-0">{{ Auth::user()->jabatan }}</p>
                                     <small>{{ Auth::user()->username }}</small>
