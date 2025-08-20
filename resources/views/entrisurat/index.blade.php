@@ -112,9 +112,7 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     
-    <!-- DataTables Select Extension -->
-    <script src="https://cdn.datatables.net/select/1.7.0/js/dataTables.select.min.js"></script>
-    <link href="https://cdn.datatables.net/select/1.7.0/css/select.dataTables.min.css" rel="stylesheet" />
+    <!-- Note: DataTables Select Extension is now loaded in main layout -->
     <style>
         /* Sticky Table Container */
         .dataTables_wrapper {
@@ -245,132 +243,182 @@
     </style>
     <script>
     $(document).ready(function(){
-        // Initialize Select2
-        $('#filterSifat, #filterJenis, #filterUnit, #filterTujuan').select2({
-            width: '100%',
-            allowClear: true
-        });
+        // Initialize Select2 with error handling
+        try {
+            $('#filterSifat, #filterJenis, #filterUnit, #filterTujuan').select2({
+                width: '100%',
+                allowClear: true
+            });
+        } catch (error) {
+            console.warn('Select2 initialization failed:', error);
+        }
         
-        // Filter functionality
+        // Filter functionality with error handling
         $('#filterSifat, #filterJenis, #filterUnit, #filterTujuan').on('change', function(){
-            let sifat = $('#filterSifat').val();
-            let jenis = $('#filterJenis').val();
-            let unit = $('#filterUnit').val();
-            let tujuan = $('#filterTujuan').val();
-            window.LaravelDataTables['tabelEntriSurat'].ajax.url('?sifat='+sifat+'&jenis='+jenis+'&unit_pengentri='+unit+'&tujuan='+tujuan).load();
+            try {
+                let sifat = $('#filterSifat').val();
+                let jenis = $('#filterJenis').val();
+                let unit = $('#filterUnit').val();
+                let tujuan = $('#filterTujuan').val();
+                
+                if (window.LaravelDataTables && window.LaravelDataTables['tabelEntriSurat']) {
+                    window.LaravelDataTables['tabelEntriSurat'].ajax.url('?sifat='+sifat+'&jenis='+jenis+'&unit_pengentri='+unit+'&tujuan='+tujuan).load();
+                }
+            } catch (error) {
+                console.warn('Filter functionality error:', error);
+            }
         });
         
-        // Custom search functionality
+        // Custom search functionality with error handling
         $('#customSearch').on('keyup', function() {
-            window.LaravelDataTables['tabelEntriSurat'].search(this.value).draw();
+            try {
+                if (window.LaravelDataTables && window.LaravelDataTables['tabelEntriSurat']) {
+                    window.LaravelDataTables['tabelEntriSurat'].search(this.value).draw();
+                }
+            } catch (error) {
+                console.warn('Search functionality error:', error);
+            }
         });
         
         // Clear search button
         $('#clearSearch').on('click', function() {
-            $('#customSearch').val('');
-            window.LaravelDataTables['tabelEntriSurat'].search('').draw();
+            try {
+                $('#customSearch').val('');
+                if (window.LaravelDataTables && window.LaravelDataTables['tabelEntriSurat']) {
+                    window.LaravelDataTables['tabelEntriSurat'].search('').draw();
+                }
+            } catch (error) {
+                console.warn('Clear search error:', error);
+            }
         });
         
-        // Wait for DataTable to load then add click events
-        setTimeout(function() {
-            console.log('Setting up click handlers...');
-            
-            // Debug: Check if table exists
-            if ($('#tabelEntriSurat tbody').length) {
-                console.log('Table found with ID: tabelEntriSurat');
-            }
-            if ($('#entrysuratisi-table tbody').length) {
-                console.log('Table found with ID: entrysuratisi-table');
-            }
-            
-            // Sync horizontal scroll between header and body
-            $('.dataTables_scrollBody').on('scroll', function() {
-                var scrollLeft = $(this).scrollLeft();
-                $('.dataTables_scrollHead').scrollLeft(scrollLeft);
-            });
-            
-            // Try both possible table IDs
-            var tableSelector = '#tabelEntriSurat tbody tr, #entrysuratisi-table tbody tr';
-            
-            // Remove any existing handlers
-            $(document).off('click', tableSelector);
-            
-            // Add click handler with debugging
-            $(document).on('click', tableSelector, function(e) {
-                console.log('Row clicked!', this);
+        // Wait for DataTable to load then add click events with better error handling
+        function initializeTableInteractions() {
+            try {
+                console.log('Initializing table interactions...');
                 
-                // Prevent action if clicking on buttons
-                if ($(e.target).closest('.btn').length) {
-                    console.log('Button clicked, ignoring...');
-                    return;
+                // Debug: Check if table exists
+                if ($('#tabelEntriSurat tbody').length) {
+                    console.log('Table found with ID: tabelEntriSurat');
+                }
+                if ($('#entrysuratisi-table tbody').length) {
+                    console.log('Table found with ID: entrysuratisi-table');
                 }
                 
-                var clickedRow = $(this);
-                var rowId = clickedRow.attr('id');
+                // Sync horizontal scroll between header and body
+                $('.dataTables_scrollBody').on('scroll', function() {
+                    try {
+                        var scrollLeft = $(this).scrollLeft();
+                        $('.dataTables_scrollHead').scrollLeft(scrollLeft);
+                    } catch (error) {
+                        console.warn('Scroll sync error:', error);
+                    }
+                });
                 
-                // Toggle selection on same row, clear others
-                if (clickedRow.hasClass('selected')) {
-                    // If clicking the same selected row, deselect it
-                    clickedRow.removeClass('selected');
-                    $('#actionButtons').removeClass('show').hide();
-                    console.log('Row deselected');
-                } else {
-                    // Clear all selections first, then select clicked row
-                    $('#tabelEntriSurat tbody tr, #entrysuratisi-table tbody tr').removeClass('selected');
-                    clickedRow.addClass('selected');
-                    
-                    // Show action buttons
-                    $('#actionButtons').addClass('show').show();
-                    
-                    // Store selected row ID for action buttons
-                    $('#actionButtons').data('selectedId', rowId);
-                    
-                    console.log('Row selected (single mode), ID:', rowId);
-                }
-            });
-            
-        }, 2000); // Wait 2 seconds for DataTable to fully load
+                // Try both possible table IDs
+                var tableSelector = '#tabelEntriSurat tbody tr, #entrysuratisi-table tbody tr';
+                
+                // Remove any existing handlers
+                $(document).off('click', tableSelector);
+                
+                // Add click handler with debugging
+                $(document).on('click', tableSelector, function(e) {
+                    try {
+                        console.log('Row clicked!', this);
+                        
+                        // Prevent action if clicking on buttons
+                        if ($(e.target).closest('.btn').length) {
+                            console.log('Button clicked, ignoring...');
+                            return;
+                        }
+                        
+                        var clickedRow = $(this);
+                        var rowId = clickedRow.attr('id');
+                        
+                        // Toggle selection on same row, clear others
+                        if (clickedRow.hasClass('selected')) {
+                            // If clicking the same selected row, deselect it
+                            clickedRow.removeClass('selected');
+                            $('#actionButtons').removeClass('show').hide();
+                            console.log('Row deselected');
+                        } else {
+                            // Clear all selections first, then select clicked row
+                            $('#tabelEntriSurat tbody tr, #entrysuratisi-table tbody tr').removeClass('selected');
+                            clickedRow.addClass('selected');
+                            
+                            // Show action buttons
+                            $('#actionButtons').addClass('show').show();
+                            
+                            // Store selected row ID for action buttons
+                            $('#actionButtons').data('selectedId', rowId);
+                            
+                            console.log('Row selected (single mode), ID:', rowId);
+                        }
+                    } catch (error) {
+                        console.error('Row click handler error:', error);
+                    }
+                });
+            } catch (error) {
+                console.error('Table initialization error:', error);
+            }
+        }
         
-        // Action button handlers
+        // Initialize with delays to ensure proper loading
+        setTimeout(initializeTableInteractions, 1000);
+        setTimeout(initializeTableInteractions, 3000);
+        
+        // Action button handlers with error handling
         $(document).on('click', '#detailBtn', function() {
-            var selectedId = $('#actionButtons').data('selectedId');
-            if (selectedId) {
-                window.location.href = '/entrisurat/' + selectedId;
+            try {
+                var selectedId = $('#actionButtons').data('selectedId');
+                if (selectedId) {
+                    window.location.href = '/entrisurat/' + selectedId;
+                }
+            } catch (error) {
+                console.error('Detail button error:', error);
             }
         });
         
         $(document).on('click', '#editBtn', function() {
-            var selectedId = $('#actionButtons').data('selectedId');
-            if (selectedId) {
-                window.location.href = '/entrisurat/' + selectedId + '/edit';
+            try {
+                var selectedId = $('#actionButtons').data('selectedId');
+                if (selectedId) {
+                    window.location.href = '/entrisurat/' + selectedId + '/edit';
+                }
+            } catch (error) {
+                console.error('Edit button error:', error);
             }
         });
         
         $(document).on('click', '#deleteBtn', function() {
-            var selectedId = $('#actionButtons').data('selectedId');
-            if (selectedId) {
-                if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
-                    // Create form and submit for DELETE request
-                    var form = $('<form>', {
-                        'method': 'POST',
-                        'action': '/entrisurat/' + selectedId
-                    });
-                    
-                    form.append($('<input>', {
-                        'type': 'hidden',
-                        'name': '_token',
-                        'value': $('meta[name="csrf-token"]').attr('content')
-                    }));
-                    
-                    form.append($('<input>', {
-                        'type': 'hidden',
-                        'name': '_method',
-                        'value': 'DELETE'
-                    }));
-                    
-                    $('body').append(form);
-                    form.submit();
+            try {
+                var selectedId = $('#actionButtons').data('selectedId');
+                if (selectedId) {
+                    if (confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                        // Create form and submit for DELETE request
+                        var form = $('<form>', {
+                            'method': 'POST',
+                            'action': '/entrisurat/' + selectedId
+                        });
+                        
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': '_token',
+                            'value': $('meta[name="csrf-token"]').attr('content')
+                        }));
+                        
+                        form.append($('<input>', {
+                            'type': 'hidden',
+                            'name': '_method',
+                            'value': 'DELETE'
+                        }));
+                        
+                        $('body').append(form);
+                        form.submit();
+                    }
                 }
+            } catch (error) {
+                console.error('Delete button error:', error);
             }
         });
     });

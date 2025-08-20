@@ -33,6 +33,10 @@
     <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+    
+    <!-- DataTables Select Extension CSS - Local Bootstrap 4 version -->
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables-select/css/select.bootstrap4.min.css') }}">
+    
     <!-- Theme style -->
     <!-- <link rel="stylesheet" href="{{ asset('dist/dist/css/adminlte.min.css') }}"> -->
     <!-- Select2 CSS -->
@@ -291,6 +295,10 @@
     <script src="{{ asset('dist/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
     <script src="{{ asset('dist/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
     <script src="{{ asset('dist/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
+    
+    <!-- DataTables Select Extension - Local version -->
+    <script src="{{ asset('dist/plugins/datatables-select/js/dataTables.select.min.js') }}"></script>
+    
     <!-- AdminLTE App -->
     <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
     <!-- AdminLTE for demo purposes -->

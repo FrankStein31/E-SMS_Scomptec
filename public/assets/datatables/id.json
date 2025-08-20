@@ -1,0 +1,52 @@
+{
+    "processing": "Sedang memproses...",
+    "lengthMenu": "Tampilkan _MENU_ entri",
+    "zeroRecords": "Tidak ada data yang ditemukan",
+    "info": "Menampilkan _START_ hingga _END_ dari _TOTAL_ entri",
+    "infoEmpty": "Menampilkan 0 hingga 0 dari 0 entri",
+    "infoFiltered": "(disaring dari _MAX_ total entri)",
+    "search": "Cari:",
+    "paginate": {
+        "first": "Pertama",
+        "last": "Terakhir",
+        "next": "Selanjutnya",
+        "previous": "Sebelumnya"
+    },
+    "emptyTable": "Tidak ada data tersedia dalam tabel",
+    "loadingRecords": "Memuat...",
+    "searchPlaceholder": "Ketik untuk mencari...",
+    "thousands": ".",
+    "decimal": ",",
+    "aria": {
+        "sortAscending": ": aktifkan untuk mengurutkan kolom naik",
+        "sortDescending": ": aktifkan untuk mengurutkan kolom turun"
+    },
+    "buttons": {
+        "copy": "Salin",
+        "excel": "Excel",
+        "csv": "CSV",
+        "pdf": "PDF",
+        "print": "Cetak",
+        "colvis": "Kolom",
+        "copyTitle": "Salin ke Clipboard",
+        "copySuccess": {
+            "_": "%d baris disalin",
+            "1": "1 baris disalin"
+        }
+    },
+    "select": {
+        "rows": {
+            "_": "%d baris dipilih",
+            "0": "Klik baris untuk memilih",
+            "1": "1 baris dipilih"
+        },
+        "cells": {
+            "_": "%d sel dipilih",
+            "1": "1 sel dipilih"
+        },
+        "columns": {
+            "_": "%d kolom dipilih",
+            "1": "1 kolom dipilih"
+        }
+    }
+}

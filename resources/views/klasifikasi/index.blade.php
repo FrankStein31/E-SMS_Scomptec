@@ -83,83 +83,175 @@
 {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
 <script>
 $(document).ready(function(){
-    // Inisialisasi select2 untuk dropdown filter
-    $('#filterKodeUtama').select2({
-        width: 'resolve',
-        placeholder: 'Pilih Kode',
-        allowClear: true,
-        dropdownParent: $('.card-header')
-    });
-
-    // Get the DataTable instance
-    var table = window.LaravelDataTables['masterklasifikasi-table'];
-    
-    // Filter kode utama
-    $('#filterKodeUtama').on('change', function(){
-        var filterValue = $(this).val();
-        
-        // Use the built-in DataTable AJAX functionality with additional data
-        table.settings()[0].ajax.data = function(d) {
-            d.filter_kode = filterValue;
-            return d;
-        };
-        
-        table.ajax.reload();
-    });
-
-    // Tambah
-    $('#btnTambah').click(function(){
-        $('#formKlasifikasi')[0].reset();
-        $('#modalTitle').text('Tambah Klasifikasi');
-        $('#klasifikasi_id').val('');
-        $('#modalKlasifikasi').modal('show');
-    });
-
-    // Edit pakai event delegation
-    $(document).on('click', '.btnEdit', function(){
-        let id = $(this).data('id');
-        $.get('/klasifikasi/'+id, function(res){
-            if(res.success){
-                let d = res.data;
-                $('#modalTitle').text('Edit Klasifikasi');
-                $('#klasifikasi_id').val(d.id);
-                $('[name=kodeklasifikasi]').val(d.kodeklasifikasi);
-                $('[name=klasifikasi]').val(d.klasifikasi);
-                $('[name=retensi_aktif]').val(d.retensi_aktif);
-                $('[name=retensi_inaktif]').val(d.retensi_inaktif);
-                $('[name=keterangan]').val(d.keterangan);
-                $('[name=retensi]').val(d.retensi);
-                $('[name=parent]').val(d.parent);
-                $('#modalKlasifikasi').modal('show');
-            } else {
-                alert('Data tidak ditemukan!');
-            }
+    // Inisialisasi select2 untuk dropdown filter dengan error handling
+    try {
+        $('#filterKodeUtama').select2({
+            width: 'resolve',
+            placeholder: 'Pilih Kode',
+            allowClear: true,
+            dropdownParent: $('.card-header')
         });
+    } catch (error) {
+        console.warn('Select2 initialization failed:', error);
+    }
+
+    // Get the DataTable instance with error handling
+    var table;
+    try {
+        table = window.LaravelDataTables['masterklasifikasi-table'];
+        if (!table) {
+            console.warn('DataTable not found, retrying...');
+            setTimeout(function() {
+                table = window.LaravelDataTables['masterklasifikasi-table'];
+            }, 1000);
+        }
+    } catch (error) {
+        console.error('DataTable initialization error:', error);
+    }
+    
+    // Filter kode utama dengan error handling
+    $('#filterKodeUtama').on('change', function(){
+        try {
+            var filterValue = $(this).val();
+            
+            if (table && table.settings && table.ajax) {
+                // Use the built-in DataTable AJAX functionality with additional data
+                table.settings()[0].ajax.data = function(d) {
+                    d.filter_kode = filterValue;
+                    return d;
+                };
+                
+                table.ajax.reload();
+            } else {
+                console.warn('DataTable not available for filtering');
+            }
+        } catch (error) {
+            console.error('Filter error:', error);
+        }
     });
 
-    // Hapus pakai event delegation
-    $(document).on('click', '.btnHapus', function(){
-        if(confirm('Yakin hapus data?')){
+    // Tambah dengan error handling
+    $('#btnTambah').click(function(){
+        try {
+            $('#formKlasifikasi')[0].reset();
+            $('#modalTitle').text('Tambah Klasifikasi');
+            $('#klasifikasi_id').val('');
+            $('#modalKlasifikasi').modal('show');
+        } catch (error) {
+            console.error('Add button error:', error);
+        }
+    });
+
+    // Edit pakai event delegation dengan error handling
+    $(document).on('click', '.btnEdit', function(){
+        try {
             let id = $(this).data('id');
+            if (!id) {
+                alert('ID tidak ditemukan!');
+                return;
+            }
+            
+            $.get('/klasifikasi/'+id, function(res){
+                if(res.success){
+                    let d = res.data;
+                    $('#modalTitle').text('Edit Klasifikasi');
+                    $('#klasifikasi_id').val(d.id);
+                    $('[name=kodeklasifikasi]').val(d.kodeklasifikasi);
+                    $('[name=klasifikasi]').val(d.klasifikasi);
+                    $('[name=retensi_aktif]').val(d.retensi_aktif);
+                    $('[name=retensi_inaktif]').val(d.retensi_inaktif);
+                    $('[name=keterangan]').val(d.keterangan);
+                    $('[name=retensi]').val(d.retensi);
+                    $('[name=parent]').val(d.parent);
+                    $('#modalKlasifikasi').modal('show');
+                } else {
+                    alert('Data tidak ditemukan!');
+                }
+            }).fail(function(xhr) {
+                console.error('Edit request failed:', xhr);
+                alert('Gagal mengambil data!');
+            });
+        } catch (error) {
+            console.error('Edit button error:', error);
+            alert('Terjadi kesalahan saat mengedit data!');
+        }
+    });
+
+    // Hapus pakai event delegation dengan error handling
+    $(document).on('click', '.btnHapus', function(){
+        try {
+            if(confirm('Yakin hapus data?')){
+                let id = $(this).data('id');
+                if (!id) {
+                    alert('ID tidak ditemukan!');
+                    return;
+                }
+                
+                $.ajax({
+                    url: '/klasifikasi/'+id,
+                    type: 'POST',
+                    data: {
+                        _method: 'DELETE',
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(res){
+                        if(res.success){
+                            $('#modalKlasifikasi').modal('hide');
+                            if (table && table.ajax) {
+                                table.ajax.reload(null, false);
+                            }
+                            alert('Data berhasil dihapus!');
+                        }
+                        else if(res.message){
+                            alert(res.message);
+                        }
+                    },
+                    error: function(xhr){
+                        console.error('Delete request failed:', xhr);
+                        let msg = 'Gagal hapus data!';
+                        if(xhr.responseJSON && xhr.responseJSON.message){
+                            msg = xhr.responseJSON.message;
+                        } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                            let errors = xhr.responseJSON.errors;
+                            msg = Object.values(errors).flat()[0];
+                        }
+                        alert(msg);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Delete button error:', error);
+            alert('Terjadi kesalahan saat menghapus data!');
+        }
+    });
+
+    // Simpan (tambah/edit) dengan error handling
+    $('#formKlasifikasi').submit(function(e){
+        try {
+            e.preventDefault();
+            let id = $('#klasifikasi_id').val();
+            let url = '/klasifikasi'+(id ? '/' + id : '');
+            let method = id ? 'PUT' : 'POST';
+            let formData = $(this).serializeArray();
+            formData.push({name: '_token', value: '{{ csrf_token() }}'});
+            if(id) formData.push({name: '_method', value: 'PUT'});
+            
             $.ajax({
-                url: '/klasifikasi/'+id,
+                url: url,
                 type: 'POST',
-                data: {
-                    _method: 'DELETE',
-                    _token: '{{ csrf_token() }}'
-                },
+                data: $.param(formData),
                 success: function(res){
                     if(res.success){
                         $('#modalKlasifikasi').modal('hide');
-                        table.ajax.reload(null, false);
-                        alert('Data berhasil dihapus!');
-                    }
-                    else if(res.message){
-                        alert(res.message);
+                        if (table && table.ajax) {
+                            table.ajax.reload(null, false);
+                        }
+                        alert('Data berhasil disimpan!');
                     }
                 },
                 error: function(xhr){
-                    let msg = 'Gagal hapus data!';
+                    console.error('Save request failed:', xhr);
+                    let msg = 'Gagal simpan data!';
                     if(xhr.responseJSON && xhr.responseJSON.message){
                         msg = xhr.responseJSON.message;
                     } else if(xhr.responseJSON && xhr.responseJSON.errors){
@@ -169,40 +261,10 @@ $(document).ready(function(){
                     alert(msg);
                 }
             });
+        } catch (error) {
+            console.error('Form submit error:', error);
+            alert('Terjadi kesalahan saat menyimpan data!');
         }
-    });
-
-    // Simpan (tambah/edit)
-    $('#formKlasifikasi').submit(function(e){
-        e.preventDefault();
-        let id = $('#klasifikasi_id').val();
-        let url = '/klasifikasi'+(id ? '/' + id : '');
-        let method = id ? 'PUT' : 'POST';
-        let formData = $(this).serializeArray();
-        formData.push({name: '_token', value: '{{ csrf_token() }}'});
-        if(id) formData.push({name: '_method', value: 'PUT'});
-        $.ajax({
-            url: url,
-            type: 'POST',
-            data: $.param(formData),
-            success: function(res){
-                if(res.success){
-                    $('#modalKlasifikasi').modal('hide');
-                    table.ajax.reload(null, false);
-                    alert('Data berhasil disimpan!');
-                }
-            },
-            error: function(xhr){
-                let msg = 'Gagal simpan data!';
-                if(xhr.responseJSON && xhr.responseJSON.message){
-                    msg = xhr.responseJSON.message;
-                } else if(xhr.responseJSON && xhr.responseJSON.errors){
-                    let errors = xhr.responseJSON.errors;
-                    msg = Object.values(errors).flat()[0];
-                }
-                alert(msg);
-            }
-        });
     });
 });
 </script>
