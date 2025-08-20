@@ -46,6 +46,9 @@ class EntrySuratIsiDataTable extends DataTable
                     return '<span class="badge bg-secondary">Belum Dibaca</span>';
                 }
             })
+            ->addColumn('tgl_surat_formatted', function($row) {
+                return date('d/m/Y', strtotime($row->tgl_surat));
+            })
             ->rawColumns(['sifat_label', 'status_baca'])
             ->setRowId('id');
     }
@@ -78,7 +81,7 @@ class EntrySuratIsiDataTable extends DataTable
         if ($tujuan !== null && $tujuan !== '') {
             $query->where('kepada', 'LIKE', '%' . $tujuan . '%');
         }
-        return $query;
+        return $query->orderBy('tgl_surat', 'desc')->orderBy('created_at', 'desc');
     }
 
     /**
@@ -90,7 +93,7 @@ class EntrySuratIsiDataTable extends DataTable
                     ->setTableId('entrysuratisi-table')
                     ->columns($this->getColumns())
                     // ->minifiedAjax()
-                    ->orderBy(1)
+                    ->orderBy(9, 'desc') // Order by tanggal surat (index 9) descending
                     ->dom('rt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
                     ->parameters([
                         'scrollY' => '60vh',
@@ -134,7 +137,7 @@ class EntrySuratIsiDataTable extends DataTable
             Column::make('hal'),
             Column::make('unit_pengentri')->title('Unit Pengentri'),
             Column::make('status_baca')->title('Status Baca'),
-            Column::make('tgl_surat')->title('Tanggal'),
+            Column::make('tgl_surat_formatted')->title('Tanggal')->name('tgl_surat'),
         ];
     }
 
