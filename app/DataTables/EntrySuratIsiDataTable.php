@@ -37,7 +37,16 @@ class EntrySuratIsiDataTable extends DataTable
             ->addColumn('unit_pengentri', function($row) {
                 return $row->createdBy ? $row->createdBy->fullname : '-';
             })
-            ->rawColumns(['sifat_label'])
+            ->addColumn('status_baca', function ($row) {
+                // Cek apakah ada yang sudah membaca surat ini
+                $sudahDibaca = $row->tujuan()->where('dibaca', 1)->exists();
+                if ($sudahDibaca) {
+                    return '<span class="badge bg-success">Sudah Dibaca</span>';
+                } else {
+                    return '<span class="badge bg-secondary">Belum Dibaca</span>';
+                }
+            })
+            ->rawColumns(['sifat_label', 'status_baca'])
             ->setRowId('id');
     }
 
@@ -48,7 +57,7 @@ class EntrySuratIsiDataTable extends DataTable
      */
     public function query(EntrySuratIsi $model): QueryBuilder
     {
-        $query = $model->newQuery()->with('createdBy');
+        $query = $model->newQuery()->with(['createdBy', 'tujuan']);
         // Filter sifat
         $sifat = $this->request->get('sifat');
         if ($sifat !== null && $sifat !== '') {
@@ -124,6 +133,7 @@ class EntrySuratIsiDataTable extends DataTable
             Column::make('kepada')->title('Tujuan'),
             Column::make('hal'),
             Column::make('unit_pengentri')->title('Unit Pengentri'),
+            Column::make('status_baca')->title('Status Baca'),
             Column::make('tgl_surat')->title('Tanggal'),
         ];
     }

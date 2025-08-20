@@ -262,17 +262,27 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            // Initialize Select2 for multiple select
-            $('.select-1').select2({
-                placeholder: "Pilih Kepada",
-                allowClear: true,
-                width: '100%'
-            });
-            
-            // Initialize Select2 for single select
-            $('.select-basic').select2({
-                width: '100%'
-            });
+            try {
+                // Initialize Select2 for multiple select with error handling
+                if ($('.select-1').length) {
+                    $('.select-1').select2({
+                        placeholder: "Pilih Kepada",
+                        allowClear: true,
+                        width: '100%'
+                    });
+                }
+                
+                // Initialize Select2 for single select with error handling
+                if ($('.select-basic').length) {
+                    $('.select-basic').select2({
+                        width: '100%'
+                    });
+                }
+                
+                console.log('Select2 initialized successfully for edit form');
+            } catch (error) {
+                console.error('Select2 initialization error:', error);
+            }
         });
     </script>
 @endpush
