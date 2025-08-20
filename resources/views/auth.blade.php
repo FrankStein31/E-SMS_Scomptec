@@ -17,7 +17,7 @@
     <title>E-SMs Sistem Manajemen Surat</title>
 
     <!--font-awesome-css-->
-    <link href="{{ asset('assets/vendor/fontawesome/css/all.css') }}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/" rel="preconnect">
