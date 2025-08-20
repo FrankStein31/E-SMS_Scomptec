@@ -139,8 +139,14 @@
     <!-- latest jquery-->
     <script src="{{ asset('assets/js/jquery-3.6.3.min.js') }}"></script>
 
+    <!-- Safe DOM utilities -->
+    <script src="{{ asset('assets/js/safe-dom.js') }}"></script>
+
     <!-- Bootstrap js-->
     <script src="{{ asset('assets/vendor/bootstrap/bootstrap.bundle.min.js') }}"></script>
+
+    <!-- Auth specific js-->
+    <script src="{{ asset('assets/js/auth.js') }}"></script>
 
 </body>
 

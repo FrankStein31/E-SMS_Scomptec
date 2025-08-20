@@ -1,6 +1,12 @@
 <!-- latest jquery-->
 <script src="{{ asset('assets/js/jquery-3.6.3.min.js') }}"></script>
 
+<!-- Safe DOM utilities - Load first -->
+<script src="{{ asset('assets/js/safe-dom.js') }}"></script>
+
+<!-- Plugin initialization utilities -->
+<script src="{{ asset('assets/js/plugin-init.js') }}"></script>
+
 <!-- Simple bar js-->
 <script src="{{ asset('assets/vendor/simplebar/simplebar.js') }}"></script>
 

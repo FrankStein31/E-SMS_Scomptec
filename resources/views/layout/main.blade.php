@@ -22,6 +22,11 @@
     <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->
     <!-- Summernote CSS -->
     <link rel="stylesheet" href="{{ asset('plugins/summernote/summernote-bs4.min.css') }}">
+    
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="{{ asset('dist/plugins/codemirror/codemirror.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/codemirror/theme/monokai.css') }}">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
     <!-- DataTables -->
@@ -244,17 +249,32 @@
     <!-- <script src="{{ asset('js/app.js') }}"></script> -->
     <!-- Summernote -->
     <script src="{{ asset('plugins/summernote/summernote-bs4.min.js') }}"></script>
+    
+    <!-- CodeMirror JS -->
+    <script src="{{ asset('dist/plugins/codemirror/codemirror.js') }}"></script>
+    <script src="{{ asset('dist/plugins/codemirror/mode/xml/xml.js') }}"></script>
+    <script src="{{ asset('dist/plugins/codemirror/mode/javascript/javascript.js') }}"></script>
+    <script src="{{ asset('dist/plugins/codemirror/mode/css/css.js') }}"></script>
+    <script src="{{ asset('dist/plugins/codemirror/mode/htmlmixed/htmlmixed.js') }}"></script>
+    
     @stack('scripts') {{-- PENTING! Untuk script dari child view, seperti TinyMCE --}}
     <script>
         $(function() {
-            // Summernote
-            $('#summernote').summernote()
+            // Summernote - only if element exists
+            if ($('#summernote').length) {
+                $('#summernote').summernote();
+            }
 
-            // CodeMirror
-            CodeMirror.fromTextArea(document.getElementById("codeMirrorDemo"), {
-                mode: "htmlmixed",
-                theme: "monokai"
-            });
+            // CodeMirror - only if element exists
+            if (document.getElementById("codeMirrorDemo")) {
+                SafeDOM.codeMirror("codeMirrorDemo", {
+                    mode: "htmlmixed",
+                    theme: "monokai",
+                    lineNumbers: true,
+                    autoCloseTags: true,
+                    lineWrapping: true
+                });
+            }
         })
     </script>
 
@@ -275,26 +295,7 @@
     <script src="{{ asset('dist/js/adminlte.min.js') }}"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="{{ asset('dist/js/demo.js') }}"></script>
-    <!-- Page specific script -->
-    <script>
-        $(function() {
-            $("#example1").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                // "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            $('#example2').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-            });
-        });
-    </script>
+    <!-- Page specific script - now handled by plugin-init.js -->
 
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

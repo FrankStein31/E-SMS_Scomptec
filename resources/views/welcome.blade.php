@@ -1839,10 +1839,12 @@
         // Navbar scroll effect
         window.addEventListener('scroll', function() {
             const navbar = document.querySelector('.navbar');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
+            if (navbar) {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
             }
         });
 
@@ -1902,12 +1904,14 @@
         });
 
         // Form submission handler
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            // Simple form validation and submission feedback
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
+                // Simple form validation and submission feedback
+                const submitBtn = this.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
 
             submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Sending...';
             submitBtn.disabled = true;
@@ -1921,7 +1925,8 @@
                     this.reset();
                 }, 2000);
             }, 2000);
-        });
+            });
+        }
 
         // Scratch Card Game Logic - MOVED TO EXTERNAL FILE
         // See: public/js/scratch-game.js
