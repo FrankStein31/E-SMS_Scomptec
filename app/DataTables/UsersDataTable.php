@@ -22,6 +22,7 @@ class UsersDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->addIndexColumn()
             ->addColumn('satker_name', function ($row) {
                 return $row->satker ? $row->satker->satker : '-';
             })
@@ -85,7 +86,7 @@ class UsersDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id')->title('ID'),
+            Column::make('DT_RowIndex')->title('No')->orderable(false)->searchable(false)->width('50px'),
             Column::make('username')->title('Username'),
             Column::make('fullname')->title('Nama Lengkap'),
             Column::make('nip')->title('NIP'),
