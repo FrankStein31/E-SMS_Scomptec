@@ -4,7 +4,7 @@
     <main>
         <div class="container-fluid">
             <!-- Breadcrumb start -->
-            <div class="row m-1">
+            <!-- <div class="row m-1">
                 <div class="col-12 ">
                     <h5 class="main-title">Kotak Masuk</h5>
                     <ul class="app-line-breadcrumbs mb-3">
@@ -20,7 +20,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
             <!-- Breadcrumb end -->
 
             @include('layout.alert')
@@ -58,4 +58,21 @@
 
 @push('js')
     {!! $dataTable->scripts(attributes: ['type' => 'module']) !!}
+    
+    <script>
+        $(document).ready(function() {
+            // Handle row click untuk navigasi ke detail
+            $('#kotakmasuk-table tbody').on('click', 'tr', function() {
+                var data = $('#kotakmasuk-table').DataTable().row(this).data();
+                if (data && data.id) {
+                    window.location.href = '{{ route("kotakmasuk.show", ":id") }}'.replace(':id', data.id);
+                }
+            });
+            
+            // Add hover cursor pointer style
+            $('#kotakmasuk-table tbody').on('mouseenter', 'tr', function() {
+                $(this).css('cursor', 'pointer');
+            });
+        });
+    </script>
 @endpush

@@ -9,7 +9,7 @@
                     <a href="{{ route('kotakmasuk.index') }}" class="btn btn-secondary btn-sm mb-3">
                         <i class="iconoir-arrow-left"></i> Kembali ke Kotak Masuk
                     </a>
-                    <h5 class="main-title">Kotak Masuk</h5>
+                    <!-- <h5 class="main-title">Kotak Masuk</h5>
                     <ul class="app-line-breadcrumbs mb-3">
                         <li class="">
                             <a class="f-s-14 f-w-500" href="#">
@@ -28,7 +28,7 @@
                         <li class="active">
                             <a class="f-s-14 f-w-500" href="#">Detail</a>
                         </li>
-                    </ul>
+                    </ul> -->
                 </div>
             </div>
             <!-- Breadcrumb end -->
@@ -43,7 +43,7 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
-                                    <h5>Kotak Masuk Surat</h5>
+                                    <h5>Detail Kotak Masuk Surat : {{ $data->nomor_surat }}</h5>
                                 </div>
                                 <div class="col text-end">
                                     {{-- <a href="{{ route('entrisurat.index') }}" class="btn btn-info btn-sm">Daftar Entri
