@@ -3,7 +3,7 @@
 @section('content')
 <main>
     <div class="container-fluid">
-        <div class="row m-1">
+        <!-- <div class="row m-1">
             <div class="col-12 ">
                 <h5 class="main-title">Laporan Surat</h5>
                 <ul class="app-line-breadcrumbs mb-3">
@@ -12,13 +12,13 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </div> -->
         @include('layout.alert')
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Filter</h5>
+                        <h5>Laporan Surat</h5>
                     </div>
                     <div class="card-body">
                         <form id="filterForm" class="row g-2 align-items-end">
@@ -62,9 +62,9 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header">
+                    <!-- <div class="card-header">
                         <h5>List Data</h5>
-                    </div>
+                    </div> -->
                     <div class="card-body">
                         <div class="table-responsive">
                             {!! $dataTable->table(['id' => 'reportsurat-table']) !!}
@@ -77,18 +77,17 @@
 </main>
 @endsection
 
-@push('scripts')
+@push('js')
 {!! $dataTable->scripts(attributes: ['type' => 'module']) !!}
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script>
 $(function(){
-    // Inisialisasi select2
+    // Initialize Select2
     $('.select2').select2({
-        width: '100%',
-        placeholder: 'Pilih',
-        allowClear: true
+        placeholder: 'Pilih...',
+        allowClear: true,
+        width: '100%'
     });
+    
     var table = window.LaravelDataTables['reportsurat-table'];
     // Tambahkan filter ke parameter AJAX DataTables
     table.on('preXhr.dt', function(e, settings, data) {
