@@ -5,7 +5,20 @@
     <div class="card mt-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Data Tindakan Disposisi</h5>
-            <button class="btn btn-primary btn-sm" id="btnTambah">Tambah Tindakan</button>
+            <div class="d-flex align-items-center">
+                <!-- Action Buttons for Selected Row -->
+                <div id="actionButtons" class="action-buttons d-none me-2">
+                    <button id="editBtn" class="btn btn-warning btn-sm b-r-22 me-1">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button id="deleteBtn" class="btn btn-danger btn-sm b-r-22 me-1">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </div>
+                <button class="btn btn-primary btn-sm b-r-22" id="btnTambah">
+                    <i class="iconoir-plus"></i> Tambah Tindakan
+                </button>
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -47,8 +60,267 @@
 
 @push('scripts')
 {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+
+<style>
+    /* Sticky Table Container */
+    .dataTables_wrapper {
+        position: relative;
+    }
+    
+    /* DataTables Scroll Configuration */
+    .dataTables_scroll {
+        overflow: visible;
+    }
+    
+    .dataTables_scrollHead {
+        overflow: visible;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: white;
+    }
+    
+    .dataTables_scrollHeadInner {
+        box-sizing: content-box;
+    }
+    
+    .dataTables_scrollHeadInner table {
+        margin-bottom: 0 !important;
+    }
+    
+    .dataTables_scrollBody {
+        overflow: auto;
+        max-height: 60vh;
+    }
+    
+    /* Remove conflicting sticky header styles */
+    #mastertindakandisposisi-table thead th,
+    #tabelTindakan thead th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        position: relative;
+    }
+    
+    /* Sticky Pagination */
+    .dataTables_wrapper .row:last-child {
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        padding: 10px 0;
+        border-top: 1px solid #dee2e6;
+        z-index: 5;
+        margin: 0;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Table wrapper optimization */
+    .table-responsive {
+        height: calc(100vh - 300px);
+        position: relative;
+        overflow: visible;
+    }
+    
+    /* Ensure table columns maintain consistent width */
+    #mastertindakandisposisi-table,
+    #tabelTindakan {
+        table-layout: fixed;
+        width: 100%;
+    }
+    
+    /* Sync scroll between header and body */
+    .dataTables_wrapper {
+        overflow: visible;
+    }
+    
+    /* Compact table rows */
+    #mastertindakandisposisi-table tbody td,
+    #tabelTindakan tbody td {
+        padding: 8px !important;
+        vertical-align: middle;
+    }
+    
+    /* Optimize header height */
+    #mastertindakandisposisi-table thead th,
+    #tabelTindakan thead th {
+        padding: 10px 8px !important;
+    }
+    
+    /* Row Selection Styling */
+    #mastertindakandisposisi-table tbody tr,
+    #tabelTindakan tbody tr {
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    
+    #mastertindakandisposisi-table tbody tr:hover,
+    #tabelTindakan tbody tr:hover {
+        background-color: #f8f9fa !important;
+    }
+    
+    #mastertindakandisposisi-table tbody tr.selected,
+    #tabelTindakan tbody tr.selected {
+        background-color: #d1ecf1 !important;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+        transition: all 0.3s ease;
+    }
+    
+    .action-buttons.show {
+        animation: fadeInScale 0.3s ease;
+    }
+    
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .tindakan-disposisi-container {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+</style>
+
 <script>
-$(function(){
+$(document).ready(function(){
+    // Wait for DataTable to load then add click events
+    function initializeTableInteractions() {
+        try {
+            console.log('Initializing tindakan disposisi table interactions...');
+            
+            // Sync horizontal scroll between header and body
+            $('.dataTables_scrollBody').on('scroll', function() {
+                try {
+                    var scrollLeft = $(this).scrollLeft();
+                    $('.dataTables_scrollHead').scrollLeft(scrollLeft);
+                } catch (error) {
+                    console.warn('Scroll sync error:', error);
+                }
+            });
+            
+            // Try both possible table IDs
+            var tableSelector = '#tabelTindakan tbody tr, #mastertindakandisposisi-table tbody tr';
+            
+            // Remove any existing handlers
+            $(document).off('click', tableSelector);
+            
+            // Add click handler for row selection
+            $(document).on('click', tableSelector, function(e) {
+                try {
+                    console.log('Tindakan row clicked!', this);
+                    
+                    // Prevent action if clicking on buttons
+                    if ($(e.target).closest('.btn').length) {
+                        console.log('Button clicked, ignoring...');
+                        return;
+                    }
+                    
+                    var clickedRow = $(this);
+                    var rowId = clickedRow.attr('id');
+                    
+                    // Toggle selection on same row, clear others
+                    if (clickedRow.hasClass('selected')) {
+                        // If clicking the same selected row, deselect it
+                        clickedRow.removeClass('selected');
+                        $('#actionButtons').removeClass('show d-inline-block').addClass('d-none');
+                        console.log('Tindakan row deselected');
+                    } else {
+                        // Clear all selections first, then select clicked row
+                        $('#tabelTindakan tbody tr, #mastertindakandisposisi-table tbody tr').removeClass('selected');
+                        clickedRow.addClass('selected');
+                        
+                        // Show action buttons with animation
+                        $('#actionButtons').removeClass('d-none').addClass('d-inline-block show');
+                        
+                        // Store selected row ID for action buttons
+                        $('#actionButtons').data('selectedId', rowId);
+                        
+                        console.log('Tindakan row selected, ID:', rowId);
+                    }
+                } catch (error) {
+                    console.error('Tindakan row click handler error:', error);
+                }
+            });
+        } catch (error) {
+            console.error('Tindakan table initialization error:', error);
+        }
+    }
+    
+    // Initialize with delays to ensure proper loading
+    setTimeout(initializeTableInteractions, 1000);
+    setTimeout(initializeTableInteractions, 3000);
+    
+    // Action button handlers
+    $(document).on('click', '#editBtn', function() {
+        try {
+            var selectedId = $('#actionButtons').data('selectedId');
+            if (selectedId) {
+                console.log('Edit button clicked for tindakan ID:', selectedId);
+                // Get tindakan data and show edit modal
+                $.get('/tindakan-disposisi/'+selectedId, function(res){
+                    if(res.success){
+                        let d = res.data;
+                        $('#modalTitle').text('Edit Tindakan');
+                        $('#tindakan_id').val(d.id);
+                        $('[name=tindakan]').val(d.tindakan);
+                        $('[name=satkerid]').val(d.satkerid);
+                        $('#modalTindakan').modal('show');
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('Edit button error:', error);
+        }
+    });
+    
+    $(document).on('click', '#deleteBtn', function() {
+        try {
+            var selectedId = $('#actionButtons').data('selectedId');
+            if (selectedId) {
+                if (confirm('Apakah Anda yakin ingin menghapus data tindakan ini?')) {
+                    console.log('Delete button clicked for tindakan ID:', selectedId);
+                    $.ajax({
+                        url: '/tindakan-disposisi/'+selectedId,
+                        type: 'POST',
+                        data: {
+                            _method: 'DELETE',
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function(res){
+                            if(res.success){
+                                $('#actionButtons').removeClass('show d-inline-block').addClass('d-none');
+                                window.LaravelDataTables['tabelTindakan'].ajax.reload(null, false);
+                                alert('Data berhasil dihapus!');
+                            }
+                            else if(res.message){
+                                alert(res.message);
+                            }
+                        },
+                        error: function(xhr){
+                            let msg = 'Gagal hapus data!';
+                            if(xhr.responseJSON && xhr.responseJSON.message){
+                                msg = xhr.responseJSON.message;
+                            } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                                let errors = xhr.responseJSON.errors;
+                                msg = Object.values(errors).flat()[0];
+                            }
+                            alert(msg);
+                        }
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Delete button error:', error);
+        }
+    });
+
     // Tambah
     $('#btnTambah').click(function(){
         $('#formTindakan')[0].reset();
@@ -56,54 +328,7 @@ $(function(){
         $('#tindakan_id').val('');
         $('#modalTindakan').modal('show');
     });
-    // Edit pakai event delegation
-    $(document).on('click', '.btnEdit', function(){
-        let id = $(this).data('id');
-        $.get('/tindakan-disposisi/'+id, function(res){
-            if(res.success){
-                let d = res.data;
-                $('#modalTitle').text('Edit Tindakan');
-                $('#tindakan_id').val(d.id);
-                $('[name=tindakan]').val(d.tindakan);
-                $('[name=satkerid]').val(d.satkerid);
-                $('#modalTindakan').modal('show');
-            }
-        });
-    });
-    // Hapus pakai event delegation
-    $(document).on('click', '.btnHapus', function(){
-        if(confirm('Yakin hapus data?')){
-            let id = $(this).data('id');
-            $.ajax({
-                url: '/tindakan-disposisi/'+id,
-                type: 'POST',
-                data: {
-                    _method: 'DELETE',
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function(res){
-                    if(res.success){
-                        $('#modalTindakan').modal('hide');
-                        window.LaravelDataTables['tabelTindakan'].ajax.reload(null, false);
-                        alert('Data berhasil dihapus!');
-                    }
-                    else if(res.message){
-                        alert(res.message);
-                    }
-                },
-                error: function(xhr){
-                    let msg = 'Gagal hapus data!';
-                    if(xhr.responseJSON && xhr.responseJSON.message){
-                        msg = xhr.responseJSON.message;
-                    } else if(xhr.responseJSON && xhr.responseJSON.errors){
-                        let errors = xhr.responseJSON.errors;
-                        msg = Object.values(errors).flat()[0];
-                    }
-                    alert(msg);
-                }
-            });
-        }
-    });
+
     // Simpan
     $('#formTindakan').submit(function(e){
         e.preventDefault();
@@ -120,6 +345,7 @@ $(function(){
             success: function(res){
                 if(res.success){
                     $('#modalTindakan').modal('hide');
+                    $('#actionButtons').removeClass('show d-inline-block').addClass('d-none');
                     window.LaravelDataTables['tabelTindakan'].ajax.reload(null, false);
                     alert('Data berhasil disimpan!');
                 }
@@ -141,60 +367,4 @@ $(function(){
     });
 });
 </script>
-@endpush
-
-@push('css')
-<style>
-.tindakan-disposisi-container {
-    padding-left: 24px;
-    padding-right: 24px;
-}
-.dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter {
-    margin-bottom: 10px;
-    margin-top: 10px;
-}
-.dataTables_wrapper .dataTables_length label, .dataTables_wrapper .dataTables_filter label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 1rem;
-    font-weight: 400;
-}
-.dataTables_wrapper .dataTables_length select {
-    margin: 0 4px;
-    height: 32px;
-    font-size: 1rem;
-}
-.dataTables_wrapper .dataTables_filter input[type="search"] {
-    margin-left: 4px;
-    height: 32px;
-    font-size: 1rem;
-    width: 160px;
-}
-.dataTables_wrapper .dataTables_length {
-    float: left;
-}
-.dataTables_wrapper .dataTables_filter {
-    float: right;
-}
-@media (max-width: 768px) {
-    .dataTables_wrapper .dataTables_length, .dataTables_wrapper .dataTables_filter {
-        float: none;
-        text-align: left;
-        margin-bottom: 8px;
-    }
-    .dataTables_wrapper .dataTables_filter input[type="search"] {
-        width: 100%;
-    }
-}
-.dataTables_wrapper .dataTables_paginate {
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-.dataTables_wrapper .dataTables_info {
-    margin-top: 10px;
-    color: #6c757d;
-    margin-left: 0;
-}
-</style>
 @endpush 
