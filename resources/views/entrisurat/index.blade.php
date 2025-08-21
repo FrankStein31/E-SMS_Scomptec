@@ -29,6 +29,18 @@
                                     <h5>Daftar Entri Surat</h5>
                                 </div>
                                 <div class="col text-end">
+                                    <!-- Action Buttons for Selected Row -->
+                                    <div id="actionButtons" class="action-buttons d-none me-2">
+                                        <button id="detailBtn" class="btn btn-info btn-sm b-r-22 me-1">
+                                            <i class="fas fa-eye"></i> Detail
+                                        </button>
+                                        <button id="editBtn" class="btn btn-warning btn-sm b-r-22 me-1">
+                                            <i class="fas fa-edit"></i> Ubah
+                                        </button>
+                                        <button id="deleteBtn" class="btn btn-danger btn-sm b-r-22 me-1">
+                                            <i class="fas fa-trash"></i> Hapus
+                                        </button>
+                                    </div>
                                     <a href="{{ route('entrisurat.create') }}" class="btn btn-primary btn-sm b-r-22">
                                         <i class="iconoir-plus"></i> Tambah Entri Surat
                                     </a>
@@ -84,21 +96,6 @@
                             <div class="table-responsive">
                                 {{ $dataTable->table(['id' => 'tabelEntriSurat']) }}
                             </div>
-                            
-                            <!-- Action Buttons for Selected Row -->
-                            <div id="actionButtons" class="action-buttons">
-                                <div class="d-flex gap-2">
-                                    <button id="detailBtn" class="btn btn-info btn-sm">
-                                        <i class="fas fa-eye"></i> Detail
-                                    </button>
-                                    <button id="editBtn" class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit"></i> Ubah
-                                    </button>
-                                    <button id="deleteBtn" class="btn btn-danger btn-sm">
-                                        <i class="fas fa-trash"></i> Hapus
-                                    </button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -109,8 +106,6 @@
 
 @push('scripts')
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     
     <!-- Note: DataTables Select Extension is now loaded in main layout -->
     <style>
@@ -216,28 +211,21 @@
         
         /* Action Buttons */
         .action-buttons {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            display: none;
             transition: all 0.3s ease;
         }
         
         .action-buttons.show {
-            display: block;
-            animation: slideDown 0.3s ease;
+            animation: fadeInScale 0.3s ease;
         }
         
-        @keyframes slideDown {
+        @keyframes fadeInScale {
             from {
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: scale(0.8);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: scale(1);
             }
         }
     </style>
@@ -339,9 +327,9 @@
                         if (clickedRow.hasClass('selected')) {
                             // If clicking the same selected row, deselect it
                             clickedRow.removeClass('selected');
-                            $('#actionButtons').removeClass('show').hide();
+                            $('#actionButtons').removeClass('show d-inline-block').addClass('d-none');
                             // Reset edit button visibility when deselecting
-                            $('#editBtn').show();
+                            $('#editBtn').removeClass('d-none');
                             console.log('Row deselected');
                         } else {
                             // Clear all selections first, then select clicked row
@@ -355,15 +343,15 @@
                             
                             console.log('Status baca:', statusBacaText, 'Sudah dibaca:', sudahDibaca);
                             
-                            // Show action buttons
-                            $('#actionButtons').addClass('show').show();
+                            // Show action buttons with animation
+                            $('#actionButtons').removeClass('d-none').addClass('d-inline-block show');
                             
                             // Hide/show edit button based on read status
                             if (sudahDibaca) {
-                                $('#editBtn').hide();
+                                $('#editBtn').addClass('d-none');
                                 console.log('Edit button hidden - surat sudah dibaca');
                             } else {
-                                $('#editBtn').show();
+                                $('#editBtn').removeClass('d-none');
                                 console.log('Edit button shown - surat belum dibaca');
                             }
                             

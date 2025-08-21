@@ -92,7 +92,7 @@ class EntrySuratIsiDataTable extends DataTable
         return $this->builder()
                     ->setTableId('entrysuratisi-table')
                     ->columns($this->getColumns())
-                    // ->minifiedAjax()
+                    ->minifiedAjax()
                     ->orderBy(9, 'desc') // Order by tanggal surat (index 9) descending
                     ->dom('rt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
                     ->parameters([
@@ -105,12 +105,16 @@ class EntrySuratIsiDataTable extends DataTable
                         'lengthChange' => false,
                         'language' => [
                             'paginate' => [
-                                'previous' => 'Previous',
-                                'next' => 'Next'
-                            ]
+                                'previous' => 'Sebelumnya',
+                                'next' => 'Selanjutnya'
+                            ],
+                            'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                            'infoEmpty' => 'Menampilkan 0 sampai 0 dari 0 data',
+                            'infoFiltered' => '(difilter dari _MAX_ total data)',
+                            'zeroRecords' => 'Tidak ada data yang ditemukan'
                         ]
                     ])
-                    ->addTableClass('table-striped table-bordered');
+                    ->addTableClass('table-striped table-bordered table-hover');
                     // ->selectStyleSingle()
                     // ->buttons([
                     //     Button::make('excel'),
