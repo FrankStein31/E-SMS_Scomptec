@@ -4,7 +4,7 @@
     <main>
         <div class="container-fluid">
             <!-- Breadcrumb start -->
-            <div class="row m-1">
+            <!-- <div class="row m-1">
                 <div class="col-12 ">
                     <h5 class="main-title">Disposisi</h5>
                     <ul class="app-line-breadcrumbs mb-3">
@@ -20,7 +20,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
             <!-- Breadcrumb end -->
 
             @include('layout.alert')
@@ -42,7 +42,9 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            {{ $dataTable->table(['class' => 'table table-sm table-hover table-striped align-middle mb-0']) }}
+                            <div class="table-responsive">
+                                {!! $dataTable->table(['id' => 'disposisi-table']) !!}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -54,5 +56,22 @@
 @endsection
 
 @push('js')
-    {{ $dataTable->scripts() }}
+    {!! $dataTable->scripts(attributes: ['type' => 'module']) !!}
+    
+    <script>
+        $(document).ready(function() {
+            // Handle row click untuk navigasi ke detail
+            $('#disposisi-table tbody').on('click', 'tr', function() {
+                var data = $('#disposisi-table').DataTable().row(this).data();
+                if (data && data.entrysurat_id) {
+                    window.location.href = '{{ route("disposisi.show", ":id") }}'.replace(':id', data.entrysurat_id);
+                }
+            });
+            
+            // Add hover cursor pointer style
+            $('#disposisi-table tbody').on('mouseenter', 'tr', function() {
+                $(this).css('cursor', 'pointer');
+            });
+        });
+    </script>
 @endpush

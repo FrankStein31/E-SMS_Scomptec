@@ -4,7 +4,7 @@
     <main>
         <div class="container-fluid">
             <!-- Breadcrumb start -->
-            <div class="row m-1">
+            <!-- <div class="row m-1">
                 <div class="col-12 ">
                     <h5 class="main-title">Disposisi</h5>
                     <ul class="app-line-breadcrumbs mb-3">
@@ -27,7 +27,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
             <!-- Breadcrumb end -->
 
             @include('layout.alert')
@@ -40,11 +40,12 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
-                                    <h5>Disposisi Surat</h5>
+                                    <h5>Detail Disposisi Surat : {{ $disposisi->nomor_surat}}</h5>
                                 </div>
                                 <div class="col text-end">
-                                    {{-- <a href="{{ route('entrisurat.index') }}" class="btn btn-info btn-sm">Daftar Entri
-                                        Surat</a> --}}
+                                    <a href="{{ route('disposisi.index') }}" class="btn btn-secondary btn-sm">
+                                        <i class="fa fa-arrow-left"></i> Kembali
+                                    </a>
                                 </div>
                             </div>
                         </div>
