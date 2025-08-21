@@ -34,6 +34,9 @@ class ReportSuratDataTable extends DataTable
                         return '<span class="badge bg-secondary">'.$row->sifat.'</span>';
                 }
             })
+            ->addColumn('tgl_surat_formatted', function($row) {
+                return date('d/m/Y', strtotime($row->tgl_surat));
+            })
             ->rawColumns(['jenis','sifat'])
             ->setRowId('id');
     }
@@ -93,7 +96,35 @@ class ReportSuratDataTable extends DataTable
         return $this->builder()
             ->setTableId('reportsurat-table')
             ->columns($this->getColumns())
-            ->orderBy(0);
+            ->minifiedAjax()
+            ->orderBy(8, 'desc') // Order by tanggal column (index 8) descending
+            ->dom('frt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
+            ->parameters([
+                'scrollY' => '55vh',
+                'scrollX' => true,
+                'scrollCollapse' => true,
+                'autoWidth' => false,
+                'paging' => true,
+                'pageLength' => 25,
+                'lengthChange' => false,
+                'searching' => true,
+                'language' => [
+                    'search' => 'Cari:',
+                    'searchPlaceholder' => 'Cari data...',
+                    'lengthMenu' => 'Tampilkan _MENU_ data per halaman',
+                    'zeroRecords' => 'Tidak ada data yang ditemukan',
+                    'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    'infoEmpty' => 'Menampilkan 0 sampai 0 dari 0 data',
+                    'infoFiltered' => '(difilter dari _MAX_ total data)',
+                    'paginate' => [
+                        'first' => 'Pertama',
+                        'last' => 'Terakhir',
+                        'next' => 'Selanjutnya',
+                        'previous' => 'Sebelumnya'
+                    ]
+                ]
+            ])
+            ->addTableClass('table-striped table-bordered table-hover');
     }
 
     public function getColumns(): array
@@ -107,7 +138,7 @@ class ReportSuratDataTable extends DataTable
             Column::make('kepada')->title('Kepada'),
             Column::make('hal')->title('Hal'),
             Column::make('unit_pengentri')->title('Unit Pengentri'),
-            Column::make('tgl_surat')->title('Tanggal'),
+            Column::make('tgl_surat_formatted')->title('Tanggal')->name('tgl_surat'),
         ];
     }
 

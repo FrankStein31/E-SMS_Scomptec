@@ -72,7 +72,7 @@ class KotakMasukDataTable extends DataTable
             ->orderBy(7, 'desc') // Order by tanggal surat (index 7) descending
             ->dom('frt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
             ->parameters([
-                'scrollY' => '60vh',
+                'scrollY' => '65vh',
                 'scrollX' => true,
                 'scrollCollapse' => true,
                 'autoWidth' => false,
