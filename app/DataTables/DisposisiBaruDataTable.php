@@ -22,11 +22,6 @@ class DisposisiBaruDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn()
-            ->addColumn('action', function ($row) {
-                return '<a href="' . route('disposisi.show', $row->entrysurat_id) . '" class="btn btn-sm btn-primary">
-                    <i class="fa fa-eye"></i> Lihat
-                </a>';
-            })
             ->addColumn('no_agenda', function ($row) {
                 return $row->entrysurat->noagenda ?? '-';
             })
@@ -109,7 +104,7 @@ class DisposisiBaruDataTable extends DataTable
                 return $row->entrysurat->createdBy->fullname ?? '-';
             })
             ->addColumn('tanggal', function ($row) {
-                return $row->entrysurat->tgl_surat ?? '-';
+                return date('d/m/Y', strtotime($row->entrysurat->tgl_surat ?? ''));
             })
             ->filterColumn('no_agenda', function($query, $keyword) {
                 $query->whereHas('entrysurat', function($q) use ($keyword) {
@@ -156,7 +151,7 @@ class DisposisiBaruDataTable extends DataTable
                     $q->where('tgl_surat', 'like', "%{$keyword}%");
                 });
             })
-            ->rawColumns(['tujuan','action'])
+            ->rawColumns(['tujuan'])
             ->setRowId('id');
     }
 
@@ -170,10 +165,13 @@ class DisposisiBaruDataTable extends DataTable
         $userId = Auth::user()->id;
         return $model->newQuery()
             ->with(['tindakans', 'entrysurat.jenis', 'entrysurat.createdBy'])
+            ->leftJoin('entry_surat_isis', 'disposisis_baru.entrysurat_id', '=', 'entry_surat_isis.id')
             ->where(function($query) use ($userId) {
-                $query->whereRaw("FIND_IN_SET(?, kepada)", [$userId]);
+                $query->whereRaw("FIND_IN_SET(?, disposisis_baru.kepada)", [$userId]);
             })
-            ->latest();
+            ->orderBy('entry_surat_isis.tgl_surat', 'desc')
+            ->orderBy('disposisis_baru.created_at', 'desc')
+            ->select('disposisis_baru.*');
     }
 
     /**
@@ -184,24 +182,22 @@ class DisposisiBaruDataTable extends DataTable
         return $this->builder()
                     ->setTableId('disposisi-table')
                     ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    ->orderBy(0, 'desc')
-                    // ->selectStyleSingle()
-                    // ->responsive(true)
-                    // ->autoWidth(false)
-                    // ->buttons([
-                    //     Button::make('excel'),
-                    //     Button::make('csv'),
-                    //     Button::make('pdf'),
-                    //     Button::make('print'),
-                    //     Button::make('reset'),
-                    //     Button::make('reload')
-                    // ])
+                    ->orderBy(9, 'desc') // Order by tanggal column (index 9) descending
+                    ->dom('frt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
                     ->parameters([
+                        'scrollY' => '60vh',
+                        'scrollX' => true,
+                        'scrollCollapse' => true,
+                        'autoWidth' => false,
+                        'paging' => true,
+                        'pageLength' => 25,
+                        'lengthChange' => false,
+                        'searching' => true,
                         'processing' => true,
                         'serverSide' => true,
                         'language' => [
                             'search' => 'Cari:',
+                            'searchPlaceholder' => 'Cari data...',
                             'lengthMenu' => 'Tampilkan _MENU_ data per halaman',
                             'zeroRecords' => 'Tidak ada data yang ditemukan',
                             'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
@@ -214,7 +210,9 @@ class DisposisiBaruDataTable extends DataTable
                                 'previous' => 'Sebelumnya'
                             ]
                         ]
-                    ]);
+                    ])
+                    ->addTableClass('table-striped table-bordered table-hover')
+                    ->selectStyleSingle();
     }
 
     /**
@@ -255,12 +253,6 @@ class DisposisiBaruDataTable extends DataTable
             Column::make('tanggal')
                   ->title('Tanggal')
                   ->searchable(true),
-            Column::computed('action')
-                  ->title('Aksi')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(100)
-                  ->addClass('text-center'),
         ];
     }
 
