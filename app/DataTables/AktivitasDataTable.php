@@ -18,10 +18,7 @@ class AktivitasDataTable extends DataTable
     {
         return datatables()
             ->of($query)
-            ->addColumn('action', function ($row) {
-                return '';
-            })
-            ->rawColumns(['action']);
+            ->rawColumns([]);
     }
 
     public function query(): DatabaseQueryBuilder
@@ -92,25 +89,49 @@ class AktivitasDataTable extends DataTable
 
     public function html(): HtmlBuilder
     {
-        return $this->builder()->setTableId('aktivitas-table')->columns($this->getColumns())->minifiedAjax()->orderBy(0, 'desc');
-        // ->selectStyleSingle()
-        // ->buttons([
-        //     Button::make('excel'),
-        //     Button::make('csv'),
-        //     Button::make('pdf'),
-        //     Button::make('print'),
-        //     Button::make('reset'),
-        //     Button::make('reload')
-        // ]);
+        return $this->builder()
+            ->setTableId('aktivitas-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->orderBy(0, 'desc') // Order by waktu column (index 0) descending
+            ->dom('frt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
+            ->parameters([
+                'scrollY' => '60vh',
+                'scrollX' => true,
+                'scrollCollapse' => true,
+                'autoWidth' => false,
+                'paging' => true,
+                'pageLength' => 25,
+                'lengthChange' => false,
+                'searching' => true,
+                'language' => [
+                    'search' => 'Cari:',
+                    'searchPlaceholder' => 'Cari data...',
+                    'lengthMenu' => 'Tampilkan _MENU_ data per halaman',
+                    'zeroRecords' => 'Tidak ada data yang ditemukan',
+                    'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    'infoEmpty' => 'Menampilkan 0 sampai 0 dari 0 data',
+                    'infoFiltered' => '(difilter dari _MAX_ total data)',
+                    'paginate' => [
+                        'first' => 'Pertama',
+                        'last' => 'Terakhir',
+                        'next' => 'Selanjutnya',
+                        'previous' => 'Sebelumnya'
+                    ]
+                ]
+            ])
+            ->addTableClass('table-striped table-bordered table-hover');
     }
 
     public function getColumns(): array
     {
-        return [Column::make('waktu')->title('Waktu')->data('waktu')->name('waktu'),
-        Column::make('user_nama')->title('User')->data('user_nama')->name('user_nama'),
-        Column::make('aktivitas')->title('Aktivitas')->data('aktivitas')->name('aktivitas')->orderable(false)->searchable(false),
-        Column::make('no_surat')->title('No Surat')->data('no_surat')->name('no_surat'),
-        Column::make('hal')->title('Perihal')->data('hal')->name('hal')];
+        return [
+            Column::make('waktu')->title('Waktu')->data('waktu')->name('waktu'),
+            Column::make('user_nama')->title('User')->data('user_nama')->name('user_nama'),
+            Column::make('aktivitas')->title('Aktivitas')->data('aktivitas')->name('aktivitas')->orderable(false)->searchable(false),
+            Column::make('no_surat')->title('No Surat')->data('no_surat')->name('no_surat'),
+            Column::make('hal')->title('Perihal')->data('hal')->name('hal')
+        ];
     }
 
     protected function filename(): string
