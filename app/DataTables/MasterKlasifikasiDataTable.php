@@ -43,13 +43,13 @@ class MasterKlasifikasiDataTable extends DataTable
     public function query(MasterKlasifikasi $model): QueryBuilder
     {
         $query = $model->newQuery();
-        
+
         // Filter kolom kodeklasifikasi jika ada
         if ($this->request->has('filter_kode') && !empty($this->request->get('filter_kode'))) {
             $filterValue = $this->request->get('filter_kode');
             $query->where('kodeklasifikasi', 'like', $filterValue.'%');
         }
-        
+
         return $query->orderBy('kodeklasifikasi');
     }
 
@@ -64,12 +64,27 @@ class MasterKlasifikasiDataTable extends DataTable
                     ->minifiedAjax()
                     ->orderBy(0)
                     ->parameters([
+                        'scrollY' => '60vh',
+                        'scrollX' => true,
+                        'scrollCollapse' => true,
+                        'autoWidth' => false,
+                        'paging' => true,
+                        'pageLength' => 25,
+                        'lengthChange' => false,
                         'responsive' => true,
                         'autoWidth' => false,
                         'language' => [
+                            'paginate' => [
+                                'previous' => 'Sebelumnya',
+                                'next' => 'Selanjutnya'
+                            ],
+                            'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                            'infoEmpty' => 'Menampilkan 0 sampai 0 dari 0 data',
+                            'infoFiltered' => '(difilter dari _MAX_ total data)',
+                            'zeroRecords' => 'Tidak ada data yang ditemukan',
                             'url' => asset('assets/datatables/id.json')
                         ]
-                    ]);
+                    ])->addTableClass('table-striped table-bordered table-hover');
     }
 
     /**
@@ -86,11 +101,11 @@ class MasterKlasifikasiDataTable extends DataTable
             Column::make('keterangan'),
             Column::make('retensi'),
             Column::make('parent'),
-            Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
+            // Column::computed('action')
+            //       ->exportable(false)
+            //       ->printable(false)
+            //       ->width(60)
+            //       ->addClass('text-center'),
             // Column::make('created_at'),
             // Column::make('updated_at'),
         ];
