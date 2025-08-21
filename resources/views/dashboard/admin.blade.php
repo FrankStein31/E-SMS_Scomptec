@@ -3,7 +3,7 @@
 @section('content')
 <main>
     <div class="container-fluid">
-        <div class="row m-1">
+        <!-- <div class="row m-1">
             <div class="col-12">
                 <h4 class="main-title">Dashboard Admin</h4>
                 <ul class="app-line-breadcrumbs mb-3">
@@ -12,7 +12,7 @@
                     </li>
                 </ul>
             </div>
-        </div>
+        </div> -->
 
         <div class="row">
             <div class="col-sm-6 col-xl-3 col-12">
@@ -120,7 +120,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-xl-3 col-12">
+            <!-- <div class="col-sm-6 col-xl-3 col-12">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-start justify-content-between">
@@ -149,9 +149,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
-        <div class="row mt-4">
+        <!-- <div class="row mt-4">
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header bg-light">
@@ -210,7 +210,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </main>
 @endsection 
