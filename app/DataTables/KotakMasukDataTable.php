@@ -24,9 +24,6 @@ class KotakMasukDataTable extends DataTable
                 }
                 return '<span class="badge bg-secondary">-</span>';
             })
-            ->addColumn('action', function($row) {
-                return '<a href="'.route('kotakmasuk.show', $row->id).'" class="btn btn-info btn-sm">Detail</a>';
-            })
             ->addColumn('unit_pengentri', function($row) {
                 return $row->createdBy->fullname;
             })
@@ -47,7 +44,7 @@ class KotakMasukDataTable extends DataTable
             ->addColumn('tgl_surat_formatted', function($row) {
                 return date('d/m/Y', strtotime($row->tgl_surat));
             })
-            ->rawColumns(['status','action','unit_pengentri','sifat'])
+            ->rawColumns(['status','unit_pengentri','sifat'])
             ->setRowId('id');
     }
 
@@ -72,7 +69,28 @@ class KotakMasukDataTable extends DataTable
         return $this->builder()
             ->setTableId('kotakmasuk-table')
             ->columns($this->getColumns())
-            ->orderBy(8, 'desc'); // Order by tanggal surat (index 8) descending
+            ->orderBy(7, 'desc') // Order by tanggal surat (index 7) descending
+            ->dom('frt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
+            ->parameters([
+                'scrollY' => '60vh',
+                'scrollX' => true,
+                'scrollCollapse' => true,
+                'autoWidth' => false,
+                'paging' => true,
+                'pageLength' => 25,
+                'lengthChange' => false,
+                'searching' => true,
+                'language' => [
+                    'search' => 'Cari:',
+                    'searchPlaceholder' => 'Cari data...',
+                    'paginate' => [
+                        'previous' => 'Previous',
+                        'next' => 'Next'
+                    ]
+                ]
+            ])
+            ->addTableClass('table-striped table-bordered table-hover')
+            ->selectStyleSingle();
     }
 
     public function getColumns(): array
@@ -88,7 +106,6 @@ class KotakMasukDataTable extends DataTable
             Column::make('unit_pengentri')->title('Unit Pengentri'),
             Column::make('tgl_surat_formatted')->title('Tanggal')->name('tgl_surat'),
             Column::computed('status')->title('Status')->exportable(false)->printable(false)->width(80)->addClass('text-center'),
-            Column::computed('action')->exportable(false)->printable(false)->width(60)->addClass('text-center'),
         ];
     }
 
