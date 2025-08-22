@@ -22,11 +22,6 @@ class MasterInstansiDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', function($row) {
-                return '<button class="btn btn-warning btn-sm btnEdit" data-id="'.$row->id.'">Edit</button> '
-                    . '<button class="btn btn-danger btn-sm btnHapus" data-id="'.$row->id.'">Hapus</button>';
-            })
-            ->rawColumns(['action'])
             ->setRowId('id');
     }
 
@@ -46,20 +41,41 @@ class MasterInstansiDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('masterinstansi-table')
-                    ->columns($this->getColumns())
-                    // ->minifiedAjax()
-                    ->orderBy(1);
-                    // ->selectStyleSingle()
-                //     ->buttons([
-                //         Button::make('excel'),
-                //         Button::make('csv'),
-                //         Button::make('pdf'),
-                //         Button::make('print'),
-                //         Button::make('reset'),
-                //         Button::make('reload')
-                //     ])
-                // ;
+            ->setTableId('masterinstansi-table')
+            ->columns($this->getColumns())
+            // ->minifiedAjax()
+            ->orderBy(0, 'asc')
+            ->dom('rt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
+            ->parameters([
+                'scrollY' => '60vh',
+                'scrollX' => true,
+                'scrollCollapse' => true,
+                'autoWidth' => false,
+                'paging' => true,
+                'pageLength' => 25,
+                'lengthChange' => false,
+                'language' => [
+                    'paginate' => [
+                        'previous' => 'Sebelumnya',
+                        'next' => 'Selanjutnya'
+                    ],
+                    'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    'infoEmpty' => 'Menampilkan 0 sampai 0 dari 0 data',
+                    'infoFiltered' => '(difilter dari _MAX_ total data)',
+                    'zeroRecords' => 'Tidak ada data yang ditemukan'
+                ]
+            ])
+            ->addTableClass('table-striped table-bordered table-hover');
+        // ->selectStyleSingle()
+        //     ->buttons([
+        //         Button::make('excel'),
+        //         Button::make('csv'),
+        //         Button::make('pdf'),
+        //         Button::make('print'),
+        //         Button::make('reset'),
+        //         Button::make('reload')
+        //     ])
+        // ;
     }
 
     /**
@@ -68,17 +84,11 @@ class MasterInstansiDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            // Column::make(''),
             Column::make('instansi'),
             Column::make('kepala'),
             Column::make('alamat'),
             Column::make('kota'),
             Column::make('telp'),
-            Column::computed('action')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
         ];
     }
 

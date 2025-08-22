@@ -23,13 +23,7 @@ class MasterSatkerDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn()
-            ->addColumn('action', function ($row) {
-                return view('unitkerja.action', [
-                    'id' => $row->id,
-                    'satker' => $row->satker,
-                    'kodesatker' => $row->kodesatker,
-                ])->render();
-            });
+            ->setRowId('id');
     }
 
     /**
@@ -51,7 +45,28 @@ class MasterSatkerDataTable extends DataTable
                     ->setTableId('mastersatker-table')
                     ->columns($this->getColumns())
                     // ->minifiedAjax()
-                    ->orderBy(1);
+                    ->orderBy(1)
+                    ->dom('rt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
+                    ->parameters([
+                        'scrollY' => '60vh',
+                        'scrollX' => true,
+                        'scrollCollapse' => true,
+                        'autoWidth' => false,
+                        'paging' => true,
+                        'pageLength' => 25,
+                        'lengthChange' => false,
+                        'language' => [
+                            'paginate' => [
+                                'previous' => 'Sebelumnya',
+                                'next' => 'Selanjutnya'
+                            ],
+                            'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                            'infoEmpty' => 'Menampilkan 0 sampai 0 dari 0 data',
+                            'infoFiltered' => '(difilter dari _MAX_ total data)',
+                            'zeroRecords' => 'Tidak ada data yang ditemukan'
+                        ]
+                    ])
+                    ->addTableClass('table-striped table-bordered table-hover');
                     // ->selectStyleSingle()
                     // ->buttons([
                     //     Button::make('excel'),
@@ -77,12 +92,6 @@ class MasterSatkerDataTable extends DataTable
                 ->printable(false),
             Column::make('satker')->title('Unit Kerja'),
             Column::make('kodesatker')->title('Kode Unit'),
-            Column::computed('action')
-                ->title('Aksi')
-                ->exportable(false)
-                ->printable(false)
-                ->orderable(false)
-                ->searchable(false),
         ];
     }
 

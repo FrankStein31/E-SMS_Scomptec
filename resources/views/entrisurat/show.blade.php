@@ -82,12 +82,12 @@
             color: #495057;
             background-color: #f8f9fa;
         }
-        
+
         .detail-table td {
             font-size: 0.85rem;
             color: #212529;
         }
-        
+
         .detail-table tr:hover {
             background-color: #f5f5f5;
         }
@@ -453,8 +453,11 @@
                 }
             } else {
                 // Fallback dengan alert jika modal tidak ada
-                if (confirm('Software Scanner belum terinstall!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software tambahan terlebih dahulu.\n\nKlik OK untuk mendownload software scanner.')) {
-                    window.open('https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing', '_blank');
+                if (confirm(
+                        'Software Scanner belum terinstall!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software tambahan terlebih dahulu.\n\nKlik OK untuk mendownload software scanner.'
+                    )) {
+                    window.open('https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing',
+                        '_blank');
                 }
             }
         }
@@ -528,6 +531,10 @@
                                                         <td class="px-3 py-1">{{ $data->nomor_surat }}</td>
                                                     </tr>
                                                     <tr>
+                                                        <th class="px-3 py-1">Kepada</th>
+                                                        <td class="px-3 py-1">{{ $data->kepada }}</td>
+                                                    </tr>
+                                                    <tr>
                                                         <th class="px-3 py-1">Hal</th>
                                                         <td class="px-3 py-1">{{ $data->hal }}</td>
                                                     </tr>
@@ -551,7 +558,8 @@
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Jenis</th>
-                                                        <td class="px-3 py-1">{{ $data->jenis ? $data->jenis->name : '-' }}</td>
+                                                        <td class="px-3 py-1">{{ $data->jenis ? $data->jenis->name : '-' }}
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">No. Agenda</th>
@@ -559,11 +567,13 @@
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Tanggal surat</th>
-                                                        <td class="px-3 py-1">{{ date('d-m-Y', strtotime($data->tgl_surat)) }}</td>
+                                                        <td class="px-3 py-1">
+                                                            {{ date('d-m-Y', strtotime($data->tgl_surat)) }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Tanggal terima</th>
-                                                        <td class="px-3 py-1">{{ date('d-m-Y', strtotime($data->tgl_diterima)) }}</td>
+                                                        <td class="px-3 py-1">
+                                                            {{ date('d-m-Y', strtotime($data->tgl_diterima)) }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Tembusan</th>
@@ -607,7 +617,8 @@
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Alamat</th>
-                                                        <td class="px-3 py-1">{{ !empty($data->alamat) ? $data->alamat : '-' }}</td>
+                                                        <td class="px-3 py-1">
+                                                            {{ !empty($data->alamat) ? $data->alamat : '-' }}</td>
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Referensi</th>
@@ -680,7 +691,8 @@
                             <div id="scanLoading" class="scan-loading">
                                 <div class="spinner"></div>
                                 <div class="loading-text">Menghubungkan ke Scanner...</div>
-                                <div class="loading-subtext">Pastikan scanner/printer terhubung dan software scanner sudah terinstall</div>
+                                <div class="loading-subtext">Pastikan scanner/printer terhubung dan software scanner sudah
+                                    terinstall</div>
                             </div>
 
                             <div class="container-fluid">
@@ -759,16 +771,18 @@
             </div>
             <!-- Blank end -->
         </div>
-        
+
         <!-- Modal untuk Scanner Install Warning -->
-        <div class="modal fade" id="scannerInstallModal" tabindex="-1" aria-labelledby="scannerInstallModalLabel" aria-hidden="true">
+        <div class="modal fade" id="scannerInstallModal" tabindex="-1" aria-labelledby="scannerInstallModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header bg-danger">
                         <h5 class="modal-title text-white" id="scannerInstallModalLabel">
                             <i class="fas fa-exclamation-triangle me-2"></i>Software Scanner Diperlukan
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="text-center mb-3">
@@ -791,8 +805,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nanti Saja</button>
-                        <a href="https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing" 
-                           target="_blank" class="btn btn-primary">
+                        <a href="https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing"
+                            target="_blank" class="btn btn-primary">
                             <i class="fas fa-download me-2"></i>Download Software Scanner
                         </a>
                     </div>
