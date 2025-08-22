@@ -63,6 +63,7 @@ class MasterKlasifikasiDataTable extends DataTable
                     ->columns($this->getColumns())
                     ->minifiedAjax()
                     ->orderBy(0)
+                    ->dom('<"row justify-content-end"<"col-auto"f>>rt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
                     ->parameters([
                         'scrollY' => '60vh',
                         'scrollX' => true,
