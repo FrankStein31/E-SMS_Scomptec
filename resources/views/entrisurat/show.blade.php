@@ -118,17 +118,28 @@
             sourceName = typeof sourceName !== 'undefined' ? sourceName :
                 'default'; // Use 'default' if sourceName is not specified.
 
+            // Reset flag scan success
+            window.scanSuccessful = false;
+
             // Tampilkan loading
             document.getElementById('scanLoading').style.display = 'flex';
 
             // Set timeout untuk deteksi software scanner
             var scanTimeout = setTimeout(function() {
-                // Jika loading masih tampil setelah 8 detik, software kemungkinan belum terinstall
-                if (document.getElementById('scanLoading').style.display === 'flex') {
+                // Jika loading masih tampil setelah 8 detik, kemungkinan software belum terinstall
+                var loadingElement = document.getElementById('scanLoading');
+                if (loadingElement && loadingElement.style.display === 'flex') {
                     // Sembunyikan loading
-                    document.getElementById('scanLoading').style.display = 'none';
+                    loadingElement.style.display = 'none';
                     
-                    // Tampilkan modal peringatan
+                    // Clear timeout untuk mencegah double call
+                    if (window.currentScanTimeout) {
+                        clearTimeout(window.currentScanTimeout);
+                        window.currentScanTimeout = null;
+                    }
+                    
+                    log("Timeout: Scanner tidak merespons dalam 8 detik", true);
+                    // Tampilkan modal peringatan untuk timeout
                     showScannerInstallModal();
                 }
             }, 8000); // 8 detik timeout
@@ -153,34 +164,51 @@
             document.getElementById('scanLoading').style.display = 'none';
 
             var errorMesg = successful ? undefined : mesg;
+            var isScanSuccessful = false;
 
             if (successful && response != null) {
                 var responseAsJson = JSON.parse(response);
                 if (responseAsJson != null && responseAsJson.image_count == 0 && responseAsJson.last_transfer_rc ==
                     "TWRC_FAILURE") {
                     errorMesg = "Device failure";
+                } else if (responseAsJson != null && responseAsJson.image_count > 0) {
+                    // Scan berhasil jika ada gambar yang di-scan
+                    isScanSuccessful = true;
+                    try {
+                        displayImagesOnPage(successful, mesg, response);
+                    } catch (exp) {
+                        errorMesg = exp;
+                        isScanSuccessful = false;
+                    }
                 } else {
                     try {
                         displayImagesOnPage(successful, mesg, response);
+                        // Jika displayImagesOnPage tidak error, anggap berhasil
+                        isScanSuccessful = true;
                     } catch (exp) {
                         errorMesg = exp;
                     }
                 }
             }
 
-            // feel free to check response and add other failure criteria ...
+            // Cek jika user cancel - ini bukan error software
+            if (successful && mesg != null && mesg.toLowerCase().indexOf('user cancel') >= 0) {
+                log("User cancelled scan");
+                return; // Keluar tanpa error atau modal
+            }
 
-            if (errorMesg) {
+            // Hanya tampilkan modal jika benar-benar error dan bukan karena user cancel
+            if (errorMesg && !isScanSuccessful) {
                 log("Error occurred when scanning with source = " + scanRequest.source_name + ": " + errorMesg, true);
                 if (scanRequest.source_name == 'default') { // fall back to select
                     log("Failed to scan with source = " + scanRequest.source_name + "; attempt source = 'select' ...");
                     scan('select');
                 } else { // report final error here ...
                     log("Fatal error: Failed to scan (tried both default and select)", true);
-                    // Tampilkan modal jika error final
+                    // Tampilkan modal hanya jika benar-benar gagal total
                     showScannerInstallModal();
                 }
-            } else {
+            } else if (isScanSuccessful) {
                 log("Scan succeeds with source = " + scanRequest.source_name);
             }
         }
@@ -198,18 +226,18 @@
         // --------------- below functions are identical with many other demo scripts ---------------
         /** Processes the scan result */
         function displayImagesOnPage(successful, mesg, response) {
+            var loading = document.getElementById('scanLoading');
+            
             if (!successful) { // On error
                 console.error('Failed: ' + mesg);
-                var loading = document.getElementById('scanLoading');
                 if (loading) loading.style.display = 'none';
-                return;
+                return false; // Return false untuk menandakan gagal
             }
 
             if (successful && mesg != null && mesg.toLowerCase().indexOf('user cancel') >= 0) { // User cancelled.
                 console.info('User cancelled');
-                var loading = document.getElementById('scanLoading');
                 if (loading) loading.style.display = 'none';
-                return;
+                return false; // Return false karena user cancel (bukan error)
             }
 
             // Bersihkan slider sebelum menambah gambar baru
@@ -217,16 +245,23 @@
             if (sliderContainer) {
                 sliderContainer.innerHTML = '';
             }
+            
             var scannedImages = scanner.getScannedImages(response, true, false); // returns an array of ScannedImage
-            for (var i = 0;
-                (scannedImages instanceof Array) && i < scannedImages.length; i++) {
+            var hasImages = false;
+            
+            for (var i = 0; (scannedImages instanceof Array) && i < scannedImages.length; i++) {
                 var scannedImage = scannedImages[i];
                 processScannedImage(scannedImage);
+                hasImages = true;
             }
+            
             // Inisialisasi slider setelah gambar ditambahkan
-            initImageSlider();
-            var loading = document.getElementById('scanLoading');
+            if (hasImages) {
+                initImageSlider();
+            }
+            
             if (loading) loading.style.display = 'none';
+            return hasImages; // Return true jika ada gambar yang berhasil di-scan
         }
 
         /** Images scanned so far. */
@@ -234,6 +269,9 @@
 
         /** Processes a ScannedImage */
         function processScannedImage(scannedImage) {
+            // Mark scan as successful untuk mencegah modal muncul
+            window.scanSuccessful = true;
+            
             imagesScanned.push(scannedImage);
             var elementImg = scanner.createDomElementFromModel({
                 'name': 'img',
@@ -308,12 +346,32 @@
 
         /** Show scanner install modal */
         function showScannerInstallModal() {
+            // Log untuk debugging
+            log("Menampilkan modal instalasi scanner", true);
+            
             // Buat modal menggunakan Bootstrap modal atau alert sederhana
             var modal = document.getElementById('scannerInstallModal');
             if (modal) {
-                // Jika menggunakan Bootstrap 5
-                var bootstrapModal = new bootstrap.Modal(modal);
-                bootstrapModal.show();
+                try {
+                    // Jika menggunakan Bootstrap 5
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        var bootstrapModal = new bootstrap.Modal(modal);
+                        bootstrapModal.show();
+                    } else if (typeof $ !== 'undefined' && $.fn.modal) {
+                        // Fallback untuk Bootstrap 4 dengan jQuery
+                        $(modal).modal('show');
+                    } else {
+                        // Fallback manual jika Bootstrap tidak tersedia
+                        modal.style.display = 'block';
+                        modal.classList.add('show');
+                    }
+                } catch (e) {
+                    console.error('Error showing modal:', e);
+                    // Fallback dengan alert jika modal error
+                    if (confirm('Software Scanner belum terinstall!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software tambahan terlebih dahulu.\n\nKlik OK untuk mendownload software scanner.')) {
+                        window.open('https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing', '_blank');
+                    }
+                }
             } else {
                 // Fallback dengan alert jika modal tidak ada
                 if (confirm('Software Scanner belum terinstall!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software tambahan terlebih dahulu.\n\nKlik OK untuk mendownload software scanner.')) {
