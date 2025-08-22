@@ -91,6 +91,45 @@
         .detail-table tr:hover {
             background-color: #f5f5f5;
         }
+        
+        /* Custom button styling for better visibility */
+        .btn-save-scan {
+            background-color: #fff3cd !important;
+            border-color: #ffc107 !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+        
+        .btn-save-scan:hover {
+            background-color: #e9ecef !important;
+            border-color: #6c757d !important;
+            color: #495057 !important;
+        }
+        
+        .btn-save-scan:focus,
+        .btn-save-scan:active {
+            background-color: #e9ecef !important;
+            border-color: #6c757d !important;
+            color: #495057 !important;
+            box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+        }
+        
+        /* Badge styling for kepada field */
+        .badge-kepada {
+            font-size: 0.75rem;
+            padding: 0.35em 0.65em;
+            background-color: #6f42c1 !important;
+            color: white !important;
+            border-radius: 0.375rem;
+        }
+        
+        .badge-klasifikasi {
+            font-size: 0.75rem;
+            padding: 0.35em 0.65em;
+            background-color: #17a2b8 !important;
+            color: white !important;
+            border-radius: 0.375rem;
+        }
     </style>
 
     <script>
@@ -118,32 +157,54 @@
             sourceName = typeof sourceName !== 'undefined' ? sourceName :
                 'default'; // Use 'default' if sourceName is not specified.
 
+            // Reset flag scan success
+            window.scanSuccessful = false;
+
             // Tampilkan loading
             document.getElementById('scanLoading').style.display = 'flex';
 
-            // Set timeout untuk deteksi software scanner
+            // Set timeout HANYA untuk deteksi jika scanner software tidak ada
             var scanTimeout = setTimeout(function() {
-                // Jika loading masih tampil setelah 8 detik, software kemungkinan belum terinstall
-                if (document.getElementById('scanLoading').style.display === 'flex') {
-                    // Sembunyikan loading
-                    document.getElementById('scanLoading').style.display = 'none';
-
-                    // Tampilkan modal peringatan
+                var loadingElement = document.getElementById('scanLoading');
+                
+                // Cek apakah masih loading DAN belum ada tanda sukses
+                if (loadingElement && loadingElement.style.display === 'flex' && !window.scanSuccessful) {
+                    loadingElement.style.display = 'none';
+                    
+                    // Clear timeout
+                    if (window.currentScanTimeout) {
+                        clearTimeout(window.currentScanTimeout);
+                        window.currentScanTimeout = null;
+                    }
+                    
+                    log("TIMEOUT: Scanner tidak merespons dalam 10 detik - kemungkinan software belum terinstall", true);
                     showScannerInstallModal();
+                } else {
+                    // Jika sudah sukses atau loading sudah hilang, jangan tampilkan modal
+                    log("Timeout reached but scan was successful or completed - no modal needed");
                 }
-            }, 8000); // 8 detik timeout
+            }, 10000); // Naikkan jadi 10 detik untuk memberi waktu lebih
 
-            // Store timeout ID untuk bisa di-clear jika scan berhasil
+            // Store timeout ID
             window.currentScanTimeout = scanTimeout;
 
             scanRequest.source_name = sourceName;
-            log("Attempts to scan with source = " + scanRequest.source_name + " ...");
-            scanner.scan(handleScanResult, scanRequest);
+            log("Memulai scan dengan source = " + scanRequest.source_name + " ...");
+            
+            try {
+                scanner.scan(handleScanResult, scanRequest);
+            } catch (error) {
+                // Jika error saat memanggil scanner.scan, berarti software tidak ada
+                log("ERROR: Scanner software tidak ditemukan - " + error, true);
+                clearTimeout(scanTimeout);
+                document.getElementById('scanLoading').style.display = 'none';
+                showScannerInstallModal();
+            }
         }
 
         /** Checks response before parsing and performs fallback scanning if possible. */
         function handleScanResult(successful, mesg, response) {
-            // Clear timeout jika scan berhasil/selesai
+            // PENTING: Clear timeout SEGERA saat dapat response apapun
             if (window.currentScanTimeout) {
                 clearTimeout(window.currentScanTimeout);
                 window.currentScanTimeout = null;
@@ -152,36 +213,56 @@
             // Sembunyikan loading
             document.getElementById('scanLoading').style.display = 'none';
 
-            var errorMesg = successful ? undefined : mesg;
+            // Cek user cancel PERTAMA - ini yang paling penting
+            if (mesg != null && mesg.toLowerCase().indexOf('user cancel') >= 0) {
+                log("User cancelled scan - tidak perlu modal");
+                window.scanSuccessful = true; // Set flag agar modal tidak muncul
+                return; // Keluar langsung tanpa proses lain
+            }
 
+            // Cek jika successful dan ada response
             if (successful && response != null) {
-                var responseAsJson = JSON.parse(response);
-                if (responseAsJson != null && responseAsJson.image_count == 0 && responseAsJson.last_transfer_rc ==
-                    "TWRC_FAILURE") {
-                    errorMesg = "Device failure";
-                } else {
-                    try {
-                        displayImagesOnPage(successful, mesg, response);
-                    } catch (exp) {
-                        errorMesg = exp;
+                try {
+                    var responseAsJson = JSON.parse(response);
+                    
+                    // Jika ada response JSON valid, berarti scanner terhubung
+                    if (responseAsJson != null) {
+                        window.scanSuccessful = true; // Scanner terhubung
+                        log("Scanner connected successfully");
+                        
+                        // Cek apakah ada gambar atau tidak
+                        if (responseAsJson.image_count > 0) {
+                            log("Images captured: " + responseAsJson.image_count);
+                            displayImagesOnPage(successful, mesg, response);
+                        } else {
+                            log("No images captured but scanner is working");
+                            // Tetap anggap berhasil karena scanner bisa diakses
+                        }
+                        return; // Keluar dengan sukses
                     }
+                } catch (exp) {
+                    log("Error parsing response: " + exp, true);
                 }
             }
 
-            // feel free to check response and add other failure criteria ...
-
-            if (errorMesg) {
-                log("Error occurred when scanning with source = " + scanRequest.source_name + ": " + errorMesg, true);
-                if (scanRequest.source_name == 'default') { // fall back to select
-                    log("Failed to scan with source = " + scanRequest.source_name + "; attempt source = 'select' ...");
+            // Jika successful false dan ada error message
+            if (!successful && mesg) {
+                log("Scan failed: " + mesg, true);
+                
+                // Jika masih default, coba select
+                if (scanRequest.source_name == 'default') {
+                    log("Retrying with source select...");
                     scan('select');
-                } else { // report final error here ...
-                    log("Fatal error: Failed to scan (tried both default and select)", true);
-                    // Tampilkan modal jika error final
+                    return;
+                } else {
+                    // Sudah coba keduanya, tampilkan modal
+                    log("Both default and select failed - showing modal", true);
                     showScannerInstallModal();
                 }
-            } else {
-                log("Scan succeeds with source = " + scanRequest.source_name);
+            } else if (successful) {
+                // Successful tapi response kosong/null
+                window.scanSuccessful = true;
+                log("Scan completed successfully");
             }
         }
 
@@ -198,18 +279,23 @@
         // --------------- below functions are identical with many other demo scripts ---------------
         /** Processes the scan result */
         function displayImagesOnPage(successful, mesg, response) {
+            var loading = document.getElementById('scanLoading');
+            
+            // Set flag sukses SEGERA
+            window.scanSuccessful = true;
+            
             if (!successful) { // On error
                 console.error('Failed: ' + mesg);
-                var loading = document.getElementById('scanLoading');
                 if (loading) loading.style.display = 'none';
-                return;
+                window.scanSuccessful = false; // Reset karena gagal
+                return false; // Return false untuk menandakan gagal
             }
 
             if (successful && mesg != null && mesg.toLowerCase().indexOf('user cancel') >= 0) { // User cancelled.
                 console.info('User cancelled');
-                var loading = document.getElementById('scanLoading');
                 if (loading) loading.style.display = 'none';
-                return;
+                window.scanSuccessful = true; // User cancel tetap dianggap sukses (bukan error software)
+                return false; // Return false karena user cancel (bukan error)
             }
 
             // Bersihkan slider sebelum menambah gambar baru
@@ -217,16 +303,30 @@
             if (sliderContainer) {
                 sliderContainer.innerHTML = '';
             }
-            var scannedImages = scanner.getScannedImages(response, true, false); // returns an array of ScannedImage
-            for (var i = 0;
-                (scannedImages instanceof Array) && i < scannedImages.length; i++) {
+            
+            var scannedImages = scanner.getScannedImages(response, true, false);
+            var hasImages = false;
+            
+            for (var i = 0; (scannedImages instanceof Array) && i < scannedImages.length; i++) {
                 var scannedImage = scannedImages[i];
                 processScannedImage(scannedImage);
+                hasImages = true;
             }
+            
             // Inisialisasi slider setelah gambar ditambahkan
-            initImageSlider();
-            var loading = document.getElementById('scanLoading');
+            if (hasImages) {
+                initImageSlider();
+                log("Scan berhasil! " + scannedImages.length + " gambar di-scan");
+            } else {
+                log("Scan selesai tapi tidak ada gambar");
+            }
+            
             if (loading) loading.style.display = 'none';
+            
+            // PENTING: Set flag sukses untuk mencegah modal timeout
+            window.scanSuccessful = true;
+            
+            return hasImages;
         }
 
         /** Images scanned so far. */
@@ -234,6 +334,15 @@
 
         /** Processes a ScannedImage */
         function processScannedImage(scannedImage) {
+            // PENTING: Mark scan as successful SEGERA untuk mencegah modal muncul
+            window.scanSuccessful = true;
+            
+            // Clear timeout jika ada untuk mencegah modal timeout
+            if (window.currentScanTimeout) {
+                clearTimeout(window.currentScanTimeout);
+                window.currentScanTimeout = null;
+            }
+            
             imagesScanned.push(scannedImage);
             var elementImg = scanner.createDomElementFromModel({
                 'name': 'img',
@@ -278,6 +387,8 @@
             if (scanBtn) scanBtn.remove();
             var loading = document.getElementById('scanLoading');
             if (loading) loading.style.display = 'none';
+            
+            log("Gambar berhasil diproses dan ditambahkan ke slider");
         }
 
         /** Initialize image slider */
@@ -308,12 +419,38 @@
 
         /** Show scanner install modal */
         function showScannerInstallModal() {
-            // Buat modal menggunakan Bootstrap modal atau alert sederhana
+            // Cek dulu apakah scan sudah berhasil - jika ya, jangan tampilkan modal
+            if (window.scanSuccessful) {
+                log("Modal dibatalkan karena scan sudah berhasil");
+                return;
+            }
+            
+            // Log untuk debugging
+            log("Menampilkan modal instalasi scanner karena benar-benar gagal", true);
+            
             var modal = document.getElementById('scannerInstallModal');
             if (modal) {
-                // Jika menggunakan Bootstrap 5
-                var bootstrapModal = new bootstrap.Modal(modal);
-                bootstrapModal.show();
+                try {
+                    // Jika menggunakan Bootstrap 5
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        var bootstrapModal = new bootstrap.Modal(modal);
+                        bootstrapModal.show();
+                    } else if (typeof $ !== 'undefined' && $.fn.modal) {
+                        // Fallback untuk Bootstrap 4 dengan jQuery
+                        $(modal).modal('show');
+                    } else {
+                        // Fallback manual jika Bootstrap tidak tersedia
+                        modal.style.display = 'block';
+                        modal.classList.add('show');
+                        modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                    }
+                } catch (e) {
+                    console.error('Error showing modal:', e);
+                    // Fallback dengan alert jika modal error
+                    if (confirm('Software Scanner belum terinstall!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software tambahan terlebih dahulu.\n\nKlik OK untuk mendownload software scanner.')) {
+                        window.open('https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing', '_blank');
+                    }
+                }
             } else {
                 // Fallback dengan alert jika modal tidak ada
                 if (confirm(
@@ -342,13 +479,6 @@
             </div>
 
             @include('layout.alert')
-
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
 
             <!-- Blank start -->
             <div class="row">
@@ -379,10 +509,23 @@
                                             {{ date('d-m-Y', strtotime($data->tgl_diterima)) }}</td>
                                     </tr>
                                     <tr>
+                                        <th scope="col" class="px-3 py-2">Kepada:</th>
+                                        <td class="align-middle px-3 py-2" colspan="2">
+                                            @if($data->kepada)
+                                                {{ $data->kepada }}
+                                            @elseif($data->tujuanSurat && count($data->tujuanSurat) > 0)
+                                                @foreach($data->tujuanSurat as $tujuan)
+                                                    {{ $tujuan->user->FullName ?? '-' }}@if(!$loop->last), @endif
+                                                @endforeach
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td colspan="3" class="p-0">
                                             <div class="collapse mt-2" id="detailCollapse" style="display:none;">
-                                                <table class="table table-sm table-borderless mb-0 detail-table"
-                                                    style="margin-bottom:0;">
+                                <table class="table table-sm table-borderless mb-0 detail-table" style="margin-bottom:0;">
                                                     <tr>
                                                         <th class="px-3 py-1" style="width:140px;">No. Surat</th>
                                                         <td class="px-3 py-1">{{ $data->nomor_surat }}</td>
@@ -394,6 +537,20 @@
                                                     <tr>
                                                         <th class="px-3 py-1">Hal</th>
                                                         <td class="px-3 py-1">{{ $data->hal }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="px-3 py-1">Kepada</th>
+                                                        <td class="px-3 py-1">
+                                                            @if($data->kepada)
+                                                                {{ $data->kepada }}
+                                                            @elseif($data->tujuanSurat && count($data->tujuanSurat) > 0)
+                                                                @foreach($data->tujuanSurat as $tujuan)
+                                                                    {{ $tujuan->user->FullName ?? '-' }}@if(!$loop->last), @endif
+                                                                @endforeach
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Sifat</th>
@@ -424,7 +581,39 @@
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Klasifikasi</th>
-                                                        <td class="px-3 py-1">{{ $data->kode_klasifikasi }}</td>
+                                                        <td class="px-3 py-1">
+                                                            @if($data->klasifikasi)
+                                                                {{ $data->klasifikasi->klasifikasi }}
+                                                                <small class="text-muted">({{ $data->klasifikasi->kodeklasifikasi }})</small>
+                                                            @elseif($data->kode_klasifikasi)
+                                                                @php
+                                                                    // Coba cari klasifikasi berdasarkan kode atau ID
+                                                                    $klasifikasi = null;
+                                                                    
+                                                                    // Coba cari berdasarkan kode klasifikasi
+                                                                    $klasifikasiByKode = App\Models\MasterKlasifikasi::where('kodeklasifikasi', $data->kode_klasifikasi)->first();
+                                                                    if ($klasifikasiByKode) {
+                                                                        $klasifikasi = $klasifikasiByKode;
+                                                                    } else {
+                                                                        // Jika tidak ditemukan berdasarkan kode, coba cari berdasarkan ID (ULID)
+                                                                        $klasifikasiById = App\Models\MasterKlasifikasi::find($data->kode_klasifikasi);
+                                                                        if ($klasifikasiById) {
+                                                                            $klasifikasi = $klasifikasiById;
+                                                                        }
+                                                                    }
+                                                                @endphp
+                                                                
+                                                                @if($klasifikasi)
+                                                                    {{ $klasifikasi->klasifikasi }}
+                                                                    <small class="text-muted">({{ $klasifikasi->kodeklasifikasi }})</small>
+                                                                @else
+                                                                    {{ $data->kode_klasifikasi }}
+                                                                    <small class="text-muted">(Data klasifikasi tidak ditemukan)</small>
+                                                                @endif
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Alamat</th>
@@ -437,12 +626,61 @@
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Unit Pengentri</th>
-                                                        <td class="px-3 py-1">{{ $data->createdBy->fullname }}</td>
+                                                        <td class="px-3 py-1">
+                                                            @if($data->createdBy)
+                                                                {{ $data->createdBy->fullname }}
+                                                                @if($data->createdBy->Jabatan)
+                                                                    <small class="text-muted d-block">{{ $data->createdBy->Jabatan }}</small>
+                                                                @endif
+                                                            @else
+                                                                {{ $data->created_by ? 'ID: ' . $data->created_by : '-' }}
+                                                            @endif
+                                                        </td>
                                                     </tr>
+                                                    @if($data->jumlah_lampiran)
+                                                    <tr>
+                                                        <th class="px-3 py-1">Jumlah Lampiran</th>
+                                                        <td class="px-3 py-1">
+                                                            {{ $data->jumlah_lampiran }}
+                                                        </td>
+                                                    </tr>
+                                                    @endif
                                                     <tr>
                                                         <th class="px-3 py-1">Lampiran</th>
-                                                        <td class="px-3 py-1">{{ $data->lampiran ?? '-' }}</td>
+                                                        <td class="px-3 py-1">
+                                                            @if($data->lampiran)
+                                                                <div class="text-wrap">{{ $data->lampiran }}</div>
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
                                                     </tr>
+                                                    @if($data->isi)
+                                                    <tr>
+                                                        <th class="px-3 py-1">Isi Surat</th>
+                                                        <td class="px-3 py-1">
+                                                            <div style="max-height: 150px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5;">
+                                                                {!! nl2br(e($data->isi)) !!}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    @endif
+                                                    @if($data->tgl_diarahkan)
+                                                    <tr>
+                                                        <th class="px-3 py-1">Tanggal Diarahkan</th>
+                                                        <td class="px-3 py-1">
+                                                            {{ date('d-m-Y', strtotime($data->tgl_diarahkan)) }}
+                                                        </td>
+                                                    </tr>
+                                                    @endif
+                                                    @if($data->terdisposisi)
+                                                    <tr>
+                                                        <th class="px-3 py-1">Status Disposisi</th>
+                                                        <td class="px-3 py-1">
+                                                            Sudah Didisposisi
+                                                        </td>
+                                                    </tr>
+                                                    @endif
                                                 </table>
                                             </div>
                                         </td>
@@ -471,7 +709,7 @@
                                         onclick="scan('default');" id="scan_btn">Scan File</button>
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <button type="submit"
-                                            class="btn btn-warning btn-sm d-lg-inline-flex align-items-center b-r-22 text-black">       
+                                            class="btn btn-save-scan btn-sm d-lg-inline-flex align-items-center b-r-22">
                                             <i class="fa fa-save me-1"></i>Simpan File Scan
                                         </button>
                                         <div class="d-flex gap-2">

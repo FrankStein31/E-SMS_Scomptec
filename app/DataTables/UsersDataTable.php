@@ -22,13 +22,10 @@ class UsersDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('aksi', function ($q){
-                $btn = '';
-                $btn .= '<button type="button" data-id="'.$q->id.'" class="btn btn-warning btn-sm btnEdit">Edit</button> ';
-                $btn .= '<button type="button" data-id="'.$q->id.'" class="btn btn-danger btn-sm btnHapus">Hapus</button>';
-                return $btn;
+            ->addIndexColumn()
+            ->addColumn('satker_name', function ($row) {
+                return $row->satker ? $row->satker->satker : '-';
             })
-            ->rawColumns(['aksi'])
             ->setRowId('id');
     }
 
@@ -39,7 +36,7 @@ class UsersDataTable extends DataTable
      */
     public function query(User $model): QueryBuilder
     {
-        $query = $model->newQuery();
+        $query = $model->newQuery()->with(['satker']);
         // Filter by jabatan/usergroup jika ada request
         $jabatan = $this->request->get('jabatan');
         if ($jabatan) {
@@ -55,10 +52,32 @@ class UsersDataTable extends DataTable
     {
         return $this->builder()
                     ->setTableId('users-table')
-                    ->columns($this->getColumns())
-                    // ->minifiedAjax()
+            ->columns($this->getColumns())
                     ->orderBy(1)
-                    ->selectStyleSingle();
+            ->dom('frt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
+            ->parameters([
+                'scrollY' => '60vh',
+                'scrollX' => true,
+                'scrollCollapse' => true,
+                'autoWidth' => false,
+                'paging' => true,
+                'pageLength' => 25,
+                'lengthChange' => false,
+                'searching' => true,
+                'language' => [
+                    'paginate' => [
+                        'previous' => 'Sebelumnya',
+                        'next' => 'Selanjutnya'
+                    ],
+                    'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+                    'infoEmpty' => 'Menampilkan 0 sampai 0 dari 0 data',
+                    'infoFiltered' => '(difilter dari _MAX_ total data)',
+                    'zeroRecords' => 'Tidak ada data yang ditemukan',
+                    'search' => 'Cari:',
+                    'searchPlaceholder' => 'Ketik untuk mencari...'
+                ]
+            ])
+            ->addTableClass('table-striped table-bordered table-hover');
     }
 
     /**
@@ -67,19 +86,14 @@ class UsersDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('id'),
-            Column::make('username'),
-            Column::make('fullname'),
-            Column::make('nip'),
-            Column::make('jabatan'),
-            Column::make('email'),
-            Column::computed('aksi')
-                  ->exportable(false)
-                  ->printable(false)
-                  ->width(60)
-                  ->addClass('text-center'),
-            // Column::make('created_at'),
-            // Column::make('updated_at'),
+            Column::make('DT_RowIndex')->title('No')->orderable(false)->searchable(false)->width('50px'),
+            Column::make('username')->title('Username'),
+            Column::make('fullname')->title('Nama Lengkap'),
+            Column::make('nip')->title('NIP'),
+            Column::make('pangkat')->title('Pangkat'),
+            Column::make('jabatan')->title('Jabatan'),
+            Column::make('satker_name')->title('Unit Kerja'),
+            Column::make('email')->title('Email'),
         ];
     }
 

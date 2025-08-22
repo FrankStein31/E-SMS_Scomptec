@@ -46,12 +46,22 @@ class ReportSuratController extends Controller
         $jenis = $request->input('jenis_surat', null);
         $data = self::getStatistik(Auth::user()->id, $jenis, $tahun);
         $jenisSurat = MasterJenisSurat::all();
+        
+        // Get additional statistics
+        $summary = self::getSummaryStatistics($tahun, $jenis);
+        $monthlyTrend = self::getMonthlyTrend($tahun, $jenis);
+        $jenisStatistik = self::getJenisStatistics($tahun);
+        $sifatStatistik = self::getSifatStatistics($tahun, $jenis);
 
         return view('report.statistik', compact(
             "data",
             "jenisSurat",
             "tahun",
-            "jenis"
+            "jenis",
+            "summary",
+            "monthlyTrend",
+            "jenisStatistik",
+            "sifatStatistik"
         ));
     }
 
@@ -114,6 +124,198 @@ class ReportSuratController extends Controller
                 'jumlah_keluar' => $stat_keluar[$i] ?? 0,
             ];
         }
+        return $result;
+    }
+
+    public static function getSummaryStatistics($tahun = null, $jenis = null)
+    {
+        $currentYear = $tahun ?: date('Y');
+        $previousYear = $currentYear - 1;
+        
+        // Current year statistics
+        $currentMasuk = DB::table('entry_surat_isis')
+            ->when($tahun, function ($q) use ($tahun) {
+                $q->whereYear('tgl_diarahkan', $tahun);
+            })
+            ->when($jenis, function ($q) use ($jenis) {
+                if ($jenis && $jenis != '00') $q->where('jenis_id', $jenis);
+            })
+            ->count();
+            
+        $currentKeluar = DB::table('surat_keluar_isis')
+            ->when($tahun, function ($q) use ($tahun) {
+                $q->whereYear('tgl_surat', $tahun);
+            })
+            ->when($jenis, function ($q) use ($jenis) {
+                if ($jenis && $jenis != '00') $q->where('jenis_id', $jenis);
+            })
+            ->count();
+        
+        // Previous year statistics for comparison
+        $previousMasuk = DB::table('entry_surat_isis')
+            ->whereYear('tgl_diarahkan', $previousYear)
+            ->when($jenis, function ($q) use ($jenis) {
+                if ($jenis && $jenis != '00') $q->where('jenis_id', $jenis);
+            })
+            ->count();
+            
+        $previousKeluar = DB::table('surat_keluar_isis')
+            ->whereYear('tgl_surat', $previousYear)
+            ->when($jenis, function ($q) use ($jenis) {
+                if ($jenis && $jenis != '00') $q->where('jenis_id', $jenis);
+            })
+            ->count();
+        
+        // Calculate growth percentages
+        $growthMasuk = $previousMasuk > 0 ? (($currentMasuk - $previousMasuk) / $previousMasuk) * 100 : 0;
+        $growthKeluar = $previousKeluar > 0 ? (($currentKeluar - $previousKeluar) / $previousKeluar) * 100 : 0;
+        
+        // Current month statistics
+        $currentMonth = date('n');
+        $currentMonthMasuk = DB::table('entry_surat_isis')
+            ->whereYear('tgl_diarahkan', $currentYear)
+            ->whereMonth('tgl_diarahkan', $currentMonth)
+            ->when($jenis, function ($q) use ($jenis) {
+                if ($jenis && $jenis != '00') $q->where('jenis_id', $jenis);
+            })
+            ->count();
+            
+        $currentMonthKeluar = DB::table('surat_keluar_isis')
+            ->whereYear('tgl_surat', $currentYear)
+            ->whereMonth('tgl_surat', $currentMonth)
+            ->when($jenis, function ($q) use ($jenis) {
+                if ($jenis && $jenis != '00') $q->where('jenis_id', $jenis);
+            })
+            ->count();
+        
+        // Average per month
+        $avgMasukPerMonth = $currentMasuk > 0 ? round($currentMasuk / 12, 1) : 0;
+        $avgKeluarPerMonth = $currentKeluar > 0 ? round($currentKeluar / 12, 1) : 0;
+        
+        return [
+            'total_masuk' => $currentMasuk,
+            'total_keluar' => $currentKeluar,
+            'total_semua' => $currentMasuk + $currentKeluar,
+            'growth_masuk' => round($growthMasuk, 1),
+            'growth_keluar' => round($growthKeluar, 1),
+            'bulan_ini_masuk' => $currentMonthMasuk,
+            'bulan_ini_keluar' => $currentMonthKeluar,
+            'avg_masuk_per_bulan' => $avgMasukPerMonth,
+            'avg_keluar_per_bulan' => $avgKeluarPerMonth,
+            'tahun_sekarang' => $currentYear,
+            'tahun_sebelumnya' => $previousYear
+        ];
+    }
+    
+    public static function getMonthlyTrend($tahun = null, $jenis = null)
+    {
+        $currentYear = $tahun ?: date('Y');
+        
+        // Get last 6 months trend
+        $trends = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $month = date('n', strtotime("-$i months"));
+            $year = date('Y', strtotime("-$i months"));
+            
+            $masuk = DB::table('entry_surat_isis')
+                ->whereYear('tgl_diarahkan', $year)
+                ->whereMonth('tgl_diarahkan', $month)
+                ->when($jenis, function ($q) use ($jenis) {
+                    if ($jenis && $jenis != '00') $q->where('jenis_id', $jenis);
+                })
+                ->count();
+                
+            $keluar = DB::table('surat_keluar_isis')
+                ->whereYear('tgl_surat', $year)
+                ->whereMonth('tgl_surat', $month)
+                ->when($jenis, function ($q) use ($jenis) {
+                    if ($jenis && $jenis != '00') $q->where('jenis_id', $jenis);
+                })
+                ->count();
+            
+            $trends[] = [
+                'bulan' => $month,
+                'tahun' => $year,
+                'nama_bulan' => date('M Y', strtotime("-$i months")),
+                'masuk' => $masuk,
+                'keluar' => $keluar,
+                'total' => $masuk + $keluar
+            ];
+        }
+        
+        return $trends;
+    }
+    
+    public static function getJenisStatistics($tahun = null)
+    {
+        $currentYear = $tahun ?: date('Y');
+        
+        $jenisStats = DB::table('entry_surat_isis as e')
+            ->leftJoin('master_jenis_surats as m', 'e.jenis_id', '=', 'm.last_id')
+            ->select('m.name as jenis_name', DB::raw('COUNT(*) as jumlah_masuk'))
+            ->whereYear('e.tgl_diarahkan', $currentYear)
+            ->groupBy('e.jenis_id', 'm.name')
+            ->get();
+            
+        $jenisStatsKeluar = DB::table('surat_keluar_isis as s')
+            ->leftJoin('master_jenis_surats as m', 's.jenis_id', '=', 'm.last_id')
+            ->select('m.name as jenis_name', DB::raw('COUNT(*) as jumlah_keluar'))
+            ->whereYear('s.tgl_surat', $currentYear)
+            ->groupBy('s.jenis_id', 'm.name')
+            ->get()
+            ->keyBy('jenis_name');
+        
+        $result = [];
+        foreach ($jenisStats as $stat) {
+            $jenisName = $stat->jenis_name ?: 'Tidak Diketahui';
+            $keluarCount = $jenisStatsKeluar->get($jenisName)->jumlah_keluar ?? 0;
+            
+            $result[] = [
+                'jenis' => $jenisName,
+                'masuk' => $stat->jumlah_masuk,
+                'keluar' => $keluarCount,
+                'total' => $stat->jumlah_masuk + $keluarCount
+            ];
+        }
+        
+        // Sort by total descending
+        usort($result, function($a, $b) {
+            return $b['total'] <=> $a['total'];
+        });
+        
+        return array_slice($result, 0, 10); // Top 10
+    }
+    
+    public static function getSifatStatistics($tahun = null, $jenis = null)
+    {
+        $currentYear = $tahun ?: date('Y');
+        
+        $sifatLabels = [
+            1 => 'Penting',
+            2 => 'Rahasia', 
+            3 => 'Biasa',
+            4 => 'Pribadi'
+        ];
+        
+        $sifatStats = DB::table('entry_surat_isis')
+            ->select('sifat', DB::raw('COUNT(*) as jumlah'))
+            ->whereYear('tgl_diarahkan', $currentYear)
+            ->when($jenis, function ($q) use ($jenis) {
+                if ($jenis && $jenis != '00') $q->where('jenis_id', $jenis);
+            })
+            ->groupBy('sifat')
+            ->get()
+            ->keyBy('sifat');
+        
+        $result = [];
+        foreach ($sifatLabels as $sifatId => $label) {
+            $result[] = [
+                'sifat' => $label,
+                'jumlah' => $sifatStats->get($sifatId)->jumlah ?? 0,
+                'color' => ['#dc3545', '#ffc107', '#17a2b8', '#6c757d'][$sifatId - 1] ?? '#6c757d'
+            ];
+        }
+        
         return $result;
     }
 

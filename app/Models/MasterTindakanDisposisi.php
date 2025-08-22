@@ -12,4 +12,9 @@ class MasterTindakanDisposisi extends Model
         'tindakan',
         'satkerid',
     ];
+
+    public function satker()
+    {
+        return $this->belongsTo(MasterSatker::class, 'satkerid', 'satkerid');
+    }
 }
