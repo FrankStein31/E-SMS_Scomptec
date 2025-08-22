@@ -244,8 +244,8 @@
                                         <label class="form-label"></label>
                                     </div>
                                     <div class="col-md-9">
-                                        <button type="submit" class="btn btn-primary">Update</button>
-                                        <a href="{{ route('entrisurat.index') }}" class="btn btn-secondary">Batal</a>
+                                        <button type="submit" class="btn btn-primary btn-update-form">Update</button>
+                                        <a href="{{ route('entrisurat.index') }}" class="btn btn-secondary btn-cancel-form">Batal</a>
                                     </div>
                                 </div>
                             </form>
@@ -258,6 +258,52 @@
         </div>
     </main>
 @endsection
+
+@push('styles')
+<style>
+    .btn-update-form {
+        background-color: #fff3cd !important;
+        border-color: #ffeaa7 !important;
+        color: #212529 !important;
+        font-weight: 500;
+    }
+    
+    .btn-update-form:hover {
+        background-color: #e9ecef !important;
+        border-color: #ced4da !important;
+        color: #495057 !important;
+    }
+    
+    .btn-update-form:focus,
+    .btn-update-form:active {
+        background-color: #e9ecef !important;
+        border-color: #ced4da !important;
+        color: #495057 !important;
+        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25) !important;
+    }
+    
+    .btn-cancel-form {
+        background-color: #f8f9fa !important;
+        border-color: #dee2e6 !important;
+        color: #212529 !important;
+        font-weight: 500;
+    }
+    
+    .btn-cancel-form:hover {
+        background-color: #e9ecef !important;
+        border-color: #ced4da !important;
+        color: #495057 !important;
+    }
+    
+    .btn-cancel-form:focus,
+    .btn-cancel-form:active {
+        background-color: #e9ecef !important;
+        border-color: #ced4da !important;
+        color: #495057 !important;
+        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25) !important;
+    }
+</style>
+@endpush
 
 @push('scripts')
     <script>

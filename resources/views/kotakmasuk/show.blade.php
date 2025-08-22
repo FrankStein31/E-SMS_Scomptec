@@ -6,7 +6,10 @@
             <!-- Breadcrumb start -->
             <div class="row m-1">
                 <div class="col-12 ">
-                    <a href="{{ route('kotakmasuk.index') }}" class="btn btn-secondary btn-sm mb-3">
+                    <a href="{{ route('kotakmasuk.index') }}" class="btn btn-secondary btn-sm mb-3 btn-back-secondary"
+                       style="background-color: #e9ecef !important; color: #000000 !important; border-color: #ced4da !important; font-weight: 600 !important; text-decoration: none;"
+                       onmouseover="this.style.backgroundColor='#6c757d'; this.style.color='#ffffff'; this.style.borderColor='#5c636a';"
+                       onmouseout="this.style.backgroundColor='#e9ecef'; this.style.color='#000000'; this.style.borderColor='#ced4da';">
                         <i class="iconoir-arrow-left"></i> Kembali ke Kotak Masuk
                     </a>
                     <!-- <h5 class="main-title">Kotak Masuk</h5>
@@ -134,19 +137,36 @@
                                 @if($tujuanUser && $tujuanUser->dibaca == 0)
                                     <form action="{{ route('kotakmasuk.tandai-dibaca', [$data->id, $tujuanUser->id]) }}" method="POST" style="display:inline;">
                                         @csrf
-                                        <button type="submit" class="btn btn-warning btn-sm b-r-22">Tandai Dibaca</button>
+                                        <button type="submit" class="btn btn-warning btn-sm b-r-22 btn-mark-read" 
+                                                style="background-color: #fff3cd !important; color: #000000 !important; border-color: #ffeaa7 !important; font-weight: 600 !important;"
+                                                onmouseover="this.style.backgroundColor='#6c757d'; this.style.color='#ffffff'; this.style.borderColor='#5c636a';"
+                                                onmouseout="this.style.backgroundColor='#fff3cd'; this.style.color='#000000'; this.style.borderColor='#ffeaa7';">
+                                            Tandai Dibaca
+                                        </button>
                                     </form>
-                                    <button class="btn btn-info btn-sm b-r-22" disabled>Disposisi</button>
+                                    <button class="btn btn-info btn-sm b-r-22 btn-disposisi" disabled
+                                            style="background-color: #d1ecf1 !important; color: #000000 !important; border-color: #bee5eb !important; font-weight: 600 !important; opacity: 0.6;">
+                                        Disposisi
+                                    </button>
                                     <div class="text-danger mt-2 small">Anda harus menandai surat sudah dibaca untuk melakukan disposisi</div>
                                 @elseif($tujuanUser && $tujuanUser->dibaca == 1)
-                                    <button class="btn btn-success btn-sm b-r-22" disabled>Sudah Dibaca</button>
+                                    <button class="btn btn-success btn-sm b-r-22 btn-already-read" disabled
+                                            style="background-color: #d1edcc !important; color: #000000 !important; border-color: #c3e6cb !important; font-weight: 600 !important; opacity: 0.6;">
+                                        Sudah Dibaca
+                                    </button>
                                     @if($users->isEmpty())
-                                        <button class="btn btn-info btn-sm b-r-22" disabled>
+                                        <button class="btn btn-info btn-sm b-r-22 btn-disposisi" disabled
+                                                style="background-color: #d1ecf1 !important; color: #000000 !important; border-color: #bee5eb !important; font-weight: 600 !important; opacity: 0.6;">
                                             Disposisi
                                         </button>
                                         <div class="text-danger mt-2 small">Anda merupakan posisi paling bawah, tidak dapat mendisposisikan surat</div>
                                     @else
-                                <a href="{{ route('kotakmasuk.disposisi', $data->id) }}" class="btn btn-info btn-sm b-r-22">Disposisi</a>
+                                        <a href="{{ route('kotakmasuk.disposisi', $data->id) }}" class="btn btn-info btn-sm b-r-22 btn-disposisi"
+                                           style="background-color: #d1ecf1 !important; color: #000000 !important; border-color: #bee5eb !important; font-weight: 600 !important; text-decoration: none;"
+                                           onmouseover="this.style.backgroundColor='#6c757d'; this.style.color='#ffffff'; this.style.borderColor='#5c636a';"
+                                           onmouseout="this.style.backgroundColor='#d1ecf1'; this.style.color='#000000'; this.style.borderColor='#bee5eb';">
+                                            Disposisi
+                                        </a>
                                     @endif
                                 @endif
                                 <!-- {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Riw. Surat</a> --}}
@@ -162,6 +182,94 @@
         </div>
     </main>
 @endsection
+
+@push('styles')
+<style>
+    .btn-back-secondary.btn-secondary {
+        background-color: #ffffff !important;
+        border-color: #dee2e6 !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+    }
+    
+    .btn-back-secondary.btn-secondary:hover,
+    .btn-back-secondary.btn-secondary:focus,
+    .btn-back-secondary.btn-secondary:active {
+        background-color: #6c757d !important;
+        border-color: #5c636a !important;
+        color: #ffffff !important;
+    }
+    
+    .btn-mark-read.btn-warning {
+        background-color: #ffffff !important;
+        border-color: #dee2e6 !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+    }
+    
+    .btn-mark-read.btn-warning:hover,
+    .btn-mark-read.btn-warning:focus,
+    .btn-mark-read.btn-warning:active {
+        background-color: #6c757d !important;
+        border-color: #5c636a !important;
+        color: #ffffff !important;
+    }
+    
+    .btn-disposisi.btn-info {
+        background-color: #ffffff !important;
+        border-color: #dee2e6 !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+    }
+    
+    .btn-disposisi.btn-info:hover,
+    .btn-disposisi.btn-info:focus,
+    .btn-disposisi.btn-info:active {
+        background-color: #6c757d !important;
+        border-color: #5c636a !important;
+        color: #ffffff !important;
+    }
+    
+    .btn-already-read.btn-success {
+        background-color: #ffffff !important;
+        border-color: #dee2e6 !important;
+        color: #000000 !important;
+        font-weight: 600 !important;
+    }
+    
+    .btn-already-read.btn-success:hover,
+    .btn-already-read.btn-success:focus,
+    .btn-already-read.btn-success:active {
+        background-color: #6c757d !important;
+        border-color: #5c636a !important;
+        color: #ffffff !important;
+    }
+    
+    /* Focus states for accessibility */
+    .btn-back-secondary:focus,
+    .btn-back-secondary:active,
+    .btn-mark-read:focus,
+    .btn-mark-read:active,
+    .btn-disposisi:focus,
+    .btn-disposisi:active,
+    .btn-already-read:focus,
+    .btn-already-read:active {
+        background-color: #6c757d !important;
+        border-color: #5c636a !important;
+        color: #ffffff !important;
+        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25) !important;
+    }
+    
+    /* Disabled button styling for better readability */
+    .btn-disposisi:disabled,
+    .btn-already-read:disabled {
+        opacity: 0.6;
+        background-color: #f8f9fa !important;
+        border-color: #dee2e6 !important;
+        color: #6c757d !important;
+    }
+</style>
+@endpush
 
 @push('js')
     <script>

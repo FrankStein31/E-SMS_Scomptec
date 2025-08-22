@@ -220,7 +220,27 @@ class EntriSuratController extends Controller
      */
     public function show($id)
     {
-        $data = EntrySuratIsi::with('FileScan')->find($id);
+        $data = EntrySuratIsi::with(['FileScan', 'tujuanSurat.user', 'klasifikasi'])->find($id);
+        
+        if (!$data) {
+            return redirect()->route('entrisurat.index')->with('error', 'Data tidak ditemukan');
+        }
+
+        // Jika klasifikasi tidak ter-load melalui relasi, coba cari manual
+        if (!$data->klasifikasi && $data->kode_klasifikasi) {
+            // Coba cari berdasarkan kode klasifikasi
+            $klasifikasiByKode = MasterKlasifikasi::where('kodeklasifikasi', $data->kode_klasifikasi)->first();
+            if ($klasifikasiByKode) {
+                $data->klasifikasi = $klasifikasiByKode;
+            } else {
+                // Jika tidak ditemukan berdasarkan kode, coba cari berdasarkan ID (jika ULID)
+                $klasifikasiById = MasterKlasifikasi::find($data->kode_klasifikasi);
+                if ($klasifikasiById) {
+                    $data->klasifikasi = $klasifikasiById;
+                }
+            }
+        }
+
         return view('entrisurat.show', compact('data'));
     }
 
