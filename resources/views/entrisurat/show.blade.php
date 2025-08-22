@@ -91,6 +91,45 @@
         .detail-table tr:hover {
             background-color: #f5f5f5;
         }
+        
+        /* Custom button styling for better visibility */
+        .btn-save-scan {
+            background-color: #fff3cd !important;
+            border-color: #ffc107 !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+        
+        .btn-save-scan:hover {
+            background-color: #e9ecef !important;
+            border-color: #6c757d !important;
+            color: #495057 !important;
+        }
+        
+        .btn-save-scan:focus,
+        .btn-save-scan:active {
+            background-color: #e9ecef !important;
+            border-color: #6c757d !important;
+            color: #495057 !important;
+            box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+        }
+        
+        /* Badge styling for kepada field */
+        .badge-kepada {
+            font-size: 0.75rem;
+            padding: 0.35em 0.65em;
+            background-color: #6f42c1 !important;
+            color: white !important;
+            border-radius: 0.375rem;
+        }
+        
+        .badge-klasifikasi {
+            font-size: 0.75rem;
+            padding: 0.35em 0.65em;
+            background-color: #17a2b8 !important;
+            color: white !important;
+            border-radius: 0.375rem;
+        }
     </style>
 
     <script>
@@ -340,13 +379,6 @@
 
             @include('layout.alert')
 
-            @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            @endif
-
             <!-- Blank start -->
             <div class="row">
                 <!-- Default Card start -->
@@ -376,9 +408,23 @@
                                             {{ date('d-m-Y', strtotime($data->tgl_diterima)) }}</td>
                                     </tr>
                                     <tr>
+                                        <th scope="col" class="px-3 py-2">Kepada:</th>
+                                        <td class="align-middle px-3 py-2" colspan="2">
+                                            @if($data->kepada)
+                                                {{ $data->kepada }}
+                                            @elseif($data->tujuanSurat && count($data->tujuanSurat) > 0)
+                                                @foreach($data->tujuanSurat as $tujuan)
+                                                    {{ $tujuan->user->FullName ?? '-' }}@if(!$loop->last), @endif
+                                                @endforeach
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <td colspan="3" class="p-0">
                                             <div class="collapse mt-2" id="detailCollapse" style="display:none;">
-                                                <table class="table table-sm table-borderless mb-0 detail-table" style="margin-bottom:0;">
+                                <table class="table table-sm table-borderless mb-0 detail-table" style="margin-bottom:0;">
                                                     <tr>
                                                         <th class="px-3 py-1" style="width:140px;">No. Surat</th>
                                                         <td class="px-3 py-1">{{ $data->nomor_surat }}</td>
@@ -386,6 +432,20 @@
                                                     <tr>
                                                         <th class="px-3 py-1">Hal</th>
                                                         <td class="px-3 py-1">{{ $data->hal }}</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th class="px-3 py-1">Kepada</th>
+                                                        <td class="px-3 py-1">
+                                                            @if($data->kepada)
+                                                                {{ $data->kepada }}
+                                                            @elseif($data->tujuanSurat && count($data->tujuanSurat) > 0)
+                                                                @foreach($data->tujuanSurat as $tujuan)
+                                                                    {{ $tujuan->user->FullName ?? '-' }}@if(!$loop->last), @endif
+                                                                @endforeach
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Sifat</th>
@@ -413,7 +473,39 @@
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Klasifikasi</th>
-                                                        <td class="px-3 py-1">{{ $data->kode_klasifikasi }}</td>
+                                                        <td class="px-3 py-1">
+                                                            @if($data->klasifikasi)
+                                                                {{ $data->klasifikasi->klasifikasi }}
+                                                                <small class="text-muted">({{ $data->klasifikasi->kodeklasifikasi }})</small>
+                                                            @elseif($data->kode_klasifikasi)
+                                                                @php
+                                                                    // Coba cari klasifikasi berdasarkan kode atau ID
+                                                                    $klasifikasi = null;
+                                                                    
+                                                                    // Coba cari berdasarkan kode klasifikasi
+                                                                    $klasifikasiByKode = App\Models\MasterKlasifikasi::where('kodeklasifikasi', $data->kode_klasifikasi)->first();
+                                                                    if ($klasifikasiByKode) {
+                                                                        $klasifikasi = $klasifikasiByKode;
+                                                                    } else {
+                                                                        // Jika tidak ditemukan berdasarkan kode, coba cari berdasarkan ID (ULID)
+                                                                        $klasifikasiById = App\Models\MasterKlasifikasi::find($data->kode_klasifikasi);
+                                                                        if ($klasifikasiById) {
+                                                                            $klasifikasi = $klasifikasiById;
+                                                                        }
+                                                                    }
+                                                                @endphp
+                                                                
+                                                                @if($klasifikasi)
+                                                                    {{ $klasifikasi->klasifikasi }}
+                                                                    <small class="text-muted">({{ $klasifikasi->kodeklasifikasi }})</small>
+                                                                @else
+                                                                    {{ $data->kode_klasifikasi }}
+                                                                    <small class="text-muted">(Data klasifikasi tidak ditemukan)</small>
+                                                                @endif
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Alamat</th>
@@ -425,12 +517,61 @@
                                                     </tr>
                                                     <tr>
                                                         <th class="px-3 py-1">Unit Pengentri</th>
-                                                        <td class="px-3 py-1">{{ $data->createdBy->fullname }}</td>
+                                                        <td class="px-3 py-1">
+                                                            @if($data->createdBy)
+                                                                {{ $data->createdBy->fullname }}
+                                                                @if($data->createdBy->Jabatan)
+                                                                    <small class="text-muted d-block">{{ $data->createdBy->Jabatan }}</small>
+                                                                @endif
+                                                            @else
+                                                                {{ $data->created_by ? 'ID: ' . $data->created_by : '-' }}
+                                                            @endif
+                                                        </td>
                                                     </tr>
+                                                    @if($data->jumlah_lampiran)
+                                                    <tr>
+                                                        <th class="px-3 py-1">Jumlah Lampiran</th>
+                                                        <td class="px-3 py-1">
+                                                            {{ $data->jumlah_lampiran }}
+                                                        </td>
+                                                    </tr>
+                                                    @endif
                                                     <tr>
                                                         <th class="px-3 py-1">Lampiran</th>
-                                                        <td class="px-3 py-1">{{ $data->lampiran ?? '-' }}</td>
+                                                        <td class="px-3 py-1">
+                                                            @if($data->lampiran)
+                                                                <div class="text-wrap">{{ $data->lampiran }}</div>
+                                                            @else
+                                                                -
+                                                            @endif
+                                                        </td>
                                                     </tr>
+                                                    @if($data->isi)
+                                                    <tr>
+                                                        <th class="px-3 py-1">Isi Surat</th>
+                                                        <td class="px-3 py-1">
+                                                            <div style="max-height: 150px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5;">
+                                                                {!! nl2br(e($data->isi)) !!}
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    @endif
+                                                    @if($data->tgl_diarahkan)
+                                                    <tr>
+                                                        <th class="px-3 py-1">Tanggal Diarahkan</th>
+                                                        <td class="px-3 py-1">
+                                                            {{ date('d-m-Y', strtotime($data->tgl_diarahkan)) }}
+                                                        </td>
+                                                    </tr>
+                                                    @endif
+                                                    @if($data->terdisposisi)
+                                                    <tr>
+                                                        <th class="px-3 py-1">Status Disposisi</th>
+                                                        <td class="px-3 py-1">
+                                                            Sudah Didisposisi
+                                                        </td>
+                                                    </tr>
+                                                    @endif
                                                 </table>
                                             </div>
                                         </td>
@@ -458,7 +599,7 @@
                                         onclick="scan('default');" id="scan_btn">Scan File</button>
                                     <div class="d-flex justify-content-between align-items-center mb-3">
                                         <button type="submit"
-                                            class="btn btn-warning btn-sm d-lg-inline-flex align-items-center b-r-22">
+                                            class="btn btn-save-scan btn-sm d-lg-inline-flex align-items-center b-r-22">
                                             <i class="fa fa-save me-1"></i>Simpan File Scan
                                         </button>
                                         <div class="d-flex gap-2">
