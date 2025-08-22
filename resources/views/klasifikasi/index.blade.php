@@ -107,7 +107,7 @@
     {!! $dataTable->scripts(attributes: ['type' => 'module']) !!}
     <script>
         $(document).ready(function() {
-            // Inisialisasi select2 untuk dropdown filter dengan error handling
+
             try {
                 $('#filterKodeUtama').select2({
                     width: 'resolve',
@@ -119,7 +119,7 @@
                 console.warn('Select2 initialization failed:', error);
             }
 
-            // Get the DataTable instance with error handling
+
             var table;
             try {
                 table = window.LaravelDataTables['masterklasifikasi-table'];
@@ -133,62 +133,112 @@
                 console.error('DataTable initialization error:', error);
             }
 
-            // Event klik row (kecuali tombol di dalam row)
-$('#masterklasifikasi-table tbody').on('click', 'tr', function(e) {
-    try {
-        // kalau yang diklik adalah tombol (Edit/Hapus), abaikan
-        if ($(e.target).closest('button').length > 0) return;
 
-        let row = $(this);
-        let rowId = row.attr('id'); // karena pakai ->setRowId('id')
+            $('#masterklasifikasi-table tbody').on('click', 'tr', function(e) {
+                try {
 
-        if (!rowId) return;
+                    if ($(e.target).closest('button').length > 0) return;
 
-        // kalau row sudah selected → deselect
-        if (row.hasClass('selected')) {
-            row.removeClass('selected');
-            $('#actionButtons').addClass('d-none');
-            $('#actionButtons').data('selectedId', null);
-        } else {
-            // clear semua row lain
-            $('#masterklasifikasi-table tbody tr').removeClass('selected');
-            // select row ini
-            row.addClass('selected');
-            $('#actionButtons').removeClass('d-none');
-            $('#actionButtons').data('selectedId', rowId);
-        }
-    } catch (error) {
-        console.error('Row click error:', error);
-    }
-});
+                    let row = $(this);
+                    let rowId = row.attr('id');
 
-// Aksi tombol Edit/Hapus pakai selectedId
-$('#editBtn').on('click', function() {
-    let id = $('#actionButtons').data('selectedId');
-    if (!id) {
-        alert('Tidak ada data yang dipilih!');
-        return;
-    }
-    $('.btnEdit[data-id="'+id+'"]').trigger('click');
-});
-
-$('#deleteBtn').on('click', function() {
-    let id = $('#actionButtons').data('selectedId');
-    if (!id) {
-        alert('Tidak ada data yang dipilih!');
-        return;
-    }
-    $('.btnHapus[data-id="'+id+'"]').trigger('click');
-});
+                    if (!rowId) return;
 
 
-            // Filter kode utama dengan error handling
+                    if (row.hasClass('selected')) {
+                        row.removeClass('selected');
+                        $('#actionButtons').addClass('d-none');
+                        $('#actionButtons').data('selectedId', null);
+                    } else {
+
+                        $('#masterklasifikasi-table tbody tr').removeClass('selected');
+                        row.addClass('selected');
+                        $('#actionButtons').removeClass('d-none');
+                        $('#actionButtons').data('selectedId', rowId);
+                    }
+                } catch (error) {
+                    console.error('Row click error:', error);
+                }
+            });
+
+            $('#editBtn').on('click', function() {
+                let id = $('#actionButtons').data('selectedId');
+                if (!id) {
+                    alert('Tidak ada data yang dipilih!');
+                    return;
+                }
+
+                $.get('/klasifikasi/' + id, function(res) {
+                    if (res.success) {
+                        let d = res.data;
+                        $('#modalTitle').text('Edit Klasifikasi');
+                        $('#klasifikasi_id').val(d.id);
+                        $('[name=kodeklasifikasi]').val(d.kodeklasifikasi);
+                        $('[name=klasifikasi]').val(d.klasifikasi);
+                        $('[name=retensi_aktif]').val(d.retensi_aktif);
+                        $('[name=retensi_inaktif]').val(d.retensi_inaktif);
+                        $('[name=keterangan]').val(d.keterangan);
+                        $('[name=retensi]').val(d.retensi);
+                        $('[name=parent]').val(d.parent);
+                        $('#modalKlasifikasi').modal('show');
+                    } else {
+                        alert('Data tidak ditemukan!');
+                    }
+                }).fail(function() {
+                    alert('Gagal mengambil data!');
+                });
+            });
+
+            $('#deleteBtn').on('click', function() {
+                let id = $('#actionButtons').data('selectedId');
+                if (!id) {
+                    alert('Tidak ada data yang dipilih!');
+                    return;
+                }
+
+                if (!confirm('Yakin hapus data?')) {
+                    return;
+                }
+
+                $.ajax({
+                    url: '/klasifikasi/' + id,
+                    type: 'POST',
+                    data: {
+                        _method: 'DELETE',
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            $('#modalKlasifikasi').modal('hide');
+                            if (table && table.ajax) {
+                                table.ajax.reload(null, false);
+                            }
+                            alert('Data berhasil dihapus!');
+                            // reset action button
+                            $('#actionButtons').addClass('d-none').data('selectedId', null);
+                        } else if (res.message) {
+                            alert(res.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error('Delete request failed:', xhr);
+                        let msg = 'Gagal hapus data!';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            let errors = xhr.responseJSON.errors;
+                            msg = Object.values(errors).flat()[0];
+                        }
+                        alert(msg);
+                    }
+                });
+            });
+
             $('#filterKodeUtama').on('change', function() {
                 try {
                     var filterValue = $(this).val();
 
                     if (table && table.settings && table.ajax) {
-                        // Use the built-in DataTable AJAX functionality with additional data
                         table.settings()[0].ajax.data = function(d) {
                             d.filter_kode = filterValue;
                             return d;
@@ -203,7 +253,6 @@ $('#deleteBtn').on('click', function() {
                 }
             });
 
-            // Tambah dengan error handling
             $('#btnTambah').click(function() {
                 try {
                     $('#formKlasifikasi')[0].reset();
@@ -215,7 +264,6 @@ $('#deleteBtn').on('click', function() {
                 }
             });
 
-            // Edit pakai event delegation dengan error handling
             $(document).on('click', '.btnEdit', function() {
                 try {
                     let id = $(this).data('id');
@@ -250,7 +298,6 @@ $('#deleteBtn').on('click', function() {
                 }
             });
 
-            // Hapus pakai event delegation dengan error handling
             $(document).on('click', '.btnHapus', function() {
                 try {
                     if (confirm('Yakin hapus data?')) {
@@ -297,7 +344,6 @@ $('#deleteBtn').on('click', function() {
                 }
             });
 
-            // Simpan (tambah/edit) dengan error handling
             $('#formKlasifikasi').submit(function(e) {
                 try {
                     e.preventDefault();
@@ -421,77 +467,85 @@ $('#deleteBtn').on('click', function() {
         }
 
         .dataTables_wrapper .dataTables_paginate {
-        margin: 10px 0;
-    }
+            margin: 10px 0;
+        }
 
         .dataTables_wrapper .dataTables_info {
             margin-top: 10px;
             color: #6c757d;
             margin-left: 0;
         }
+
         .dataTables_wrapper {
-        position: relative;
-        overflow: visible;
-    }
+            position: relative;
+            overflow: visible;
+        }
 
-    .dataTables_scroll {
-        overflow: visible;
-    }
+        .dataTables_scroll {
+            overflow: visible;
+        }
 
-    .dataTables_scrollHead {
-        overflow: visible;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background-color: white;
-    }
-    .dataTables_scrollHeadInner {
-        box-sizing: content-box;
-    }
+        .dataTables_scrollHead {
+            overflow: visible;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: white;
+        }
 
-    .dataTables_scrollHeadInner table {
-        margin-bottom: 0 !important;
-    }
+        .dataTables_scrollHeadInner {
+            box-sizing: content-box;
+        }
 
-    .dataTables_scrollBody {
-        overflow: auto;
-        max-height: 60vh;
-    }
+        .dataTables_scrollHeadInner table {
+            margin-bottom: 0 !important;
+        }
 
-    /* Table wrapper optimization */
-    .table-responsive {
-    height: calc(100vh - min(20vh, 200px));
-    overflow: auto;
-}
+        .dataTables_scrollBody {
+            overflow: auto;
+            max-height: 60vh;
+        }
 
-#masterklasifikasi-table {
-        table-layout: fixed;
-        width: 100%;
-    }
-    .dataTables_wrapper .row:last-child {
-        position: sticky;
-        bottom: 0;
-        background-color: white;
-        padding: 10px 0;
-        border-top: 1px solid #dee2e6;
-        z-index: 0;
-        margin: 0;
-        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-    }
+        /* Table wrapper optimization */
+        .table-responsive {
+            height: calc(100vh - min(20vh, 200px));
+            overflow: auto;
+        }
+
+        #masterklasifikasi-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .dataTables_wrapper .row:last-child {
+            position: sticky;
+            bottom: 0;
+            background-color: white;
+            padding: 10px 0;
+            border-top: 1px solid #dee2e6;
+            z-index: 0;
+            margin: 0;
+            box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+        }
+
         #masterklasifikasi-table tbody td {
             padding: 8px !important;
             vertical-align: middle;
         }
+
         #masterklasifikasi-table tbody tr {
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
+
         #masterklasifikasi-table tbody tr:hover {
             background-color: #f8f9fa !important;
         }
+
         #masterklasifikasi-table tbody tr.selected {
             background-color: #d1ecf1 !important;
         }
+
         .action-buttons {
             transition: all 0.3s ease;
         }
@@ -499,11 +553,13 @@ $('#deleteBtn').on('click', function() {
         .action-buttons.show {
             animation: fadeInScale 0.3s ease;
         }
+
         @keyframes fadeInScale {
             from {
                 opacity: 0;
                 transform: scale(0.8);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
