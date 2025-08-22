@@ -124,37 +124,48 @@
             // Tampilkan loading
             document.getElementById('scanLoading').style.display = 'flex';
 
-            // Set timeout untuk deteksi software scanner
+            // Set timeout HANYA untuk deteksi jika scanner software tidak ada
             var scanTimeout = setTimeout(function() {
-                // Jika loading masih tampil setelah 8 detik, kemungkinan software belum terinstall
                 var loadingElement = document.getElementById('scanLoading');
-                if (loadingElement && loadingElement.style.display === 'flex') {
-                    // Sembunyikan loading
+                
+                // Cek apakah masih loading DAN belum ada tanda sukses
+                if (loadingElement && loadingElement.style.display === 'flex' && !window.scanSuccessful) {
                     loadingElement.style.display = 'none';
                     
-                    // Clear timeout untuk mencegah double call
+                    // Clear timeout
                     if (window.currentScanTimeout) {
                         clearTimeout(window.currentScanTimeout);
                         window.currentScanTimeout = null;
                     }
                     
-                    log("Timeout: Scanner tidak merespons dalam 8 detik", true);
-                    // Tampilkan modal peringatan untuk timeout
+                    log("TIMEOUT: Scanner tidak merespons dalam 10 detik - kemungkinan software belum terinstall", true);
                     showScannerInstallModal();
+                } else {
+                    // Jika sudah sukses atau loading sudah hilang, jangan tampilkan modal
+                    log("Timeout reached but scan was successful or completed - no modal needed");
                 }
-            }, 8000); // 8 detik timeout
+            }, 10000); // Naikkan jadi 10 detik untuk memberi waktu lebih
 
-            // Store timeout ID untuk bisa di-clear jika scan berhasil
+            // Store timeout ID
             window.currentScanTimeout = scanTimeout;
 
             scanRequest.source_name = sourceName;
-            log("Attempts to scan with source = " + scanRequest.source_name + " ...");
-            scanner.scan(handleScanResult, scanRequest);
+            log("Memulai scan dengan source = " + scanRequest.source_name + " ...");
+            
+            try {
+                scanner.scan(handleScanResult, scanRequest);
+            } catch (error) {
+                // Jika error saat memanggil scanner.scan, berarti software tidak ada
+                log("ERROR: Scanner software tidak ditemukan - " + error, true);
+                clearTimeout(scanTimeout);
+                document.getElementById('scanLoading').style.display = 'none';
+                showScannerInstallModal();
+            }
         }
 
         /** Checks response before parsing and performs fallback scanning if possible. */
         function handleScanResult(successful, mesg, response) {
-            // Clear timeout jika scan berhasil/selesai
+            // PENTING: Clear timeout SEGERA saat dapat response apapun
             if (window.currentScanTimeout) {
                 clearTimeout(window.currentScanTimeout);
                 window.currentScanTimeout = null;
@@ -163,53 +174,56 @@
             // Sembunyikan loading
             document.getElementById('scanLoading').style.display = 'none';
 
-            var errorMesg = successful ? undefined : mesg;
-            var isScanSuccessful = false;
+            // Cek user cancel PERTAMA - ini yang paling penting
+            if (mesg != null && mesg.toLowerCase().indexOf('user cancel') >= 0) {
+                log("User cancelled scan - tidak perlu modal");
+                window.scanSuccessful = true; // Set flag agar modal tidak muncul
+                return; // Keluar langsung tanpa proses lain
+            }
 
+            // Cek jika successful dan ada response
             if (successful && response != null) {
-                var responseAsJson = JSON.parse(response);
-                if (responseAsJson != null && responseAsJson.image_count == 0 && responseAsJson.last_transfer_rc ==
-                    "TWRC_FAILURE") {
-                    errorMesg = "Device failure";
-                } else if (responseAsJson != null && responseAsJson.image_count > 0) {
-                    // Scan berhasil jika ada gambar yang di-scan
-                    isScanSuccessful = true;
-                    try {
-                        displayImagesOnPage(successful, mesg, response);
-                    } catch (exp) {
-                        errorMesg = exp;
-                        isScanSuccessful = false;
+                try {
+                    var responseAsJson = JSON.parse(response);
+                    
+                    // Jika ada response JSON valid, berarti scanner terhubung
+                    if (responseAsJson != null) {
+                        window.scanSuccessful = true; // Scanner terhubung
+                        log("Scanner connected successfully");
+                        
+                        // Cek apakah ada gambar atau tidak
+                        if (responseAsJson.image_count > 0) {
+                            log("Images captured: " + responseAsJson.image_count);
+                            displayImagesOnPage(successful, mesg, response);
+                        } else {
+                            log("No images captured but scanner is working");
+                            // Tetap anggap berhasil karena scanner bisa diakses
+                        }
+                        return; // Keluar dengan sukses
                     }
-                } else {
-                    try {
-                        displayImagesOnPage(successful, mesg, response);
-                        // Jika displayImagesOnPage tidak error, anggap berhasil
-                        isScanSuccessful = true;
-                    } catch (exp) {
-                        errorMesg = exp;
-                    }
+                } catch (exp) {
+                    log("Error parsing response: " + exp, true);
                 }
             }
 
-            // Cek jika user cancel - ini bukan error software
-            if (successful && mesg != null && mesg.toLowerCase().indexOf('user cancel') >= 0) {
-                log("User cancelled scan");
-                return; // Keluar tanpa error atau modal
-            }
-
-            // Hanya tampilkan modal jika benar-benar error dan bukan karena user cancel
-            if (errorMesg && !isScanSuccessful) {
-                log("Error occurred when scanning with source = " + scanRequest.source_name + ": " + errorMesg, true);
-                if (scanRequest.source_name == 'default') { // fall back to select
-                    log("Failed to scan with source = " + scanRequest.source_name + "; attempt source = 'select' ...");
+            // Jika successful false dan ada error message
+            if (!successful && mesg) {
+                log("Scan failed: " + mesg, true);
+                
+                // Jika masih default, coba select
+                if (scanRequest.source_name == 'default') {
+                    log("Retrying with source select...");
                     scan('select');
-                } else { // report final error here ...
-                    log("Fatal error: Failed to scan (tried both default and select)", true);
-                    // Tampilkan modal hanya jika benar-benar gagal total
+                    return;
+                } else {
+                    // Sudah coba keduanya, tampilkan modal
+                    log("Both default and select failed - showing modal", true);
                     showScannerInstallModal();
                 }
-            } else if (isScanSuccessful) {
-                log("Scan succeeds with source = " + scanRequest.source_name);
+            } else if (successful) {
+                // Successful tapi response kosong/null
+                window.scanSuccessful = true;
+                log("Scan completed successfully");
             }
         }
 
@@ -228,15 +242,20 @@
         function displayImagesOnPage(successful, mesg, response) {
             var loading = document.getElementById('scanLoading');
             
+            // Set flag sukses SEGERA
+            window.scanSuccessful = true;
+            
             if (!successful) { // On error
                 console.error('Failed: ' + mesg);
                 if (loading) loading.style.display = 'none';
+                window.scanSuccessful = false; // Reset karena gagal
                 return false; // Return false untuk menandakan gagal
             }
 
             if (successful && mesg != null && mesg.toLowerCase().indexOf('user cancel') >= 0) { // User cancelled.
                 console.info('User cancelled');
                 if (loading) loading.style.display = 'none';
+                window.scanSuccessful = true; // User cancel tetap dianggap sukses (bukan error software)
                 return false; // Return false karena user cancel (bukan error)
             }
 
@@ -246,7 +265,7 @@
                 sliderContainer.innerHTML = '';
             }
             
-            var scannedImages = scanner.getScannedImages(response, true, false); // returns an array of ScannedImage
+            var scannedImages = scanner.getScannedImages(response, true, false);
             var hasImages = false;
             
             for (var i = 0; (scannedImages instanceof Array) && i < scannedImages.length; i++) {
@@ -258,10 +277,17 @@
             // Inisialisasi slider setelah gambar ditambahkan
             if (hasImages) {
                 initImageSlider();
+                log("Scan berhasil! " + scannedImages.length + " gambar di-scan");
+            } else {
+                log("Scan selesai tapi tidak ada gambar");
             }
             
             if (loading) loading.style.display = 'none';
-            return hasImages; // Return true jika ada gambar yang berhasil di-scan
+            
+            // PENTING: Set flag sukses untuk mencegah modal timeout
+            window.scanSuccessful = true;
+            
+            return hasImages;
         }
 
         /** Images scanned so far. */
@@ -269,8 +295,14 @@
 
         /** Processes a ScannedImage */
         function processScannedImage(scannedImage) {
-            // Mark scan as successful untuk mencegah modal muncul
+            // PENTING: Mark scan as successful SEGERA untuk mencegah modal muncul
             window.scanSuccessful = true;
+            
+            // Clear timeout jika ada untuk mencegah modal timeout
+            if (window.currentScanTimeout) {
+                clearTimeout(window.currentScanTimeout);
+                window.currentScanTimeout = null;
+            }
             
             imagesScanned.push(scannedImage);
             var elementImg = scanner.createDomElementFromModel({
@@ -316,6 +348,8 @@
             if (scanBtn) scanBtn.remove();
             var loading = document.getElementById('scanLoading');
             if (loading) loading.style.display = 'none';
+            
+            log("Gambar berhasil diproses dan ditambahkan ke slider");
         }
 
         /** Initialize image slider */
@@ -346,10 +380,15 @@
 
         /** Show scanner install modal */
         function showScannerInstallModal() {
-            // Log untuk debugging
-            log("Menampilkan modal instalasi scanner", true);
+            // Cek dulu apakah scan sudah berhasil - jika ya, jangan tampilkan modal
+            if (window.scanSuccessful) {
+                log("Modal dibatalkan karena scan sudah berhasil");
+                return;
+            }
             
-            // Buat modal menggunakan Bootstrap modal atau alert sederhana
+            // Log untuk debugging
+            log("Menampilkan modal instalasi scanner karena benar-benar gagal", true);
+            
             var modal = document.getElementById('scannerInstallModal');
             if (modal) {
                 try {
@@ -364,6 +403,7 @@
                         // Fallback manual jika Bootstrap tidak tersedia
                         modal.style.display = 'block';
                         modal.classList.add('show');
+                        modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
                     }
                 } catch (e) {
                     console.error('Error showing modal:', e);
