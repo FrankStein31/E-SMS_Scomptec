@@ -389,11 +389,11 @@ class EntriSuratController extends Controller
         $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
 
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        
+
         // Set default font
         $phpWord->setDefaultFontName('Times New Roman');
         $phpWord->setDefaultFontSize(12);
-        
+
         // Section dengan margin yang sesuai untuk cetak A4
         $section = $phpWord->addSection([
             'marginTop' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
@@ -414,7 +414,7 @@ class EntriSuratController extends Controller
         // Header: Logo Jawa Timur + Kop Surat
         $headerTable = $section->addTable('HeaderTable');
         $headerTable->addRow();
-        
+
         // Logo cell - prioritas logo Jawa Timur
         $logoCell = $headerTable->addCell(1800, ['valign' => 'center']);
         $logoPath = public_path('assets/images/logo/logo_jatim.png'); // Logo Jawa Timur yang ada
@@ -440,29 +440,34 @@ class EntriSuratController extends Controller
             'borderBottomSize' => 18,
             'borderBottomColor' => '000000'
         ]);
-        
-        $kopCell->addText('PEMERINTAH PROVINSI JAWA TIMUR', 
-            ['bold' => true, 'size' => 16, 'color' => '000000'], 
+
+        $kopCell->addText(
+            'PEMERINTAH PROVINSI JAWA TIMUR',
+            ['bold' => true, 'size' => 16, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 40]
         );
-        $kopCell->addText('SEKRETARIAT DAERAH', 
-            ['bold' => true, 'size' => 14, 'color' => '000000'], 
+        $kopCell->addText(
+            'SEKRETARIAT DAERAH',
+            ['bold' => true, 'size' => 14, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 40]
         );
-        $kopCell->addText('Jl. Pahlawan No. 110, Surabaya 60176', 
-            ['size' => 11, 'color' => '000000'], 
+        $kopCell->addText(
+            'Jl. Pahlawan No. 110, Surabaya 60176',
+            ['size' => 11, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 20]
         );
-        $kopCell->addText('Telp. (031) 3524001 - 11, Pswt. 1467-1465-1489', 
-            ['size' => 11, 'color' => '000000'], 
+        $kopCell->addText(
+            'Telp. (031) 3524001 - 11, Pswt. 1467-1465-1489',
+            ['size' => 11, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 20]
         );
 
         $section->addTextBreak(2);
 
         // Judul
-        $section->addText('TANDA PENERIMAAN SURAT', 
-            ['bold' => true, 'size' => 14, 'underline' => 'single', 'color' => '000000'], 
+        $section->addText(
+            'TANDA PENERIMAAN SURAT',
+            ['bold' => true, 'size' => 14, 'underline' => 'single', 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 300]
         );
 
@@ -476,27 +481,27 @@ class EntriSuratController extends Controller
 
         // Tabel info surat
         $table = $section->addTable('InfoTable');
-        
+
         $table->addRow();
         $table->addCell(3500)->addText('Telah Terima Surat dari', ['size' => 12], ['spaceAfter' => 0]);
         $table->addCell(300)->addText(':', ['size' => 12], ['spaceAfter' => 0]);
         $table->addCell(6000)->addText($data->dari ?? '-', ['size' => 12], ['spaceAfter' => 0]);
-        
+
         $table->addRow();
         $table->addCell(3500)->addText('Tanggal', ['size' => 12], ['spaceAfter' => 0]);
         $table->addCell(300)->addText(':', ['size' => 12], ['spaceAfter' => 0]);
         $table->addCell(6000)->addText($data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : '-', ['size' => 12], ['spaceAfter' => 0]);
-        
+
         $table->addRow();
         $table->addCell(3500)->addText('Nomor Surat', ['size' => 12], ['spaceAfter' => 0]);
         $table->addCell(300)->addText(':', ['size' => 12], ['spaceAfter' => 0]);
         $table->addCell(6000)->addText($data->nomor_surat ?? '-', ['size' => 12], ['spaceAfter' => 0]);
-        
+
         $table->addRow();
         $table->addCell(3500)->addText('Perihal', ['size' => 12], ['spaceAfter' => 0]);
         $table->addCell(300)->addText(':', ['size' => 12], ['spaceAfter' => 0]);
         $table->addCell(6000)->addText($data->hal ?? '-', ['size' => 12], ['spaceAfter' => 0]);
-        
+
         $table->addRow();
         $table->addCell(3500)->addText('Diterima', ['size' => 12], ['spaceAfter' => 0]);
         $table->addCell(300)->addText(':', ['size' => 12], ['spaceAfter' => 0]);
@@ -512,30 +517,34 @@ class EntriSuratController extends Controller
         $footerTable->addRow();
         $footerTable->addCell(4000); // Empty left cell
         $footerCell = $footerTable->addCell(5000);
-        
-        $footerCell->addText('Surabaya, ' . ($data->tgl_diterima ? date('d F Y', strtotime($data->tgl_diterima)) : date('d F Y')), 
-            ['size' => 12], 
+
+        $footerCell->addText(
+            'Surabaya, ' . ($data->tgl_diterima ? date('d F Y', strtotime($data->tgl_diterima)) : date('d F Y')),
+            ['size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        $footerCell->addText('PENERIMA', 
-            ['size' => 12, 'bold' => true], 
+        $footerCell->addText(
+            'PENERIMA',
+            ['size' => 12, 'bold' => true],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        
+
         $footerCell->addTextBreak(3);
-        
-        $footerCell->addText($data->createdBy->fullname ?? 'PETUGAS ADMINISTRASI', 
-            ['bold' => true, 'underline' => 'single', 'size' => 12], 
+
+        $footerCell->addText(
+            $data->createdBy->fullname ?? 'PETUGAS ADMINISTRASI',
+            ['bold' => true, 'underline' => 'single', 'size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        $footerCell->addText('NIP. ........................................', 
-            ['size' => 11], 
+        $footerCell->addText(
+            'NIP. ........................................',
+            ['size' => 11],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
 
         // Generate filename yang aman
         $fileName = 'Tanda_Terima_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Surat') . '_' . date('Y-m-d') . '.docx';
-        
+
         $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
@@ -551,7 +560,7 @@ class EntriSuratController extends Controller
         $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
 
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        
+
         // Set default font untuk look yang profesional
         $phpWord->setDefaultFontName('Times New Roman');
         $phpWord->setDefaultFontSize(12);
@@ -560,7 +569,7 @@ class EntriSuratController extends Controller
         $section = $phpWord->addSection([
             'marginTop' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
             'marginLeft' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(3),
-            'marginRight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5), 
+            'marginRight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
             'marginBottom' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
             'pageSizeW' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(21),
             'pageSizeH' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(29.7),
@@ -573,7 +582,7 @@ class EntriSuratController extends Controller
             'cellMargin' => 60,
             'borderSize' => 0,
         ]);
-        
+
         $phpWord->addTableStyle('MainTable', [
             'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::START,
             'cellMargin' => 80,
@@ -608,21 +617,25 @@ class EntriSuratController extends Controller
             'borderBottomSize' => 18,
             'borderBottomColor' => '000000',
         ]);
-        
-        $kopCell->addText('PEMERINTAH PROVINSI JAWA TIMUR', 
-            ['bold' => true, 'size' => 16, 'color' => '000000'], 
+
+        $kopCell->addText(
+            'PEMERINTAH PROVINSI JAWA TIMUR',
+            ['bold' => true, 'size' => 16, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 40]
         );
-        $kopCell->addText('SEKRETARIAT DAERAH', 
-            ['bold' => true, 'size' => 14, 'color' => '000000'], 
+        $kopCell->addText(
+            'SEKRETARIAT DAERAH',
+            ['bold' => true, 'size' => 14, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 40]
         );
-        $kopCell->addText('Jl. Pahlawan No. 110, Surabaya 60176', 
-            ['size' => 11, 'color' => '000000'], 
+        $kopCell->addText(
+            'Jl. Pahlawan No. 110, Surabaya 60176',
+            ['size' => 11, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 20]
         );
-        $kopCell->addText('Telp. (031) 3524001 - 11, Pswt. 1467-1465-1489', 
-            ['size' => 11, 'color' => '000000'], 
+        $kopCell->addText(
+            'Telp. (031) 3524001 - 11, Pswt. 1467-1465-1489',
+            ['size' => 11, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 20]
         );
 
@@ -636,10 +649,11 @@ class EntriSuratController extends Controller
         $leftCell1 = $mainTable->addCell(5000);
         $leftCell1->addText('Nomor', ['size' => 12], ['spaceAfter' => 0]);
         $leftCell1->addText(': ' . ($data->nomor_surat ?? '-'), ['size' => 12], ['spaceAfter' => 0]);
-        
+
         $rightCell1 = $mainTable->addCell(5000);
-        $rightCell1->addText('Surabaya, ' . ($data->tgl_surat ? date('d F Y', strtotime($data->tgl_surat)) : date('d F Y')), 
-            ['size' => 12], 
+        $rightCell1->addText(
+            'Surabaya, ' . ($data->tgl_surat ? date('d F Y', strtotime($data->tgl_surat)) : date('d F Y')),
+            ['size' => 12],
             ['alignment' => 'right', 'spaceAfter' => 0]
         );
 
@@ -648,7 +662,7 @@ class EntriSuratController extends Controller
         $leftCell2 = $mainTable->addCell(5000);
         $leftCell2->addText('Klasifikasi', ['size' => 12], ['spaceAfter' => 0]);
         $leftCell2->addText(': ' . ($data->kode_klasifikasi ?? '-'), ['size' => 12], ['spaceAfter' => 0]);
-        
+
         $rightCell2 = $mainTable->addCell(5000, ['valign' => 'top']);
         $rightCell2->addText('Kepada Yth.', ['size' => 12], ['alignment' => 'right', 'spaceAfter' => 0]);
         $rightCell2->addText($data->kepada ?? '-', ['size' => 12, 'bold' => true], ['alignment' => 'right', 'spaceAfter' => 0]);
@@ -658,7 +672,7 @@ class EntriSuratController extends Controller
         $leftCell3 = $mainTable->addCell(5000);
         $leftCell3->addText('Hal', ['size' => 12], ['spaceAfter' => 0]);
         $leftCell3->addText(': ' . ($data->hal ?? '-'), ['size' => 12, 'bold' => true], ['spaceAfter' => 0]);
-        
+
         $rightCell3 = $mainTable->addCell(5000, ['valign' => 'top']);
         $rightCell3->addText('di Tempat', ['size' => 12], ['alignment' => 'right', 'spaceAfter' => 0]);
 
@@ -666,8 +680,9 @@ class EntriSuratController extends Controller
 
         // Isi surat
         if (!empty($data->isi)) {
-            $section->addText($data->isi, 
-                ['size' => 12], 
+            $section->addText(
+                $data->isi,
+                ['size' => 12],
                 ['alignment' => 'both', 'spaceAfter' => 300, 'lineHeight' => 1.5]
             );
         }
@@ -699,29 +714,33 @@ class EntriSuratController extends Controller
 
         // Tanda tangan
         $signCell = $footerTable->addCell(5000, ['valign' => 'top']);
-        $signCell->addText('a.n. GUBERNUR JAWA TIMUR', 
-            ['bold' => true, 'size' => 12], 
+        $signCell->addText(
+            'a.n. GUBERNUR JAWA TIMUR',
+            ['bold' => true, 'size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        $signCell->addText('SEKRETARIS DAERAH', 
-            ['bold' => true, 'size' => 12], 
+        $signCell->addText(
+            'SEKRETARIS DAERAH',
+            ['bold' => true, 'size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        
+
         $signCell->addTextBreak(3);
-        
-        $signCell->addText('Dr. H. HERU TJAHJONO, S.IP., M.Si.', 
-            ['bold' => true, 'underline' => 'single', 'size' => 12], 
+
+        $signCell->addText(
+            'Dr. H. HERU TJAHJONO, S.IP., M.Si.',
+            ['bold' => true, 'underline' => 'single', 'size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        $signCell->addText('NIP. 19651015 199103 1 002', 
-            ['size' => 11], 
+        $signCell->addText(
+            'NIP. 19651015 199103 1 002',
+            ['size' => 11],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
 
         // Generate filename dan download
         $fileName = 'Surat_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Tanpa_Nomor') . '_' . date('Y-m-d') . '.docx';
-        
+
         $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
@@ -739,7 +758,7 @@ class EntriSuratController extends Controller
         $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
 
         $phpWord = new \PhpOffice\PhpWord\PhpWord();
-        
+
         // Set default font untuk look yang bersih
         $phpWord->setDefaultFontName('Times New Roman');
         $phpWord->setDefaultFontSize(12);
@@ -761,7 +780,7 @@ class EntriSuratController extends Controller
             'cellMargin' => 60,
             'borderSize' => 0,
         ]);
-        
+
         $phpWord->addTableStyle('MainTable', [
             'cellMargin' => 80,
             'borderSize' => 8,
@@ -771,7 +790,7 @@ class EntriSuratController extends Controller
         // Header: Logo Jawa Timur + Kop Surat
         $headerTable = $section->addTable('HeaderTable');
         $headerTable->addRow();
-        
+
         // Logo cell dengan logo Jawa Timur
         $logoCell = $headerTable->addCell(1800, ['valign' => 'center']);
         $logoPath = public_path('assets/images/logo/logo_jatim.png'); // Logo Jawa Timur
@@ -796,29 +815,34 @@ class EntriSuratController extends Controller
             'borderBottomSize' => 18,
             'borderBottomColor' => '000000'
         ]);
-        
-        $kopCell->addText('PEMERINTAH PROVINSI JAWA TIMUR', 
-            ['bold' => true, 'size' => 16, 'color' => '000000'], 
+
+        $kopCell->addText(
+            'PEMERINTAH PROVINSI JAWA TIMUR',
+            ['bold' => true, 'size' => 16, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 40]
         );
-        $kopCell->addText('SEKRETARIAT DAERAH', 
-            ['bold' => true, 'size' => 14, 'color' => '000000'], 
+        $kopCell->addText(
+            'SEKRETARIAT DAERAH',
+            ['bold' => true, 'size' => 14, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 40]
         );
-        $kopCell->addText('Jl. Pahlawan No. 110, Surabaya 60176', 
-            ['size' => 11, 'color' => '000000'], 
+        $kopCell->addText(
+            'Jl. Pahlawan No. 110, Surabaya 60176',
+            ['size' => 11, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 20]
         );
-        $kopCell->addText('Telp. (031) 3524001 - 11, Pswt. 1467-1465-1489', 
-            ['size' => 11, 'color' => '000000'], 
+        $kopCell->addText(
+            'Telp. (031) 3524001 - 11, Pswt. 1467-1465-1489',
+            ['size' => 11, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 20]
         );
 
         $section->addTextBreak(2);
 
         // Judul
-        $section->addText('LEMBAR DISPOSISI', 
-            ['bold' => true, 'size' => 16, 'color' => '000000'], 
+        $section->addText(
+            'LEMBAR DISPOSISI',
+            ['bold' => true, 'size' => 16, 'color' => '000000'],
             ['alignment' => 'center', 'spaceAfter' => 300]
         );
 
@@ -827,12 +851,14 @@ class EntriSuratController extends Controller
 
         // Header row dengan merge
         $table->addRow();
-        $table->addCell(4000, ['gridSpan' => 2])->addText('INFORMASI SURAT MASUK', 
-            ['bold' => true, 'size' => 12], 
+        $table->addCell(4000, ['gridSpan' => 2])->addText(
+            'INFORMASI SURAT MASUK',
+            ['bold' => true, 'size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        $table->addCell(4000, ['gridSpan' => 2])->addText('INFORMASI PENERIMAAN', 
-            ['bold' => true, 'size' => 12], 
+        $table->addCell(4000, ['gridSpan' => 2])->addText(
+            'INFORMASI PENERIMAAN',
+            ['bold' => true, 'size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
 
@@ -874,8 +900,9 @@ class EntriSuratController extends Controller
         $section->addTextBreak(1);
 
         // Header Diteruskan Kepada
-        $section->addText('DITERUSKAN KEPADA:', 
-            ['bold' => true, 'size' => 12], 
+        $section->addText(
+            'DITERUSKAN KEPADA:',
+            ['bold' => true, 'size' => 12],
             ['spaceAfter' => 100]
         );
 
@@ -885,7 +912,7 @@ class EntriSuratController extends Controller
             'borderColor' => '000000',
             'cellMargin' => 100,
         ]);
-        
+
         for ($i = 1; $i <= 8; $i++) {
             $daftarTable->addRow();
             $daftarTable->addCell(500)->addText($i . '.', ['size' => 11], ['spaceAfter' => 0]);
@@ -893,20 +920,21 @@ class EntriSuratController extends Controller
         }
 
         $section->addTextBreak(1);
-        
+
         // ISI DISPOSISI section
-        $section->addText('ISI DISPOSISI / INSTRUKSI:', 
-            ['bold' => true, 'size' => 12], 
+        $section->addText(
+            'ISI DISPOSISI / INSTRUKSI:',
+            ['bold' => true, 'size' => 12],
             ['spaceAfter' => 100]
         );
 
         // ISI DISPOSISI Table dengan tinggi yang cukup
         $isiDisposisiTable = $section->addTable([
-            'borderSize' => 8, 
+            'borderSize' => 8,
             'borderColor' => '000000',
             'cellMargin' => 150,
         ]);
-        
+
         $isiDisposisiTable->addRow(\PhpOffice\PhpWord\Shared\Converter::cmToTwip(6)); // 6cm height
         $isiCell = $isiDisposisiTable->addCell(10000);
         $isiCell->addText('', ['size' => 12], ['spaceAfter' => 0]);
@@ -921,34 +949,39 @@ class EntriSuratController extends Controller
         $footerTable->addRow();
         $footerTable->addCell(4000); // Empty left cell
         $footerCell = $footerTable->addCell(5000);
-        
-        $footerCell->addText('Surabaya, ' . date('d F Y'), 
-            ['size' => 12], 
+
+        $footerCell->addText(
+            'Surabaya, ' . date('d F Y'),
+            ['size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        $footerCell->addText('a.n. GUBERNUR JAWA TIMUR', 
-            ['bold' => true, 'size' => 12], 
+        $footerCell->addText(
+            'a.n. GUBERNUR JAWA TIMUR',
+            ['bold' => true, 'size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        $footerCell->addText('SEKRETARIS DAERAH', 
-            ['size' => 12, 'bold' => true], 
+        $footerCell->addText(
+            'SEKRETARIS DAERAH',
+            ['size' => 12, 'bold' => true],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        
+
         $footerCell->addTextBreak(3);
-        
-        $footerCell->addText('Dr. H. HERU TJAHJONO, S.IP., M.Si.', 
-            ['bold' => true, 'underline' => 'single', 'size' => 12], 
+
+        $footerCell->addText(
+            'Dr. H. HERU TJAHJONO, S.IP., M.Si.',
+            ['bold' => true, 'underline' => 'single', 'size' => 12],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
-        $footerCell->addText('NIP. 19651015 199103 1 002', 
-            ['size' => 11], 
+        $footerCell->addText(
+            'NIP. 19651015 199103 1 002',
+            ['size' => 11],
             ['alignment' => 'center', 'spaceAfter' => 0]
         );
 
         // Generate filename yang aman
         $fileName = 'Disposisi_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Tanpa_Nomor') . '_' . date('Y-m-d') . '.docx';
-        
+
         $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
