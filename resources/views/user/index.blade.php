@@ -34,12 +34,22 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
+                                    <h5>Daftar User</h5>
                                 </div>
                                 <div class="col text-end">
+                                    <!-- Action Buttons for Selected Row -->
+                                    <div id="actionButtons" class="action-buttons d-none me-2">
+                                        <button id="editBtn" class="btn btn-warning btn-sm b-r-22 me-1">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </button>
+                                        <button id="deleteBtn" class="btn btn-danger btn-sm b-r-22 me-1">
+                                            <i class="fas fa-trash"></i> Hapus
+                                        </button>
+                                    </div>
                                     <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                    <button type="button" class="btn btn-primary btn-sm b-r-22" data-bs-toggle="modal"
                                         data-bs-target="#exampleModal">
-                                        + Tambah
+                                        <i class="iconoir-plus"></i> Tambah User
                                     </button>
 
                                     <!-- Modal -->
@@ -127,26 +137,20 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="card">
-                                <!-- /.card-header -->
-                                <div class="card-body">
-                                    <div class="row mb-2">
-                                        <div class="col-md-4">
-                                        <label class="input-group-text" for="group">User Group</label>
-                                            <select id="filterJabatan" class="form-select">
-                                                <option value="">-- Semua Jabatan --</option>
-                                                @foreach($userGroups as $ug)
-                                                    <option value="{{ $ug }}">{{ $ug }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    </div>
-                                    {{ $dataTable->table(['id' => 'tabelUser']) }}
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="input-group-text" for="group">User Group</label>
+                                    <select id="filterJabatan" class="form-select form-select-sm">
+                                        <option value="">-- Semua Jabatan --</option>
+                                        @foreach($userGroups as $ug)
+                                            <option value="{{ $ug }}">{{ $ug }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                                <!-- /.card-body -->
                             </div>
-                            <!-- /.card -->
-                            <!-- /.card -->
+                            <div class="table-responsive">
+                                {{ $dataTable->table(['id' => 'tabelUser']) }}
+                            </div>
                         </div>
                     </div>
                     <!-- Default Card end -->
@@ -251,13 +255,266 @@
 
 @push('scripts')
     {{ $dataTable->scripts(attributes: ['type' => 'module']) }}
+    
+    <style>
+        /* Sticky Table Container */
+        .dataTables_wrapper {
+            position: relative;
+        }
+        
+        /* DataTables Scroll Configuration */
+        .dataTables_scroll {
+            overflow: visible;
+        }
+        
+        .dataTables_scrollHead {
+            overflow: visible;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background-color: white;
+        }
+        
+        .dataTables_scrollHeadInner {
+            box-sizing: content-box;
+        }
+        
+        .dataTables_scrollHeadInner table {
+            margin-bottom: 0 !important;
+        }
+        
+        .dataTables_scrollBody {
+            overflow: auto;
+            max-height: 60vh;
+        }
+        
+        /* Remove conflicting sticky header styles */
+        #users-table thead th,
+        #tabelUser thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            position: relative;
+        }
+        
+        /* Sticky Pagination */
+        .dataTables_wrapper .row:last-child {
+            position: sticky;
+            bottom: 0;
+            background-color: white;
+            padding: 10px 0;
+            border-top: 1px solid #dee2e6;
+            z-index: 5;
+            margin: 0;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Table wrapper optimization */
+        .table-responsive {
+            height: calc(100vh - 300px);
+            position: relative;
+            overflow: visible;
+        }
+        
+        /* Ensure table columns maintain consistent width */
+        #users-table,
+        #tabelUser {
+            table-layout: fixed;
+            width: 100%;
+        }
+        
+        /* Sync scroll between header and body */
+        .dataTables_wrapper {
+            overflow: visible;
+        }
+        
+        /* Compact table rows */
+        #users-table tbody td,
+        #tabelUser tbody td {
+            padding: 8px !important;
+            vertical-align: middle;
+        }
+        
+        /* Optimize header height */
+        #users-table thead th,
+        #tabelUser thead th {
+            padding: 10px 8px !important;
+        }
+        
+        /* Row Selection Styling */
+        #users-table tbody tr,
+        #tabelUser tbody tr {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        #users-table tbody tr:hover,
+        #tabelUser tbody tr:hover {
+            background-color: #f8f9fa !important;
+        }
+        
+        #users-table tbody tr.selected,
+        #tabelUser tbody tr.selected {
+            background-color: #d1ecf1 !important;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            transition: all 0.3s ease;
+        }
+        
+        .action-buttons.show {
+            animation: fadeInScale 0.3s ease;
+        }
+        
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
     <script>
-    $(function(){
+    $(document).ready(function(){
         // Filter jabatan
         $('#filterJabatan').on('change', function(){
             let val = $(this).val();
-            window.LaravelDataTables['tabelUser'].column('jabatan:name').search(val).draw();
+            if (window.LaravelDataTables && window.LaravelDataTables['tabelUser']) {
+                window.LaravelDataTables['tabelUser'].ajax.url('?jabatan='+val).load();
+            }
         });
+        
+        // Wait for DataTable to load then add click events
+        function initializeTableInteractions() {
+            try {
+                console.log('Initializing user table interactions...');
+                
+                // Sync horizontal scroll between header and body
+                $('.dataTables_scrollBody').on('scroll', function() {
+                    try {
+                        var scrollLeft = $(this).scrollLeft();
+                        $('.dataTables_scrollHead').scrollLeft(scrollLeft);
+                    } catch (error) {
+                        console.warn('Scroll sync error:', error);
+                    }
+                });
+                
+                // Try both possible table IDs
+                var tableSelector = '#tabelUser tbody tr, #users-table tbody tr';
+                
+                // Remove any existing handlers
+                $(document).off('click', tableSelector);
+                
+                // Add click handler for row selection
+                $(document).on('click', tableSelector, function(e) {
+                    try {
+                        console.log('User row clicked!', this);
+                        
+                        // Prevent action if clicking on buttons
+                        if ($(e.target).closest('.btn').length) {
+                            console.log('Button clicked, ignoring...');
+                            return;
+                        }
+                        
+                        var clickedRow = $(this);
+                        var rowId = clickedRow.attr('id');
+                        
+                        // Toggle selection on same row, clear others
+                        if (clickedRow.hasClass('selected')) {
+                            // If clicking the same selected row, deselect it
+                            clickedRow.removeClass('selected');
+                            $('#actionButtons').removeClass('show d-inline-block').addClass('d-none');
+                            console.log('User row deselected');
+                        } else {
+                            // Clear all selections first, then select clicked row
+                            $('#tabelUser tbody tr, #users-table tbody tr').removeClass('selected');
+                            clickedRow.addClass('selected');
+                            
+                            // Show action buttons with animation
+                            $('#actionButtons').removeClass('d-none').addClass('d-inline-block show');
+                            
+                            // Store selected row ID for action buttons
+                            $('#actionButtons').data('selectedId', rowId);
+                            
+                            console.log('User row selected, ID:', rowId);
+                        }
+                    } catch (error) {
+                        console.error('User row click handler error:', error);
+                    }
+                });
+            } catch (error) {
+                console.error('User table initialization error:', error);
+            }
+        }
+        
+        // Initialize with delays to ensure proper loading
+        setTimeout(initializeTableInteractions, 1000);
+        setTimeout(initializeTableInteractions, 3000);
+        
+        // Action button handlers
+        $(document).on('click', '#editBtn', function() {
+            try {
+                var selectedId = $('#actionButtons').data('selectedId');
+                if (selectedId) {
+                    console.log('Edit button clicked for user ID:', selectedId);
+                    // Get user data and show edit modal
+                    $.get('/user?id='+selectedId, function(data){
+                        $('#exampleModal2 #username').val(data.username);
+                        $('#exampleModal2 #fullname').val(data.fullname);
+                        $('#exampleModal2 #nip').val(data.nip);
+                        $('#exampleModal2 #pangkat').val(data.pangkat);
+                        $('#exampleModal2 #jabatan').val(data.jabatan);
+                        $('#exampleModal2 #satkerid2').val(data.satkerid).trigger('change');
+                        $('#exampleModal2 #email').val(data.email);
+                        $('#exampleModal2 form').attr('action', '/user/'+data.id);
+                        $('#exampleModal2').modal('show');
+                    });
+                }
+            } catch (error) {
+                console.error('Edit button error:', error);
+            }
+        });
+        
+        $(document).on('click', '#deleteBtn', function() {
+            try {
+                var selectedId = $('#actionButtons').data('selectedId');
+                if (selectedId) {
+                    if (confirm('Apakah Anda yakin ingin menghapus user ini?')) {
+                        console.log('Delete button clicked for user ID:', selectedId);
+                        $.ajax({
+                            url: '/user/'+selectedId,
+                            type: 'POST',
+                            data: {_method: 'DELETE', _token: '{{ csrf_token() }}'},
+                            success: function(res){
+                                if(res.success){
+                                    $('#actionButtons').removeClass('show d-inline-block').addClass('d-none');
+                                    window.LaravelDataTables['tabelUser'].ajax.reload(null, false);
+                                    alert('User berhasil dihapus!');
+                                } else if(res.message){
+                                    alert(res.message);
+                                }
+                            },
+                            error: function(xhr){
+                                let msg = 'Gagal hapus data!';
+                                if(xhr.responseJSON && xhr.responseJSON.message){
+                                    msg = xhr.responseJSON.message;
+                                } else if(xhr.responseJSON && xhr.responseJSON.errors){
+                                    let errors = xhr.responseJSON.errors;
+                                    msg = Object.values(errors).flat()[0];
+                                }
+                                alert(msg);
+                            }
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Delete button error:', error);
+            }
+        });
+        
         // Tambah User AJAX
         $('#exampleModal form').submit(function(e){
             e.preventDefault();
@@ -290,21 +547,7 @@
                 }
             });
         });
-        // Edit User AJAX
-        $(document).on('click', '.btnEdit', function(){
-            let id = $(this).data('id');
-            $.get('/user?id='+id, function(data){
-                $('#exampleModal2 #username').val(data.username);
-                $('#exampleModal2 #fullname').val(data.fullname);
-                $('#exampleModal2 #nip').val(data.nip);
-                $('#exampleModal2 #pangkat').val(data.pangkat);
-                $('#exampleModal2 #jabatan').val(data.jabatan);
-                $('#exampleModal2 #satkerid2').val(data.satkerid).trigger('change');
-                $('#exampleModal2 #email').val(data.email);
-                $('#exampleModal2 form').attr('action', '/user/'+data.id);
-                $('#exampleModal2').modal('show');
-            });
-        });
+        
         // Update User AJAX
         $('#exampleModal2 form').submit(function(e){
             e.preventDefault();
@@ -319,6 +562,7 @@
                 success: function(res){
                     if(res.success){
                         $('#exampleModal2').modal('hide');
+                        $('#actionButtons').removeClass('show d-inline-block').addClass('d-none');
                         window.LaravelDataTables['tabelUser'].ajax.reload(null, false);
                         alert('User berhasil diupdate!');
                     } else if(res.message){
@@ -337,51 +581,16 @@
                 }
             });
         });
-        // Hapus User AJAX
-        $(document).on('click', '.btnHapus', function(){
-            if(confirm('Yakin hapus user ini?')){
-                let id = $(this).data('id');
-                $.ajax({
-                    url: '/user/'+id,
-                    type: 'POST',
-                    data: {_method: 'DELETE', _token: '{{ csrf_token() }}'},
-                    success: function(res){
-                        if(res.success){
-                            window.LaravelDataTables['tabelUser'].ajax.reload(null, false);
-                            alert('User berhasil dihapus!');
-                        } else if(res.message){
-                            alert(res.message);
-                        }
-                    },
-                    error: function(xhr){
-                        let msg = 'Gagal hapus data!';
-                        if(xhr.responseJSON && xhr.responseJSON.message){
-                            msg = xhr.responseJSON.message;
-                        } else if(xhr.responseJSON && xhr.responseJSON.errors){
-                            let errors = xhr.responseJSON.errors;
-                            msg = Object.values(errors).flat()[0];
-                        }
-                        alert(msg);
-                    }
-                });
-            }
-        });
-    });
-    </script>
-@endpush
-@push('scripts')
-    <script>
-        $(document).ready(function() {
-            // Inisialisasi semua select2 di luar modal (misal: di halaman Buat Surat)
-            $('.select2, .select-example, .select-basic, .select-1').select2({
+        
+        // Initialize Select2
+        try {
+            // Initialize select2 for filter
+            $('#filterJabatan').select2({
                 width: '100%',
-                dropdownAutoWidth: true,
-                placeholder: 'Pilih opsi',
-                allowClear: true,
-                dropdownParent: $('#exampleModal2')
+                allowClear: true
             });
-
-            // Inisialisasi Select2 khusus saat modal Tambah User muncul
+            
+            // Initialize Select2 for modals
             $('#exampleModal').on('shown.bs.modal', function() {
                 $(this).find('.select2').select2({
                     dropdownParent: $('#exampleModal'),
@@ -391,15 +600,17 @@
                 });
             });
 
-            // Inisialisasi Select2 khusus untuk semua modal edit user
-            $('div[id^="editUserModal"]').on('shown.bs.modal', function() {
+            $('#exampleModal2').on('shown.bs.modal', function() {
                 $(this).find('.select2').select2({
-                    dropdownParent: $(this),
+                    dropdownParent: $('#exampleModal2'),
                     width: '100%',
                     placeholder: 'Pilih Unit Kerja',
                     allowClear: true
                 });
             });
-        });
+        } catch (error) {
+            console.warn('Select2 initialization failed:', error);
+        }
+    });
     </script>
 @endpush
