@@ -147,15 +147,15 @@
 
                     if (row.hasClass('selected')) {
                         row.removeClass('selected');
-                        $('#actionButtons').addClass('d-none');
+                        $('#actionButtons').addClass('d-none').removeClass('show');
                         $('#actionButtons').data('selectedId', null);
                     } else {
-
                         $('#masterklasifikasi-table tbody tr').removeClass('selected');
                         row.addClass('selected');
-                        $('#actionButtons').removeClass('d-none');
+                        $('#actionButtons').removeClass('d-none').addClass('show');
                         $('#actionButtons').data('selectedId', rowId);
                     }
+
                 } catch (error) {
                     console.error('Row click error:', error);
                 }
@@ -551,7 +551,7 @@
         }
 
         .action-buttons.show {
-            animation: fadeInScale 0.3s ease;
+            animation: fadeInScale 0.3s ease forwards;
         }
 
         @keyframes fadeInScale {
