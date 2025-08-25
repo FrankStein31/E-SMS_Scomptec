@@ -16,16 +16,16 @@ show @extends('layout.main')
                                 <div class="col text-end">
                                     <!-- Action Buttons for Selected Row -->
                                     <div id="actionButtons" class="action-buttons d-none me-2">
-                                        <button id="editBtn" class="btn btn-warning btn-sm b-r-22 me-1 text-black">
-                                            <i class="fas fa-edit"></i> Edit
+                                        <button id="editBtn" class="btn btn-warning btn-sm b-r-22 me-1 btn-action-edit">
+                                            <i class="fas fa-edit"></i> Ubah
                                         </button>
-                                        <button id="deleteBtn" class="btn btn-danger btn-sm b-r-22 me-1">
+                                        <button id="deleteBtn" class="btn btn-danger btn-sm b-r-22 me-1 btn-action-delete">
                                             <i class="fas fa-trash-alt"></i> Hapus
                                         </button>
                                     </div>
-                                    <button type="button" class="btn btn-primary btn-sm b-r-22" data-bs-toggle="modal"
-                                        data-bs-target="#exampleModal">
-                                        <i class="iconoir-plus"></i> Tambah Unit Kerja
+                                    <button type="button" class="btn btn-primary btn-sm b-r-22 btn-add-primary"
+                                        data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        <i class="fas fa-plus"></i> Tambah Unit Kerja
                                     </button>
                                     <!-- Modal Tambah Unit Kerja -->
                                     <div class="modal fade" id="exampleModal" tabindex="-1"
@@ -259,28 +259,162 @@ show @extends('layout.main')
             }
         }
 
-        /* Fallback sticky for plain table without DataTables scroll wrappers */
-        .table-sticky {
-            height: auto !important;
-            max-height: none;
-            overflow: visible !important;
-            /* avoid double scroll with DataTables scrollY */
+        /* Button Styling - Updated */
+        .btn-custom {
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 16px;
+            border: none;
+            text-transform: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .table-sticky table {
-            margin-bottom: 0 !important;
+        /* Detail Button - Blue */
+        .btn-detail {
+            background-color: #007bff;
+            color: white;
         }
 
-        .table-sticky table thead th {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background-color: #fff;
+        .btn-detail:hover {
+            background-color: #0056b3;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
         }
 
-        /* Force hide length control (Show entries) */
-        .dataTables_wrapper .dataTables_length {
-            display: none !important;
+        /* Edit Button - Yellow/Orange */
+        .btn-edit {
+            background-color: #ffc107;
+            color: #000;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+            color: #000;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(255, 193, 7, 0.3);
+        }
+
+        /* Delete Button - Red */
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+        }
+
+        /* Add Button - Blue */
+        .btn-add {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background-color: #0056b3;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Icon spacing */
+        .btn-custom i {
+            font-size: 11px;
+        }
+
+        /* Action buttons container */
+        .action-buttons .btn {
+            margin-right: 6px;
+        }
+
+        .action-buttons .btn:last-child {
+            margin-right: 0;
+        }
+
+        /* Override Bootstrap button styles */
+        .btn-custom:focus {
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .btn-custom:active {
+            transform: translateY(0);
+        }
+
+        /* Enhanced Button Styling for Better Text Visibility */
+        .btn-action-detail {
+            background-color: #e3f2fd !important;
+            border-color: #bbdefb !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .btn-action-detail:hover {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+        }
+
+        .btn-action-edit {
+            background-color: #fff3cd !important;
+            border-color: #ffeaa7 !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .btn-action-edit:hover {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+        }
+
+        .btn-action-delete {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .btn-action-delete:hover {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+        }
+
+        .btn-add-primary {
+            background-color: #cfe2ff !important;
+            border-color: #b6d4fe !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .btn-add-primary:hover {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+        }
+
+        /* Focus states for accessibility */
+        .btn-action-detail:focus,
+        .btn-action-detail:active,
+        .btn-action-edit:focus,
+        .btn-action-edit:active,
+        .btn-action-delete:focus,
+        .btn-action-delete:active,
+        .btn-add-primary:focus,
+        .btn-add-primary:active {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+            box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25) !important;
         }
     </style>
     <script>
