@@ -12,10 +12,10 @@
                                 <h5 class="mb-0">Daftar Klasifikasi</h5>
                                 <div class="d-flex align-items-center gap-2">
                                     <div id="actionButtons" class="action-buttons d-none me-2">
-                                        <button id="editBtn" class="btn btn-warning btn-sm b-r-22">
+                                        <button id="editBtn" class="btn btn-warning btn-sm b-r-22 me-1 btn-action-edit">
                                             <i class="fas fa-edit"></i> Ubah
                                         </button>
-                                        <button id="deleteBtn" class="btn btn-danger btn-sm b-r-22">
+                                        <button id="deleteBtn" class="btn btn-danger btn-sm b-r-22 me-1 btn-action-delete">
                                             <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </div>
@@ -29,12 +29,12 @@
                                             @endforeach
                                         </select>
                                     </form>
-                                    <a class="btn btn-primary btn-sm b-r-22" id="btnTambah">
+                                    <a class="btn btn-primary btn-sm b-r-22 btn-add-primary" id="btnTambah">
                                         <i class="iconoir-plus"></i> Tambah Klasifikasi
                                     </a>
                                 </div>
                             </div>
-                        </div>
+                        </div>  
 
                         <div class="card-body">
                             <div class="table-responsive">
@@ -564,6 +564,74 @@
                 opacity: 1;
                 transform: scale(1);
             }
+        }
+
+        /* Enhanced Button Styling for Better Text Visibility */
+        .btn-action-detail {
+            background-color: #e3f2fd !important;
+            border-color: #bbdefb !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .btn-action-detail:hover {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+        }
+
+        .btn-action-edit {
+            background-color: #fff3cd !important;
+            border-color: #ffeaa7 !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .btn-action-edit:hover {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+        }
+
+        .btn-action-delete {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .btn-action-delete:hover {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+        }
+
+        .btn-add-primary {
+            background-color: #cfe2ff !important;
+            border-color: #b6d4fe !important;
+            color: #212529 !important;
+            font-weight: 500;
+        }
+
+        .btn-add-primary:hover {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+        }
+
+        /* Focus states for accessibility */
+        .btn-action-detail:focus,
+        .btn-action-detail:active,
+        .btn-action-edit:focus,
+        .btn-action-edit:active,
+        .btn-action-delete:focus,
+        .btn-action-delete:active,
+        .btn-add-primary:focus,
+        .btn-add-primary:active {
+            background-color: #e9ecef !important;
+            border-color: #ced4da !important;
+            color: #495057 !important;
+            box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25) !important;
         }
     </style>
 @endpush

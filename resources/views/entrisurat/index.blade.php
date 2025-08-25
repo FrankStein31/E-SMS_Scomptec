@@ -88,7 +88,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-4">  
                                     <div class="input-group">
                                         <input type="text" id="customSearch" class="form-control form-control-sm"
                                             placeholder="Search...">
