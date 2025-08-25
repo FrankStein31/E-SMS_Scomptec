@@ -24,6 +24,22 @@ class KotakMasukDataTable extends DataTable
                 }
                 return '<span class="badge bg-secondary">-</span>';
             })
+            ->addColumn('tindakan_indicator', function ($row) {
+                $userId = Auth::user()->id;
+                $indicator = $row->getPriorityIndicatorForUser($userId);
+
+                if (!$indicator) {
+                    return '<span class="text-muted">-</span>';
+                }
+
+                $iconClass = 'fas ' . $indicator['icon'];
+                $badgeClass = 'bg-' . $indicator['color'];
+
+                return '<div class="d-flex align-items-center tindakan-tooltip" data-tooltip="' . $indicator['text'] . '">
+                    <i class="' . $iconClass . ' text-' . $indicator['color'] . ' me-2"></i>
+                    <span class="badge ' . $badgeClass . ' badge-sm">' . $indicator['text'] . '</span>
+                </div>';
+            })
             ->addColumn('unit_pengentri', function($row) {
                 return $row->createdBy->fullname;
             })
@@ -44,8 +60,24 @@ class KotakMasukDataTable extends DataTable
             ->addColumn('tgl_surat_formatted', function($row) {
                 return date('d/m/Y', strtotime($row->tgl_surat));
             })
-            ->rawColumns(['status','unit_pengentri','sifat'])
-            ->setRowId('id');
+            ->rawColumns(['status', 'unit_pengentri', 'sifat', 'tindakan_indicator'])
+            ->setRowId('id')
+            ->setRowClass(function ($row) {
+                $userId = Auth::user()->id;
+                $indicator = $row->getPriorityIndicatorForUser($userId);
+
+                if ($indicator) {
+                    switch ($indicator['level']) {
+                        case 'high':
+                            return 'priority-high';
+                        case 'medium':
+                            return 'priority-medium';
+                        case 'low':
+                            return 'priority-low';
+                    }
+                }
+                return '';
+            });
     }
 
     public function query(EntrySuratIsi $model): QueryBuilder
@@ -53,6 +85,7 @@ class KotakMasukDataTable extends DataTable
         return $model->with([
             'jenis',
             'createdBy',
+            'disposisis.tindakans',
             'tujuanSurat' => function($q) {
                 $q->where('userid_tujuan', Auth::user()->id);
             }
@@ -103,6 +136,7 @@ class KotakMasukDataTable extends DataTable
             Column::make('dari')->title('Dari'),
             Column::make('kepada')->title('Kepada'),
             Column::make('hal')->title('Hal'),
+            Column::computed('tindakan_indicator')->title('Tindakan')->exportable(false)->printable(false)->width(150)->addClass('text-center'),
             Column::make('unit_pengentri')->title('Unit Pengentri'),
             Column::make('tgl_surat_formatted')->title('Tanggal')->name('tgl_surat'),
             Column::computed('status')->title('Status')->exportable(false)->printable(false)->width(80)->addClass('text-center'),

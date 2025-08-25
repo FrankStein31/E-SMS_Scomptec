@@ -91,4 +91,72 @@ class EntrySuratIsi extends Model
     {
         return $this->hasMany(EntrySuratScan::class, 'entrysurat_id', 'id')->orderBy('nourut');
     }
+
+    /**
+     * Get all disposisi for this entry surat
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function disposisis(): HasMany
+    {
+        return $this->hasMany(DisposisiBaru::class, 'entrysurat_id', 'id');
+    }
+
+    /**
+     * Get the latest disposisi with highest priority action for this user
+     */
+    public function getLatestDisposisiForUser($userId)
+    {
+        return $this->disposisis()
+            ->with('tindakans')
+            ->whereRaw("FIND_IN_SET(?, kepada)", [$userId])
+            ->latest()
+            ->first();
+    }
+
+    /**
+     * Get priority indicator based on disposisi actions
+     */
+    public function getPriorityIndicatorForUser($userId)
+    {
+        $disposisi = $this->getLatestDisposisiForUser($userId);
+
+        if (!$disposisi || $disposisi->tindakans->isEmpty()) {
+            return null;
+        }
+
+        $highPriorityActions = ['Segera Dibalas', 'Tindak Lanjuti'];
+        $mediumPriorityActions = ['Supaya Diwakili', 'Perhatikan', 'Dikoordinasikan'];
+
+        foreach ($disposisi->tindakans as $tindakan) {
+            if (in_array($tindakan->tindakan, $highPriorityActions)) {
+                return [
+                    'level' => 'high',
+                    'icon' => 'fa-exclamation-triangle',
+                    'color' => 'danger',
+                    'text' => $tindakan->tindakan
+                ];
+            }
+        }
+
+        foreach ($disposisi->tindakans as $tindakan) {
+            if (in_array($tindakan->tindakan, $mediumPriorityActions)) {
+                return [
+                    'level' => 'medium',
+                    'icon' => 'fa-exclamation-circle',
+                    'color' => 'warning',
+                    'text' => $tindakan->tindakan
+                ];
+            }
+        }
+
+        // Low priority or info actions
+        $firstAction = $disposisi->tindakans->first();
+        return [
+            'level' => 'low',
+            'icon' => 'fa-info-circle',
+            'color' => 'info',
+            'text' => $firstAction->tindakan
+        ];
+    }
 }

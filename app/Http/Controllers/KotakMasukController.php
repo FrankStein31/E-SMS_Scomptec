@@ -167,7 +167,7 @@ class KotakMasukController extends Controller
      */
     public function show($id)
     {
-        $data = EntrySuratIsi::find($id);
+        $data = EntrySuratIsi::with(['disposisis.tindakans', 'jenis', 'createdBy'])->find($id);
         // Ambil kodesatker user login
         $loginUser = Auth::user();
         $loginSatker = \App\Models\MasterSatker::where('userid', $loginUser->id)->first();

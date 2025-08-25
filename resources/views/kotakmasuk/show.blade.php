@@ -38,6 +38,28 @@
 
             @include('layout.alert')
 
+            @php
+                $indicator = $data->getPriorityIndicatorForUser(Auth::user()->id);
+            @endphp
+            @if($indicator)
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="alert alert-{{ $indicator['color'] }} alert-dismissible fade show" role="alert">
+                            <i class="fas {{ $indicator['icon'] }} me-2"></i>
+                            <strong>Tindakan Diperlukan:</strong> {{ $indicator['text'] }}
+                            @if($indicator['level'] == 'high')
+                                - Surat ini memerlukan tindakan segera dari Anda.
+                            @elseif($indicator['level'] == 'medium')
+                                - Surat ini memerlukan perhatian khusus dari Anda.
+                            @else
+                                - Silakan tindaklanjuti sesuai instruksi disposisi.
+                            @endif
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Blank start -->
             <div class="row">
                 <!-- Default Card start -->
@@ -130,6 +152,37 @@
                                                 {{ $data->created_at->format('d-m-Y') }}
                                             </td>
                                         </tr>
+                                        @php
+                                            $indicator = $data->getPriorityIndicatorForUser(Auth::user()->id);
+                                        @endphp
+                                        @if($indicator)
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3">
+                                                Tindakan
+                                            </th>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fas {{ $indicator['icon'] }} text-{{ $indicator['color'] }} me-2" style="font-size: 1.2em;"></i>
+                                                    @if($tujuanUser && $tujuanUser->dibaca == 1)
+                                                        <span class="text-{{ $indicator['color'] }} fw-bold">{{ $indicator['text'] }}</span>
+                                                    @else
+                                                        <span class="badge bg-{{ $indicator['color'] }} badge-lg">{{ $indicator['text'] }}</span>
+                                                    @endif
+                                                    @if($indicator['level'] == 'high' && (!$tujuanUser || $tujuanUser->dibaca == 0))
+                                                        <small class="text-muted ms-2">
+                                                            <i class="fas fa-clock me-1"></i>
+                                                            Memerlukan tindakan segera
+                                                        </small>
+                                                    @elseif($indicator['level'] == 'medium' && (!$tujuanUser || $tujuanUser->dibaca == 0))
+                                                        <small class="text-muted ms-2">
+                                                            <i class="fas fa-clock me-1"></i>
+                                                            Memerlukan perhatian
+                                                        </small>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @endif
                                     </tbody>
                                 </table>
 
@@ -171,6 +224,60 @@
                                 @endif
                                 <!-- {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Riw. Surat</a> --}}
                                 {{-- <a href="" class="btn btn-info btn-sm b-r-22" hidden>Cetak</a> --}} -->
+
+                                @php
+                                    $userDisposisi = $data->getLatestDisposisiForUser(Auth::user()->id);
+                                @endphp
+                                @if($userDisposisi)
+                                    <div class="mt-4">
+                                        <h6 class="mb-3">
+                                            <i class="fas fa-paper-plane me-2"></i>
+                                            Disposisi Terbaru untuk Anda
+                                        </h6>
+                                        <div class="card border-left-primary">
+                                            <div class="card-body">
+                                                <div class="row mb-2">
+                                                    <div class="col-sm-3">
+                                                        <strong>Tanggal Disposisi:</strong>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        @if($userDisposisi->remitten)
+                                                            {{ \Carbon\Carbon::parse($userDisposisi->remitten)->format('d-m-Y') }}
+                                                        @else
+                                                            {{ $userDisposisi->created_at->format('d-m-Y') }}
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-sm-3">
+                                                        <strong>Tindakan:</strong>
+                                                    </div>
+                                                    <div class="col-sm-9">
+                                                        @foreach($userDisposisi->tindakans as $tindakan)
+                                                            @if($tujuanUser && $tujuanUser->dibaca == 1)
+                                                                <span class="text-primary">{{ $tindakan->tindakan }}</span>@if(!$loop->last), @endif
+                                                            @else
+                                                                <span class="badge bg-primary me-1">{{ $tindakan->tindakan }}</span>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                </div>
+                                                @if($userDisposisi->content)
+                                                    <div class="row mb-2">
+                                                        <div class="col-sm-3">
+                                                            <strong>Catatan:</strong>
+                                                        </div>
+                                                        <div class="col-sm-9">
+                                                            <div class="border p-2 rounded bg-light">
+                                                                {!! $userDisposisi->content !!}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -267,6 +374,102 @@
         background-color: #f8f9fa !important;
         border-color: #dee2e6 !important;
         color: #6c757d !important;
+    }
+
+    /* Tindakan indicator styling */
+    .badge-lg {
+        font-size: 0.85em;
+        padding: 0.5em 0.75em;
+        font-weight: 600;
+    }
+
+    .text-danger {
+        color: #dc3545 !important;
+    }
+
+    .text-warning {
+        color: #fd7e14 !important;
+    }
+
+    .text-info {
+        color: #0dcaf0 !important;
+    }
+
+    .bg-danger {
+        background-color: #dc3545 !important;
+    }
+
+    .bg-warning {
+        background-color: #fd7e14 !important;
+    }
+
+    .bg-info {
+        background-color: #0dcaf0 !important;
+    }
+
+    /* Pulsing animation for high priority */
+    @keyframes pulse-danger {
+        0% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+        }
+    }
+
+    .bg-danger {
+        animation: pulse-danger 2s infinite;
+    }
+
+    /* Icon styling for better visibility */
+    .fas.fa-exclamation-triangle,
+    .fas.fa-exclamation-circle,
+    .fas.fa-info-circle {
+        text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    /* Text styling for read tindakan */
+    .text-danger.fw-bold {
+        font-weight: 700 !important;
+        font-size: 1.1em;
+    }
+
+    .text-warning.fw-bold {
+        font-weight: 700 !important;
+        font-size: 1.1em;
+    }
+
+    .text-info.fw-bold {
+        font-weight: 700 !important;
+        font-size: 1.1em;
+    }
+
+    .text-primary {
+        font-weight: 600;
+        font-size: 1em;
+    }
+
+    /* Disposisi card styling */
+    .border-left-primary {
+        border-left: 4px solid #007bff !important;
+    }
+
+    .border-left-primary .card-body {
+        background-color: #f8f9ff;
+    }
+
+    /* Alert responsive styling */
+    @media (max-width: 768px) {
+        .alert {
+            font-size: 0.9em;
+        }
+        .badge-lg {
+            font-size: 0.8em;
+            padding: 0.4em 0.6em;
+        }
     }
 </style>
 @endpush
