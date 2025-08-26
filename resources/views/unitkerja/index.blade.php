@@ -57,7 +57,7 @@ show @extends('layout.main')
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">Batal</button>
-                                                        <button type="submit" class="btn btn-primary">Simpan</button>
+                                                        <button type="submit" class="btn btn-primary" data-prevent-double>Simpan</button>
                                                     </div>
                                                 </div>
                                             </form>
@@ -104,7 +104,7 @@ show @extends('layout.main')
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                        <button type="submit" class="btn btn-primary" data-prevent-double>Simpan Perubahan</button>
                     </div>
                 </div>
             </form>
