@@ -69,7 +69,7 @@ show @extends('layout.main')
                         </div>
                         <div class="card-body">
                             <div class="table-responsive table-sticky">
-                                {{ $dataTable->table(['id' => 'tabelUnitKerja']) }}
+                                {{ $dataTable->table(['id' => 'mastersatker-table']) }}
                             </div>
                         </div>
                     </div>
@@ -115,6 +115,37 @@ show @extends('layout.main')
         @csrf
         @method('DELETE')
     </form>
+
+    <!-- Modal Detail Unit Kerja -->
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailModalLabel">Detail Unit Kerja</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><strong>Unit Kerja Anak</strong></h6>
+                            <div id="childrenList">
+                                <div class="text-muted">Memuat data...</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><strong>User yang Menggunakan</strong></h6>
+                            <div id="usersList">
+                                <div class="text-muted">Memuat data...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -155,7 +186,7 @@ show @extends('layout.main')
         /* Remove conflicting sticky header styles */
         #entrysuratisi-table thead th,
         #tabelEntriSurat thead th,
-        #tabelUnitKerja thead th {
+        #mastersatker-table thead th {
             background-color: #f8f9fa;
             border-bottom: 2px solid #dee2e6;
             position: relative;
@@ -193,7 +224,7 @@ show @extends('layout.main')
         /* Ensure table columns maintain consistent width */
         #entrysuratisi-table,
         #tabelEntriSurat,
-        #tabelUnitKerja {
+        #mastersatker-table {
             table-layout: fixed;
             width: 100%;
         }
@@ -206,7 +237,7 @@ show @extends('layout.main')
         /* Compact table rows */
         #entrysuratisi-table tbody td,
         #tabelEntriSurat tbody td,
-        #tabelUnitKerja tbody td {
+        #mastersatker-table tbody td {
             padding: 8px !important;
             vertical-align: middle;
         }
@@ -214,27 +245,27 @@ show @extends('layout.main')
         /* Optimize header height */
         #entrysuratisi-table thead th,
         #tabelEntriSurat thead th,
-        #tabelUnitKerja thead th {
+        #mastersatker-table thead th {
             padding: 10px 8px !important;
         }
 
         /* Row Selection Styling */
         #entrysuratisi-table tbody tr,
         #tabelEntriSurat tbody tr,
-        #tabelUnitKerja tbody tr {
+        #mastersatker-table tbody tr {
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
 
         #entrysuratisi-table tbody tr:hover,
         #tabelEntriSurat tbody tr:hover,
-        #tabelUnitKerja tbody tr:hover {
+        #mastersatker-table tbody tr:hover {
             background-color: #f8f9fa !important;
         }
 
         #entrysuratisi-table tbody tr.selected,
         #tabelEntriSurat tbody tr.selected,
-        #tabelUnitKerja tbody tr.selected {
+        #mastersatker-table tbody tr.selected {
             background-color: #d1ecf1 !important;
         }
 
@@ -416,6 +447,152 @@ show @extends('layout.main')
             color: #495057 !important;
             box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25) !important;
         }
+
+        /* Status clickable styling */
+        .status-clickable {
+            transition: all 0.2s ease;
+        }
+
+        .status-clickable:hover {
+            transform: scale(1.05);
+            opacity: 0.8;
+        }
+
+        .status-clickable .badge {
+            pointer-events: none;
+        }
+
+        /* Modal styling */
+        .modal-xl {
+            max-width: 90%;
+        }
+
+        .list-group-item {
+            border: 1px solid #dee2e6;
+            margin-bottom: 2px;
+        }
+
+        .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Search and Length Menu Styling */
+        .dataTables_wrapper .dataTables_filter {
+            float: right;
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_filter label {
+            font-weight: normal;
+            white-space: nowrap;
+            text-align: left;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            margin-left: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 14px;
+            width: 250px;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #007bff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .dataTables_wrapper .dataTables_length {
+            float: left;
+            margin-bottom: 10px;
+        }
+
+        .dataTables_wrapper .dataTables_length label {
+            font-weight: normal;
+            text-align: left;
+            white-space: nowrap;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 14px;
+            margin: 0 8px;
+        }
+
+        .dataTables_wrapper .dataTables_length select:focus {
+            border-color: #007bff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        /* Top controls styling */
+        .dataTables_wrapper .row:first-child {
+            margin-bottom: 15px;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dataTables_wrapper .row:first-child .col-md-6:first-child {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+
+        .dataTables_wrapper .row:first-child .col-md-6:last-child {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .dataTables_wrapper .row:first-child {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .dataTables_wrapper .row:first-child .col-md-6 {
+                width: 100%;
+            }
+            
+            .dataTables_wrapper .dataTables_filter input {
+                width: 200px;
+            }
+        }
+
+        /* Force standard DataTables layout */
+        .dataTables_wrapper .dataTables_filter {
+            position: relative;
+        }
+
+        .dataTables_wrapper .dataTables_length {
+            position: relative;
+        }
+
+        /* Clear any conflicting floats */
+        .dataTables_wrapper .row:first-child::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        /* Ensure search is always on the right */
+        .dataTables_wrapper .row:first-child {
+            width: 100%;
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -440,9 +617,18 @@ show @extends('layout.main')
                     // Ensure ul.pagination aligns to the far left
                     paginateCol.find('.pagination').addClass('justify-content-start').css('margin', 0);
                 }
+                
+                // Ensure search input has proper styling
+                wrapper.find('.dataTables_filter input').addClass('form-control').attr('placeholder', 'Cari unit kerja...');
+                wrapper.find('.dataTables_length select').addClass('form-select');
+                
+                // Ensure proper Bootstrap grid classes for responsive layout
+                wrapper.find('.row:first-child .col-md-6').addClass('d-flex align-items-center');
+                wrapper.find('.dataTables_length').parent().addClass('justify-content-start');
+                wrapper.find('.dataTables_filter').parent().addClass('justify-content-end');
             }
 
-            var table = $('#tabelUnitKerja');
+            var table = $('#mastersatker-table');
 
             // Sync horizontal scroll between header and body (consistent with Entri Surat)
             $(document).on('scroll', '.dataTables_scrollBody', function() {
@@ -464,7 +650,7 @@ show @extends('layout.main')
             table.on('init.dt', function() {
                 try {
                     var api = table.DataTable ? table.DataTable() : (window.LaravelDataTables && window
-                        .LaravelDataTables['tabelUnitKerja']);
+                        .LaravelDataTables['mastersatker-table']);
                     if (api && api.page) {
                         api.page.len(25).draw(false);
                     }
@@ -472,18 +658,46 @@ show @extends('layout.main')
                     /* ignore */
                 }
                 applySwap();
+                
+                // Initialize search placeholder
+                $('.dataTables_filter input').attr('placeholder', 'Cari unit kerja...');
             });
 
             // Terapkan saat tabel selesai digambar
-            table.on('draw.dt', applySwap);
+            table.on('draw.dt', function() {
+                applySwap();
+                // Re-apply Bootstrap classes after each draw
+                $('.dataTables_filter input').addClass('form-control').attr('placeholder', 'Cari unit kerja...');
+                $('.dataTables_length select').addClass('form-select');
+                
+                // Ensure proper positioning
+                $('.dataTables_wrapper .row:first-child .col-md-6').addClass('d-flex align-items-center');
+                $('.dataTables_length').parent().addClass('justify-content-start');
+                $('.dataTables_filter').parent().addClass('justify-content-end');
+            });
+            
             // Coba setelah inisialisasi awal
-            setTimeout(applySwap, 500);
-            setTimeout(applySwap, 1500);
+            setTimeout(function() {
+                applySwap();
+                $('.dataTables_filter input').addClass('form-control').attr('placeholder', 'Cari unit kerja...');
+                $('.dataTables_length select').addClass('form-select');
+                $('.dataTables_wrapper .row:first-child .col-md-6').addClass('d-flex align-items-center');
+                $('.dataTables_length').parent().addClass('justify-content-start');
+                $('.dataTables_filter').parent().addClass('justify-content-end');
+            }, 500);
+            setTimeout(function() {
+                applySwap();
+                $('.dataTables_filter input').addClass('form-control').attr('placeholder', 'Cari unit kerja...');
+                $('.dataTables_length select').addClass('form-select');
+                $('.dataTables_wrapper .row:first-child .col-md-6').addClass('d-flex align-items-center');
+                $('.dataTables_length').parent().addClass('justify-content-start');
+                $('.dataTables_filter').parent().addClass('justify-content-end');
+            }, 1500);
 
             // Initialize row click selection and top action buttons
             function initializeRowSelection() {
                 try {
-                    var tableSelector = '#tabelUnitKerja tbody tr, #mastersatker-table tbody tr';
+                    var tableSelector = '#mastersatker-table tbody tr';
                     // Remove any existing handlers
                     $(document).off('click', tableSelector);
                     // Add delegated click handler
@@ -494,15 +708,42 @@ show @extends('layout.main')
                             var clickedRow = $(this);
                             var rowId = clickedRow.attr('id');
                             if (!rowId) return;
+                            
                             if (clickedRow.hasClass('selected')) {
                                 clickedRow.removeClass('selected');
                                 $('#actionButtons').removeClass('show d-inline-block').addClass('d-none');
                             } else {
-                                $('#tabelUnitKerja tbody tr, #mastersatker-table tbody tr').removeClass(
-                                    'selected');
+                                $('#mastersatker-table tbody tr').removeClass('selected');
                                 clickedRow.addClass('selected');
-                                $('#actionButtons').data('selectedId', rowId).removeClass('d-none')
-                                    .addClass('d-inline-block show');
+                                
+                                // Get row data from DataTable
+                                var table = $('#mastersatker-table').DataTable();
+                                var rowData = table.row(clickedRow).data();
+                                
+                                // Check if can edit/delete
+                                var canEdit = rowData && rowData.can_edit;
+                                var canDelete = rowData && rowData.can_delete;
+                                var restrictionReason = rowData && rowData.restriction_reason;
+                                
+                                // Show/hide buttons based on permissions
+                                if (canEdit) {
+                                    $('#editBtn').show().prop('disabled', false);
+                                } else {
+                                    $('#editBtn').hide();
+                                }
+                                
+                                if (canDelete) {
+                                    $('#deleteBtn').show().prop('disabled', false);
+                                } else {
+                                    $('#deleteBtn').hide();
+                                }
+                                
+                                // Show action buttons container
+                                $('#actionButtons').data('selectedId', rowId)
+                                    .data('canEdit', canEdit)
+                                    .data('canDelete', canDelete)
+                                    .data('restrictionReason', restrictionReason)
+                                    .removeClass('d-none').addClass('d-inline-block show');
                             }
                         } catch (err) {
                             console.error('Row click error:', err);
@@ -521,13 +762,21 @@ show @extends('layout.main')
             $(document).on('click', '#editBtn', function() {
                 try {
                     var selectedId = $('#actionButtons').data('selectedId');
+                    var canEdit = $('#actionButtons').data('canEdit');
+                    var restrictionReason = $('#actionButtons').data('restrictionReason');
+                    
                     if (!selectedId) {
                         alert('Pilih data terlebih dahulu.');
                         return;
                     }
+                    
+                    if (!canEdit) {
+                        alert('Tidak dapat mengedit: ' + (restrictionReason || 'Data tidak dapat diubah'));
+                        return;
+                    }
 
                     // Ambil data dari baris terpilih
-                    var $row = $('#tabelUnitKerja tbody tr#' + selectedId);
+                    var $row = $('#mastersatker-table tbody tr#' + selectedId);
                     if (!$row.length) {
                         $row = $('tr#' + selectedId).first();
                     }
@@ -553,13 +802,23 @@ show @extends('layout.main')
                     console.error('Edit button error:', error);
                 }
             });
+            
             $(document).on('click', '#deleteBtn', function() {
                 try {
                     var selectedId = $('#actionButtons').data('selectedId');
+                    var canDelete = $('#actionButtons').data('canDelete');
+                    var restrictionReason = $('#actionButtons').data('restrictionReason');
+                    
                     if (!selectedId) {
                         alert('Pilih data terlebih dahulu.');
                         return;
                     }
+                    
+                    if (!canDelete) {
+                        alert('Tidak dapat menghapus: ' + (restrictionReason || 'Data tidak dapat dihapus'));
+                        return;
+                    }
+                    
                     if (!confirm('Yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.')) {
                         return;
                     }
@@ -569,6 +828,83 @@ show @extends('layout.main')
                 } catch (error) {
                     console.error('Delete button error:', error);
                 }
+            });
+
+            // Event handler untuk status clickable
+            $(document).on('click', '.status-clickable', function(e) {
+                e.stopPropagation(); // Prevent row selection
+                
+                var unitId = $(this).data('id');
+                var type = $(this).data('type');
+                
+                if (!unitId) return;
+                
+                // Show modal dengan loading
+                $('#detailModalLabel').text('Detail Unit Kerja');
+                $('#childrenList').html('<div class="text-muted"><i class="fas fa-spinner fa-spin"></i> Memuat data...</div>');
+                $('#usersList').html('<div class="text-muted"><i class="fas fa-spinner fa-spin"></i> Memuat data...</div>');
+                
+                var modal = new bootstrap.Modal(document.getElementById('detailModal'));
+                modal.show();
+                
+                // Fetch data detail
+                $.ajax({
+                    url: '/unitkerja/detail/' + unitId,
+                    type: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            var data = response.data;
+                            
+                            // Update modal title
+                            $('#detailModalLabel').text('Detail Unit Kerja: ' + data.unit_name);
+                            
+                            // Render children data
+                            var childrenHtml = '';
+                            if (data.children && data.children.length > 0) {
+                                childrenHtml = '<div class="list-group">';
+                                data.children.forEach(function(child) {
+                                    childrenHtml += '<div class="list-group-item">' +
+                                        '<div class="d-flex w-100 justify-content-between">' +
+                                        '<h6 class="mb-1">' + child.satker + '</h6>' +
+                                        '<small class="text-muted">' + child.kodesatker + '</small>' +
+                                        '</div>' +
+                                        '</div>';
+                                });
+                                childrenHtml += '</div>';
+                            } else {
+                                childrenHtml = '<div class="text-muted">Tidak ada unit kerja anak</div>';
+                            }
+                            $('#childrenList').html(childrenHtml);
+                            
+                            // Render users data
+                            var usersHtml = '';
+                            if (data.users && data.users.length > 0) {
+                                usersHtml = '<div class="list-group">';
+                                data.users.forEach(function(user) {
+                                    usersHtml += '<div class="list-group-item">' +
+                                        '<div class="d-flex w-100 justify-content-between">' +
+                                        '<h6 class="mb-1">' + user.fullname + '</h6>' +
+                                        '<small class="text-muted">' + (user.nip || '-') + '</small>' +
+                                        '</div>' +
+                                        '<p class="mb-1">' + (user.jabatan || '-') + '</p>' +
+                                        '<small class="text-muted">' + (user.pangkat || '-') + '</small>' +
+                                        '</div>';
+                                });
+                                usersHtml += '</div>';
+                            } else {
+                                usersHtml = '<div class="text-muted">Tidak ada user yang menggunakan</div>';
+                            }
+                            $('#usersList').html(usersHtml);
+                        } else {
+                            $('#childrenList').html('<div class="text-danger">Gagal memuat data anak</div>');
+                            $('#usersList').html('<div class="text-danger">Gagal memuat data user</div>');
+                        }
+                    },
+                    error: function() {
+                        $('#childrenList').html('<div class="text-danger">Gagal memuat data anak</div>');
+                        $('#usersList').html('<div class="text-danger">Gagal memuat data user</div>');
+                    }
+                });
             });
 
         });

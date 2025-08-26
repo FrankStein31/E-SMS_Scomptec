@@ -87,6 +87,7 @@ Route::middleware('prevent.double.submission')->group(function () {
     Route::get('user/search', [UserController::class, 'search'])->name('user.search');
     Route::resource('user', UserController::class)->only(['index', 'show']);
 
+    Route::get('unitkerja/detail/{id}', [UnitKerjaController::class, 'getDetailData'])->name('unitkerja.detail');
     Route::resource('unitkerja', UnitKerjaController::class)->only(['index', 'show']);
 
     Route::resource('klasifikasi', MasterKlasifikasiController::class)->only(['index', 'show']);
