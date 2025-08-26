@@ -764,7 +764,7 @@ class EntriSuratController extends Controller
     }
 
     /**
-     * Export Surat ke Excel dengan format yang konsisten
+     * Export Surat ke Excel
      */
     public function exportSuratExcel($id)
     {
@@ -968,7 +968,7 @@ class EntriSuratController extends Controller
     }
 
     /**
-     * Export Lembar Disposisi ke Excel dengan layout yang lebih compact dan rapi untuk cetak
+     * Export Lembar Disposisi ke Excel
      */
     public function exportSuratDisExcel($id)
     {
@@ -977,85 +977,54 @@ class EntriSuratController extends Controller
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Set lebar kolom yang lebih compact untuk cetak
-        $sheet->getColumnDimension('A')->setWidth(6);   // Logo area
-        $sheet->getColumnDimension('B')->setWidth(16);  // Label kiri
-        $sheet->getColumnDimension('C')->setWidth(18);  // Data kiri
-        $sheet->getColumnDimension('D')->setWidth(16);  // Label kanan
-        $sheet->getColumnDimension('E')->setWidth(18);  // Data kanan
-        $sheet->getColumnDimension('F')->setWidth(18);  // Tanda tangan
+        // Set lebar kolom untuk layout yang optimal
+        $sheet->getColumnDimension('A')->setWidth(18);  // Label kiri
+        $sheet->getColumnDimension('B')->setWidth(25);  // Data kiri
+        $sheet->getColumnDimension('C')->setWidth(18);  // Label kanan
+        $sheet->getColumnDimension('D')->setWidth(25);  // Data kanan
 
-        // Set margin untuk print yang lebih ketat
-        $sheet->getPageMargins()->setTop(0.5);
-        $sheet->getPageMargins()->setLeft(0.5);
-        $sheet->getPageMargins()->setRight(0.5);
-        $sheet->getPageMargins()->setBottom(0.5);
-
-        // Set tinggi baris header yang lebih compact
-        $sheet->getRowDimension(1)->setRowHeight(18);
-        $sheet->getRowDimension(2)->setRowHeight(16);
-        $sheet->getRowDimension(3)->setRowHeight(14);
-        $sheet->getRowDimension(4)->setRowHeight(14);
+        // Set margin untuk print yang optimal
+        $sheet->getPageMargins()->setTop(0.8);
+        $sheet->getPageMargins()->setLeft(0.8);
+        $sheet->getPageMargins()->setRight(0.8);
+        $sheet->getPageMargins()->setBottom(0.8);
 
         // Header kop surat
-        $sheet->setCellValue('B1', 'PEMERINTAH PROVINSI JAWA TIMUR');
-        $sheet->mergeCells('B1:F1');
-        $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(13);
-        $sheet->getStyle('B1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->setCellValue('A1', 'PEMERINTAH PROVINSI JAWA TIMUR');
+        $sheet->mergeCells('A1:D1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension(1)->setRowHeight(22);
 
-        $sheet->setCellValue('B2', 'SEKRETARIAT DAERAH');
-        $sheet->mergeCells('B2:F2');
-        $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(11);
-        $sheet->getStyle('B2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->setCellValue('A2', 'SEKRETARIAT DAERAH');
+        $sheet->mergeCells('A2:D2');
+        $sheet->getStyle('A2')->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle('A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension(2)->setRowHeight(20);
 
-        $sheet->setCellValue('B3', 'Jl. Pahlawan No. 110, Surabaya 60176');
-        $sheet->mergeCells('B3:F3');
-        $sheet->getStyle('B3')->getFont()->setSize(9);
-        $sheet->getStyle('B3')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        // Spasi
+        $sheet->getRowDimension(3)->setRowHeight(15);
 
-        $sheet->setCellValue('B4', 'Telp. (031) 3524001 - 11, Pswt 1467-1465-1489');
-        $sheet->mergeCells('B4:F4');
-        $sheet->getStyle('B4')->getFont()->setSize(9);
-        $sheet->getStyle('B4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        // Judul dokumen
+        $sheet->setCellValue('A4', 'LEMBAR DISPOSISI');
+        $sheet->mergeCells('A4:D4');
+        $sheet->getStyle('A4')->getFont()->setBold(true)->setSize(16);
+        $sheet->getStyle('A4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension(4)->setRowHeight(25);
 
-        // Tambahkan logo Jawa Timur yang lebih kecil
-        $logoPath = public_path('assets/images/logo/logo_jatim.png');
-        if (file_exists($logoPath)) {
-            try {
-                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-                $drawing->setName('Logo Jawa Timur');
-                $drawing->setDescription('Logo Pemprov Jatim');
-                $drawing->setPath($logoPath);
-                $drawing->setHeight(60);
-                $drawing->setWidth(48);
-                $drawing->setCoordinates('A1');
-                $drawing->setOffsetX(15);
-                $drawing->setOffsetY(5);
-                $drawing->setWorksheet($sheet);
-            } catch (\Exception $e) {
-                // Fallback text logo
-                $sheet->setCellValue('A1', 'LOGO');
-                $sheet->setCellValue('A2', 'JATIM');
-                $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(7);
-                $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-            }
-        }
+        // Info klasifikasi dan tanggal di kanan
+        $sheet->setCellValue('C5', 'Klasifikasi : ' . ($data->kode_klasifikasi ?? '000.231'));
+        $sheet->setCellValue('C6', 'Diterima tanggal : ' . ($data->tgl_diterima ? date('d-m-Y', strtotime($data->tgl_diterima)) : date('d-m-Y')));
+        $sheet->mergeCells('C5:D5');
+        $sheet->mergeCells('C6:D6');
+        $sheet->getStyle('C5:C6')->getFont()->setSize(11);
+        $sheet->getRowDimension(5)->setRowHeight(18);
+        $sheet->getRowDimension(6)->setRowHeight(18);
 
-        // Garis bawah header
-        $sheet->getRowDimension(5)->setRowHeight(4);
-        $sheet->getStyle('A5:F5')->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
+        // Spasi
+        $sheet->getRowDimension(7)->setRowHeight(15);
 
-        // Judul
-        $sheet->setCellValue('A6', 'LEMBAR DISPOSISI');
-        $sheet->mergeCells('A6:F6');
-        $sheet->getStyle('A6')->getFont()->setBold(true)->setSize(14);
-        $sheet->getStyle('A6')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension(6)->setRowHeight(20);
-
-        // Spasi minimal
-        $sheet->getRowDimension(7)->setRowHeight(8);
-
-        // Border style untuk tabel
+        // Border style untuk tabel yang rapi
         $borderStyle = [
             'borders' => [
                 'allBorders' => [
@@ -1065,132 +1034,106 @@ class EntriSuratController extends Controller
             ],
         ];
 
-        // Tabel informasi surat dalam 2 kolom
+        // Tabel informasi surat - format 2 kolom yang rapi
         $row = 8;
 
-        // Header tabel
-        $sheet->setCellValue('A' . $row, 'INFORMASI SURAT MASUK');
-        $sheet->setCellValue('D' . $row, 'INFORMASI PENERIMAAN');
-        $sheet->mergeCells('A' . $row . ':C' . $row);
-        $sheet->mergeCells('D' . $row . ':F' . $row);
-        $sheet->getStyle('A' . $row . ':F' . $row)->applyFromArray($borderStyle);
-        $sheet->getStyle('A' . $row . ':F' . $row)->getFont()->setBold(true)->setSize(10);
-        $sheet->getStyle('A' . $row . ':F' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A' . $row . ':F' . $row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('E8E8E8');
-        $sheet->getRowDimension($row)->setRowHeight(16);
-        $row++;
-
-        // Data baris dengan tinggi yang compact
+        // Data surat dalam format tabel yang konsisten
         $dataRows = [
-            ['Surat dari', $data->dari ?? '-', 'Klasifikasi', $data->kode_klasifikasi ?? '-'],
-            ['Tanggal surat', $data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : '-', 'Tanggal diterima    x', $data->tgl_diterima ? date('d/m/Y', strtotime($data->tgl_diterima)) : date('d/m/Y')],
-            ['Nomor', $data->nomor_surat ?? '-', 'Nomor Agenda', $data->noagenda ?? '-'],
-            ['Hal', $data->hal ?? '-', 'Sifat', $data->sifat ?? '-'],
-            ['Lampiran', $data->jumlah_lampiran ?? '0', '', '']
+            ['Surat dari', $data->dari ?? '-'],
+            ['Nomor Agenda', $data->noagenda ?? '-'],
+            ['Tanggal surat', $data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : '-', '', ''],
+            ['Nomor surat', $data->nomor_surat ?? '-', '', ''],
+            ['Perihal', $data->hal ?? '-', '', '']
         ];
 
-        foreach ($dataRows as $dataRow) {
+        foreach ($dataRows as $index => $dataRow) {
+            // Apply border untuk semua sel dalam baris
+            $sheet->getStyle('A' . $row . ':D' . $row)->applyFromArray($borderStyle);
+
             $sheet->setCellValue('A' . $row, $dataRow[0]);
-            $sheet->setCellValue('C' . $row, $dataRow[1]);
-            $sheet->setCellValue('D' . $row, $dataRow[2]);
-            $sheet->setCellValue('F' . $row, $dataRow[3]);
-            $sheet->getStyle('A' . $row . ':F' . $row)->applyFromArray($borderStyle);
-            $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(9);
-            $sheet->getStyle('C' . $row)->getFont()->setSize(9);
-            $sheet->getStyle('D' . $row)->getFont()->setBold(true)->setSize(9);
-            $sheet->getStyle('F' . $row)->getFont()->setSize(9);
+            $sheet->setCellValue('B' . $row, $dataRow[1]);
 
-            // Set alignment untuk data agar sejajar
-            $sheet->getStyle('C' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
-            $sheet->getStyle('F' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+            // Hanya tampilkan kolom kanan jika ada data
+            if (!empty($dataRow[2])) {
+                $sheet->setCellValue('C' . $row, $dataRow[2]);
+                $sheet->setCellValue('D' . $row, $dataRow[3]);
+            }
 
-            // Wrap text untuk "Hal" yang mungkin panjang
-            if ($dataRow[0] == 'Hal') {
-                $sheet->getStyle('C' . $row)->getAlignment()->setWrapText(true);
-                $sheet->getRowDimension($row)->setRowHeight(18);
+            // Style untuk label (kolom A dan C)
+            $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(11);
+            $sheet->getStyle('C' . $row)->getFont()->setBold(true)->setSize(11);
+
+            // Style untuk data (kolom B dan D)
+            $sheet->getStyle('B' . $row)->getFont()->setSize(11);
+            $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+
+            // Set alignment left untuk data agar rapi
+            $sheet->getStyle('B' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+
+            // Set tinggi baris sesuai konten
+            if ($dataRow[0] == 'Perihal' && strlen($dataRow[1]) > 30) {
+                $sheet->getStyle('B' . $row)->getAlignment()->setWrapText(true);
+                $sheet->getRowDimension($row)->setRowHeight(30);
             } else {
-                $sheet->getRowDimension($row)->setRowHeight(14);
+                $sheet->getRowDimension($row)->setRowHeight(22);
             }
             $row++;
         }
 
-        $row++; // Spasi
+        $row += 2; // Spasi
 
-        // Diteruskan kepada - lebih compact
-        $sheet->setCellValue('A' . $row, 'DITERUSKAN KEPADA:');
-        $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(10);
-        $sheet->getRowDimension($row)->setRowHeight(14);
+        // Diteruskan kepada dengan border yang konsisten
+        $sheet->setCellValue('A' . $row, 'Diteruskan kepada:');
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(12);
+        $sheet->getRowDimension($row)->setRowHeight(20);
         $row++;
 
-        // List penerima (6 baris untuk menghemat ruang)
-        for ($i = 1; $i <= 6; $i++) {
+        // List penerima dengan border yang rapi (6 baris)
+        for ($i = 1; $i <= 5; $i++) {
             $sheet->setCellValue('A' . $row, $i . '.');
             $sheet->setCellValue('B' . $row, '');
-            $sheet->mergeCells('B' . $row . ':F' . $row);
-            $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-            $sheet->getStyle('A' . $row)->getFont()->setSize(9);
-            $sheet->getRowDimension($row)->setRowHeight(16);
+            $sheet->mergeCells('B' . $row . ':D' . $row);
+
+            // Apply border untuk semua sel
+            $sheet->getStyle('A' . $row . ':D' . $row)->applyFromArray($borderStyle);
+
+            $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+            $sheet->getStyle('A' . $row)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+            $sheet->getRowDimension($row)->setRowHeight(28);
             $row++;
         }
 
-        $row++; // Spasi minimal
+        $row += 2; // Spasi
 
-        // ISI DISPOSISI
-        $sheet->setCellValue('A' . $row, 'ISI DISPOSISI / INSTRUKSI:');
-        $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(10);
-        $sheet->getRowDimension($row)->setRowHeight(14);
+        // ISI DISPOSISI dengan header yang rapi
+        $sheet->setCellValue('A' . $row, 'ISI DISPOSISI');
+        $sheet->mergeCells('A' . $row . ':D' . $row);
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle('A' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A' . $row)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('A' . $row . ':D' . $row)->applyFromArray($borderStyle);
+        $sheet->getRowDimension($row)->setRowHeight(25);
         $row++;
 
-        // Area untuk isi disposisi (4 baris untuk menghemat ruang)
-        for ($i = 0; $i < 4; $i++) {
+        // Area kosong untuk isi disposisi dengan border yang konsisten (12 baris)
+        for ($i = 0; $i < 12; $i++) {
             $sheet->setCellValue('A' . $row, '');
-            $sheet->mergeCells('A' . $row . ':F' . $row);
-            $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-            $sheet->getRowDimension($row)->setRowHeight(20);
+            $sheet->mergeCells('A' . $row . ':D' . $row);
+            $sheet->getStyle('A' . $row . ':D' . $row)->applyFromArray($borderStyle);
+            $sheet->getRowDimension($row)->setRowHeight(30);
             $row++;
         }
 
-        // Tanda tangan - compact
-        $row += 2;
-        $sheet->setCellValue('E' . $row, 'Surabaya, ' . date('d F Y'));
-        $sheet->getStyle('E' . $row)->getFont()->setSize(10);
-        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension($row)->setRowHeight(14);
-        $row++;
-
-        $sheet->setCellValue('E' . $row, 'a.n. GUBERNUR JAWA TIMUR');
-        $sheet->getStyle('E' . $row)->getFont()->setSize(10);
-        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension($row)->setRowHeight(14);
-        $row++;
-
-        $sheet->setCellValue('E' . $row, 'SEKRETARIS DAERAH');
-        $sheet->getStyle('E' . $row)->getFont()->setBold(true)->setSize(10);
-        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension($row)->setRowHeight(14);
-        $row += 3;
-
-        $sheet->setCellValue('E' . $row, 'Dr. H. HERU TJAHJONO, S.IP., M.Si.');
-        $sheet->getStyle('E' . $row)->getFont()->setBold(true)->setSize(10);
-        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('E' . $row)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-        $sheet->getRowDimension($row)->setRowHeight(16);
-        $row++;
-
-        $sheet->setCellValue('E' . $row, 'NIP. 19651015 199103 1 002');
-        $sheet->getStyle('E' . $row)->getFont()->setSize(9);
-        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension($row)->setRowHeight(12);
-
-        // Set print area yang tepat dan orientation
-        $sheet->getPageSetup()->setPrintArea('A1:F' . ($row + 1));
+        // Set print area dan orientation yang optimal
+        $sheet->getPageSetup()->setPrintArea('A1:D' . ($row));
         $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
         $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
 
-        // Set scale untuk memastikan muat dalam 1 halaman
-        $sheet->getPageSetup()->setScale(85);
+        // Set scale untuk memastikan tampilan optimal
+        $sheet->getPageSetup()->setScale(90);
 
-        // Set print options
+        // Set print options untuk hasil terbaik
         $sheet->getPageSetup()->setFitToPage(true);
         $sheet->getPageSetup()->setFitToWidth(1);
         $sheet->getPageSetup()->setFitToHeight(1);
