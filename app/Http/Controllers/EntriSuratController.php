@@ -18,7 +18,8 @@ use App\DataTables\EntrySuratIsiDataTable;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\TemplateProcessor;
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class EntriSuratController extends Controller
 {
@@ -57,14 +58,14 @@ class EntriSuratController extends Controller
     }
 
     /**
-     * undocumented function summary
+     * Upload file scan untuk entri surat
      *
-     * Undocumented function long description
+     * Method ini digunakan untuk menyimpan file scan yang diupload dalam format base64
      *
-     * @param Type $var Description
-     * @return type
-     * @throws conditon
-     **/
+     * @param Request $request Request yang berisi images_input
+     * @param int $entri_surat_id ID dari entri surat
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function scanfile(Request $request, $entri_surat_id)
     {
         DB::beginTransaction();
@@ -221,7 +222,7 @@ class EntriSuratController extends Controller
     public function show($id)
     {
         $data = EntrySuratIsi::with(['FileScan', 'tujuanSurat.user', 'klasifikasi'])->find($id);
-        
+
         if (!$data) {
             return redirect()->route('entrisurat.index')->with('error', 'Data tidak ditemukan');
         }
@@ -573,436 +574,631 @@ class EntriSuratController extends Controller
     }
 
     /**
-     * Export Surat Resmi ke Word dengan Logo Jawa Timur
+     * Export Tanda Terima Surat ke Excel sesuai template yang diberikan
      */
-    public function exportSuratWord($id)
+    public function exportTandaTerimaExcel($id)
     {
         $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
 
-        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-        // Set default font untuk look yang profesional
-        $phpWord->setDefaultFontName('Times New Roman');
-        $phpWord->setDefaultFontSize(12);
+        // Set lebar kolom sesuai template
+        $sheet->getColumnDimension('A')->setWidth(8);   // Logo area
+        $sheet->getColumnDimension('B')->setWidth(35);  // Label field yang lebih lebar
+        $sheet->getColumnDimension('C')->setWidth(3);   // Titik dua
+        $sheet->getColumnDimension('D')->setWidth(40);  // Data area yang lebar
+        $sheet->getColumnDimension('E')->setWidth(20);  // Area kosong/tanda tangan
 
-        // Section dengan pengaturan halaman A4 yang tepat
-        $section = $phpWord->addSection([
-            'marginTop' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
-            'marginLeft' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(3),
-            'marginRight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
-            'marginBottom' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
-            'pageSizeW' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(21),
-            'pageSizeH' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(29.7),
-            'orientation' => 'portrait',
-        ]);
+        // Set margin untuk print A4
+        $sheet->getPageMargins()->setTop(0.75);
+        $sheet->getPageMargins()->setLeft(0.7);
+        $sheet->getPageMargins()->setRight(0.7);
+        $sheet->getPageMargins()->setBottom(0.75);
 
-        // Define table styles untuk konsistensi
-        $phpWord->addTableStyle('HeaderTable', [
-            'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER,
-            'cellMargin' => 60,
-            'borderSize' => 0,
-        ]);
+        // Set tinggi baris header
+        $sheet->getRowDimension(1)->setRowHeight(20);
+        $sheet->getRowDimension(2)->setRowHeight(18);
+        $sheet->getRowDimension(3)->setRowHeight(16);
+        $sheet->getRowDimension(4)->setRowHeight(16);
 
-        $phpWord->addTableStyle('MainTable', [
-            'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::START,
-            'cellMargin' => 80,
-            'borderSize' => 0,
-        ]);
+        // Header kop surat
+        $sheet->setCellValue('B1', 'PEMERINTAH PROVINSI JAWA TIMUR');
+        $sheet->mergeCells('B1:E1');
+        $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('B1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-        // Header: Logo Jawa Timur + Kop Surat
-        $headerTable = $section->addTable('HeaderTable');
-        $headerTable->addRow();
+        $sheet->setCellValue('B2', 'SEKRETARIAT DAERAH');
+        $sheet->mergeCells('B2:E2');
+        $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle('B2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-        // Logo cell dengan logo Jawa Timur
-        $logoCell = $headerTable->addCell(1800, ['valign' => 'center']);
+        $sheet->setCellValue('B3', 'Jl. Pahlawan 110, Surabaya, Jawa Timur');
+        $sheet->mergeCells('B3:E3');
+        $sheet->getStyle('B3')->getFont()->setSize(10);
+        $sheet->getStyle('B3')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        $sheet->setCellValue('B4', 'Telp (031) 3524001 - 11, Pswt 1467-1465-1489');
+        $sheet->mergeCells('B4:E4');
+        $sheet->getStyle('B4')->getFont()->setSize(10);
+        $sheet->getStyle('B4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        // Tambahkan logo Jawa Timur
         $logoPath = public_path('assets/images/logo/logo_jatim.png');
-        if (file_exists($logoPath) && filesize($logoPath) > 0) {
+        if (file_exists($logoPath)) {
             try {
-                $logoCell->addImage($logoPath, [
-                    'width' => 75,
-                    'height' => 90,
-                    'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
-                    'wrappingStyle' => 'inline'
-                ]);
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName('Logo Jawa Timur');
+                $drawing->setDescription('Logo Pemprov Jatim');
+                $drawing->setPath($logoPath);
+                $drawing->setHeight(70);
+                $drawing->setWidth(55);
+                $drawing->setCoordinates('A1');
+                $drawing->setOffsetX(20);
+                $drawing->setOffsetY(5);
+                $drawing->setWorksheet($sheet);
             } catch (\Exception $e) {
-                $logoCell->addText('LOGO\nJAWA TIMUR', ['bold' => true, 'size' => 10], ['alignment' => 'center']);
-            }
-        } else {
-            $logoCell->addText('LOGO\nJAWA TIMUR', ['bold' => true, 'size' => 10], ['alignment' => 'center']);
-        }
-
-        // Kop surat cell
-        $kopCell = $headerTable->addCell(8200, [
-            'valign' => 'center',
-            'borderBottomSize' => 18,
-            'borderBottomColor' => '000000',
-        ]);
-
-        $kopCell->addText(
-            'PEMERINTAH PROVINSI JAWA TIMUR',
-            ['bold' => true, 'size' => 16, 'color' => '000000'],
-            ['alignment' => 'center', 'spaceAfter' => 40]
-        );
-        $kopCell->addText(
-            'SEKRETARIAT DAERAH',
-            ['bold' => true, 'size' => 14, 'color' => '000000'],
-            ['alignment' => 'center', 'spaceAfter' => 40]
-        );
-        $kopCell->addText(
-            'Jl. Pahlawan No. 110, Surabaya 60176',
-            ['size' => 11, 'color' => '000000'],
-            ['alignment' => 'center', 'spaceAfter' => 20]
-        );
-        $kopCell->addText(
-            'Telp. (031) 3524001 - 11, Pswt. 1467-1465-1489',
-            ['size' => 11, 'color' => '000000'],
-            ['alignment' => 'center', 'spaceAfter' => 20]
-        );
-
-        $section->addTextBreak(2);
-
-        // --- Bagian Informasi Surat dan Alamat Tujuan ---
-        $mainTable = $section->addTable('MainTable');
-
-        // Baris 1: Nomor Surat & Tanggal
-        $mainTable->addRow();
-        $leftCell1 = $mainTable->addCell(5000);
-        $leftCell1->addText('Nomor', ['size' => 12], ['spaceAfter' => 0]);
-        $leftCell1->addText(': ' . ($data->nomor_surat ?? '-'), ['size' => 12], ['spaceAfter' => 0]);
-
-        $rightCell1 = $mainTable->addCell(5000);
-        $rightCell1->addText(
-            'Surabaya, ' . ($data->tgl_surat ? date('d F Y', strtotime($data->tgl_surat)) : date('d F Y')),
-            ['size' => 12],
-            ['alignment' => 'right', 'spaceAfter' => 0]
-        );
-
-        // Baris 2: Klasifikasi & Kepada
-        $mainTable->addRow();
-        $leftCell2 = $mainTable->addCell(5000);
-        $leftCell2->addText('Klasifikasi', ['size' => 12], ['spaceAfter' => 0]);
-        $leftCell2->addText(': ' . ($data->kode_klasifikasi ?? '-'), ['size' => 12], ['spaceAfter' => 0]);
-
-        $rightCell2 = $mainTable->addCell(5000, ['valign' => 'top']);
-        $rightCell2->addText('Kepada Yth.', ['size' => 12], ['alignment' => 'right', 'spaceAfter' => 0]);
-        $rightCell2->addText($data->kepada ?? '-', ['size' => 12, 'bold' => true], ['alignment' => 'right', 'spaceAfter' => 0]);
-
-        // Baris 3: Hal & di Tempat  
-        $mainTable->addRow();
-        $leftCell3 = $mainTable->addCell(5000);
-        $leftCell3->addText('Hal', ['size' => 12], ['spaceAfter' => 0]);
-        $leftCell3->addText(': ' . ($data->hal ?? '-'), ['size' => 12, 'bold' => true], ['spaceAfter' => 0]);
-
-        $rightCell3 = $mainTable->addCell(5000, ['valign' => 'top']);
-        $rightCell3->addText('di Tempat', ['size' => 12], ['alignment' => 'right', 'spaceAfter' => 0]);
-
-        $section->addTextBreak(2);
-
-        // Isi surat
-        if (!empty($data->isi)) {
-            $section->addText(
-                $data->isi,
-                ['size' => 12],
-                ['alignment' => 'both', 'spaceAfter' => 300, 'lineHeight' => 1.5]
-            );
-        }
-
-        $section->addTextBreak(3);
-
-        // Footer dengan tembusan dan tanda tangan
-        $footerTable = $section->addTable([
-            'borderSize' => 0,
-        ]);
-        $footerTable->addRow();
-
-        // Tembusan
-        $tembusanCell = $footerTable->addCell(5000);
-        if (!empty($data->tembusan)) {
-            $tembusanCell->addText('Tembusan:', ['bold' => true, 'size' => 12], ['spaceAfter' => 100]);
-            $items = preg_split('/\r\n|\r|\n|,|;/', (string) $data->tembusan);
-            if (is_array($items)) {
-                $counter = 1;
-                foreach ($items as $item) {
-                    $item = trim($item);
-                    if ($item !== '') {
-                        $tembusanCell->addText($counter . '. ' . $item, ['size' => 11], ['spaceAfter' => 80]);
-                        $counter++;
-                    }
-                }
+                // Fallback text logo
+                $sheet->setCellValue('A1', 'LOGO');
+                $sheet->setCellValue('A2', 'JATIM');
+                $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(8);
+                $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
             }
         }
 
-        // Tanda tangan
-        $signCell = $footerTable->addCell(5000, ['valign' => 'top']);
-        $signCell->addText(
-            'a.n. GUBERNUR JAWA TIMUR',
-            ['bold' => true, 'size' => 12],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
-        $signCell->addText(
-            'SEKRETARIS DAERAH',
-            ['bold' => true, 'size' => 12],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
+        // Garis bawah header
+        $sheet->getRowDimension(5)->setRowHeight(5);
+        $sheet->getStyle('A5:E5')->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
 
-        $signCell->addTextBreak(3);
+        // Spasi
+        $sheet->getRowDimension(6)->setRowHeight(20);
 
-        $signCell->addText(
-            'Dr. H. HERU TJAHJONO, S.IP., M.Si.',
-            ['bold' => true, 'underline' => 'single', 'size' => 12],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
-        $signCell->addText(
-            'NIP. 19651015 199103 1 002',
-            ['size' => 11],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
+        // Judul dokumen
+        $sheet->setCellValue('A7', 'TANDA PENERIMAAN SURAT');
+        $sheet->mergeCells('A7:E7');
+        $sheet->getStyle('A7')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A7')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension(7)->setRowHeight(25);
 
-        // Generate filename dan download
-        $fileName = 'Surat_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Tanpa_Nomor') . '_' . date('Y-m-d') . '.docx';
+        // Spasi setelah judul
+        $sheet->getRowDimension(8)->setRowHeight(20);
 
-        $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        // Data tanda terima sesuai template - mulai dari baris 9
+        $row = 9;
+
+        // Telah Terima Surat dari
+        $sheet->setCellValue('A' . $row, 'Telah Terima Surat dari');
+        $sheet->setCellValue('C' . $row, ':');
+        $sheet->setCellValue('D' . $row, $data->dari ?? '-');
+        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row++;
+
+        // Tanggal
+        $sheet->setCellValue('A' . $row, 'Tanggal');
+        $sheet->setCellValue('C' . $row, ':');
+        $sheet->setCellValue('D' . $row, $data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : '-');
+        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row++;
+
+        // Nomor Surat
+        $sheet->setCellValue('A' . $row, 'Nomor Surat');
+        $sheet->setCellValue('C' . $row, ':');
+        $sheet->setCellValue('D' . $row, $data->nomor_surat ?? '-');
+        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row++;
+
+        // Perihal
+        $sheet->setCellValue('A' . $row, 'Perihal');
+        $sheet->setCellValue('C' . $row, ':');
+        $sheet->setCellValue('D' . $row, $data->hal ?? '-');
+        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getAlignment()->setWrapText(true);
+        $sheet->getRowDimension($row)->setRowHeight(22);
+        $row++;
+
+        // Diterima
+        $sheet->setCellValue('A' . $row, 'Diterima');
+        $sheet->setCellValue('C' . $row, ':');
+        $sheet->setCellValue('D' . $row, $data->tgl_diterima ? date('d-m-Y', strtotime($data->tgl_diterima)) : date('d-m-Y'));
+        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+
+        // Spasi sebelum tanda tangan
+        $row += 6;
+
+        // Area tanda tangan sesuai template - di sebelah kanan
+        $sheet->setCellValue('D' . $row, 'SURABAYA, ' . ($data->tgl_diterima ? date('d/m/Y', strtotime($data->tgl_diterima)) : date('d/m/Y')));
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row++;
+
+        $sheet->setCellValue('D' . $row, 'PENERIMA');
+        $sheet->getStyle('D' . $row)->getFont()->setBold(true)->setSize(11);
+        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row++;
+
+        // Label "Operator" di sebelah kanan sesuai template
+        $sheet->setCellValue('E' . $row, 'Operator');
+        $sheet->getStyle('E' . $row)->getFont()->setSize(10);
+        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(16);
+        $row += 4;
+
+        // Nama penandatangan dengan garis bawah
+        $sheet->setCellValue('D' . $row, $data->createdBy->fullname ?? 'Operator');
+        $sheet->getStyle('D' . $row)->getFont()->setBold(true)->setSize(11);
+        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('D' . $row)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $sheet->getRowDimension($row)->setRowHeight(20);
+        $row++;
+
+        // NIP
+        $sheet->setCellValue('D' . $row, 'NIP');
+        $sheet->getStyle('D' . $row)->getFont()->setSize(10);
+        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(16);
+
+        // Set print area dan orientation
+        $sheet->getPageSetup()->setPrintArea('A1:E' . ($row + 2));
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
+        $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+
+        // Generate filename
+        $fileName = 'Tanda_Terima_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Surat') . '_' . date('Y-m-d') . '.xlsx';
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
 
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
     }
 
-
-
     /**
-     * Export Lembar Disposisi ke Word dengan Logo Jawa Timur
+     * Export Surat ke Excel dengan format yang konsisten
      */
-    public function exportSuratDisWord($id)
+    public function exportSuratExcel($id)
     {
         $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
 
-        $phpWord = new \PhpOffice\PhpWord\PhpWord();
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-        // Set default font untuk look yang bersih
-        $phpWord->setDefaultFontName('Times New Roman');
-        $phpWord->setDefaultFontSize(12);
+        // Set lebar kolom sesuai template tanda terima
+        $sheet->getColumnDimension('A')->setWidth(8);   // Logo area
+        $sheet->getColumnDimension('B')->setWidth(35);  // Label field
+        $sheet->getColumnDimension('C')->setWidth(3);   // Titik dua
+        $sheet->getColumnDimension('D')->setWidth(40);  // Data area
+        $sheet->getColumnDimension('E')->setWidth(20);  // Info tambahan
 
-        // Section dengan pengaturan halaman A4 yang tepat
-        $section = $phpWord->addSection([
-            'marginTop' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
-            'marginLeft' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(3),
-            'marginRight' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
-            'marginBottom' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(2.5),
-            'pageSizeW' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(21),
-            'pageSizeH' => \PhpOffice\PhpWord\Shared\Converter::cmToTwip(29.7),
-            'orientation' => 'portrait',
-        ]);
+        // Set margin untuk print
+        $sheet->getPageMargins()->setTop(0.75);
+        $sheet->getPageMargins()->setLeft(0.7);
+        $sheet->getPageMargins()->setRight(0.7);
+        $sheet->getPageMargins()->setBottom(0.75);
 
-        // Define table styles
-        $phpWord->addTableStyle('HeaderTable', [
-            'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::CENTER,
-            'cellMargin' => 60,
-            'borderSize' => 0,
-        ]);
+        // Set tinggi baris header
+        $sheet->getRowDimension(1)->setRowHeight(20);
+        $sheet->getRowDimension(2)->setRowHeight(18);
+        $sheet->getRowDimension(3)->setRowHeight(16);
+        $sheet->getRowDimension(4)->setRowHeight(16);
 
-        $phpWord->addTableStyle('MainTable', [
-            'cellMargin' => 80,
-            'borderSize' => 8,
-            'borderColor' => '000000',
-        ]);
+        // Header kop surat yang sama dengan tanda terima
+        $sheet->setCellValue('B1', 'PEMERINTAH PROVINSI JAWA TIMUR');
+        $sheet->mergeCells('B1:E1');
+        $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('B1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-        // Header: Logo Jawa Timur + Kop Surat
-        $headerTable = $section->addTable('HeaderTable');
-        $headerTable->addRow();
+        $sheet->setCellValue('B2', 'SEKRETARIAT DAERAH');
+        $sheet->mergeCells('B2:E2');
+        $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(12);
+        $sheet->getStyle('B2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
 
-        // Logo cell dengan logo Jawa Timur
-        $logoCell = $headerTable->addCell(1800, ['valign' => 'center']);
-        $logoPath = public_path('assets/images/logo/logo_jatim.png'); // Logo Jawa Timur
-        if (file_exists($logoPath) && filesize($logoPath) > 0) {
+        $sheet->setCellValue('B3', 'Jl. Pahlawan 110, Surabaya, Jawa Timur');
+        $sheet->mergeCells('B3:E3');
+        $sheet->getStyle('B3')->getFont()->setSize(10);
+        $sheet->getStyle('B3')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        $sheet->setCellValue('B4', 'Telp (031) 3524001 - 11, Pswt 1467-1465-1489');
+        $sheet->mergeCells('B4:E4');
+        $sheet->getStyle('B4')->getFont()->setSize(10);
+        $sheet->getStyle('B4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        // Tambahkan logo Jawa Timur
+        $logoPath = public_path('assets/images/logo/logo_jatim.png');
+        if (file_exists($logoPath)) {
             try {
-                $logoCell->addImage($logoPath, [
-                    'width' => 75,
-                    'height' => 90,
-                    'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::CENTER,
-                    'wrappingStyle' => 'inline'
-                ]);
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName('Logo Jawa Timur');
+                $drawing->setDescription('Logo Pemprov Jatim');
+                $drawing->setPath($logoPath);
+                $drawing->setHeight(70);
+                $drawing->setWidth(55);
+                $drawing->setCoordinates('A1');
+                $drawing->setOffsetX(20);
+                $drawing->setOffsetY(5);
+                $drawing->setWorksheet($sheet);
             } catch (\Exception $e) {
-                $logoCell->addText('LOGO\nJAWA TIMUR', ['bold' => true, 'size' => 10], ['alignment' => 'center']);
+                // Fallback text logo
+                $sheet->setCellValue('A1', 'LOGO');
+                $sheet->setCellValue('A2', 'JATIM');
+                $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(8);
+                $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
             }
-        } else {
-            $logoCell->addText('LOGO\nJAWA TIMUR', ['bold' => true, 'size' => 10], ['alignment' => 'center']);
         }
 
-        // Kop surat cell
-        $kopCell = $headerTable->addCell(8200, [
-            'valign' => 'center',
-            'borderBottomSize' => 18,
-            'borderBottomColor' => '000000'
-        ]);
+        // Garis bawah header
+        $sheet->getRowDimension(5)->setRowHeight(5);
+        $sheet->getStyle('A5:E5')->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
 
-        $kopCell->addText(
-            'PEMERINTAH PROVINSI JAWA TIMUR',
-            ['bold' => true, 'size' => 16, 'color' => '000000'],
-            ['alignment' => 'center', 'spaceAfter' => 40]
-        );
-        $kopCell->addText(
-            'SEKRETARIAT DAERAH',
-            ['bold' => true, 'size' => 14, 'color' => '000000'],
-            ['alignment' => 'center', 'spaceAfter' => 40]
-        );
-        $kopCell->addText(
-            'Jl. Pahlawan No. 110, Surabaya 60176',
-            ['size' => 11, 'color' => '000000'],
-            ['alignment' => 'center', 'spaceAfter' => 20]
-        );
-        $kopCell->addText(
-            'Telp. (031) 3524001 - 11, Pswt. 1467-1465-1489',
-            ['size' => 11, 'color' => '000000'],
-            ['alignment' => 'center', 'spaceAfter' => 20]
-        );
+        // Spasi setelah header
+        $sheet->getRowDimension(6)->setRowHeight(20);
 
-        $section->addTextBreak(2);
+        // Info surat dalam format yang konsisten
+        $row = 7;
+
+        // Nomor surat
+        $sheet->setCellValue('A' . $row, 'Nomor');
+        $sheet->setCellValue('C' . $row, ':');
+        $sheet->setCellValue('D' . $row, $data->nomor_surat ?? '-');
+        $sheet->setCellValue('E' . $row, 'Surabaya, ' . ($data->tgl_surat ? date('d F Y', strtotime($data->tgl_surat)) : date('d F Y')));
+        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('E' . $row)->getFont()->setSize(11);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row++;
+
+        // Klasifikasi
+        $sheet->setCellValue('A' . $row, 'Klasifikasi');
+        $sheet->setCellValue('C' . $row, ':');
+        $sheet->setCellValue('D' . $row, $data->kode_klasifikasi ?? '-');
+        $sheet->setCellValue('E' . $row, 'Kepada Yth.');
+        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('E' . $row)->getFont()->setSize(11)->setBold(true);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row++;
+
+        // Hal
+        $sheet->setCellValue('A' . $row, 'Hal');
+        $sheet->setCellValue('C' . $row, ':');
+        $sheet->setCellValue('D' . $row, $data->hal ?? '-');
+        $sheet->setCellValue('E' . $row, $data->kepada ?? '-');
+        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11)->setBold(true);
+        $sheet->getStyle('E' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getAlignment()->setWrapText(true);
+        $sheet->getRowDimension($row)->setRowHeight(22);
+        $row++;
+
+        // Di tempat
+        $sheet->setCellValue('E' . $row, 'di Tempat');
+        $sheet->getStyle('E' . $row)->getFont()->setSize(11);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row += 2;
+
+        // Isi surat
+        if (!empty($data->isi)) {
+            $sheet->setCellValue('A' . $row, 'Isi Surat:');
+            $sheet->mergeCells('A' . $row . ':E' . $row);
+            $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(11);
+            $sheet->getRowDimension($row)->setRowHeight(20);
+            $row++;
+
+            $sheet->setCellValue('A' . $row, $data->isi);
+            $sheet->mergeCells('A' . $row . ':E' . $row);
+            $sheet->getStyle('A' . $row)->getAlignment()->setWrapText(true);
+            $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+            $sheet->getRowDimension($row)->setRowHeight(35);
+            $row += 2;
+        }
+
+        // Tembusan
+        if (!empty($data->tembusan)) {
+            $sheet->setCellValue('A' . $row, 'Tembusan:');
+            $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(11);
+            $sheet->getRowDimension($row)->setRowHeight(20);
+            $row++;
+
+            $items = preg_split('/\r\n|\r|\n|,|;/', (string) $data->tembusan);
+            if (is_array($items)) {
+                $counter = 1;
+                foreach ($items as $item) {
+                    $item = trim($item);
+                    if ($item !== '') {
+                        $sheet->setCellValue('A' . $row, $counter . '. ' . $item);
+                        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
+                        $sheet->getRowDimension($row)->setRowHeight(18);
+                        $row++;
+                        $counter++;
+                    }
+                }
+            }
+            $row++;
+        }
+
+        // Tanda tangan - format konsisten dengan tanda terima
+        $row += 2;
+        $sheet->setCellValue('D' . $row, 'a.n. GUBERNUR JAWA TIMUR');
+        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
+        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row++;
+
+        $sheet->setCellValue('D' . $row, 'SEKRETARIS DAERAH');
+        $sheet->getStyle('D' . $row)->getFont()->setBold(true)->setSize(11);
+        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(18);
+        $row += 4;
+
+        $sheet->setCellValue('D' . $row, 'Dr. H. HERU TJAHJONO, S.IP., M.Si.');
+        $sheet->getStyle('D' . $row)->getFont()->setBold(true)->setSize(11);
+        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('D' . $row)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $sheet->getRowDimension($row)->setRowHeight(20);
+        $row++;
+
+        $sheet->setCellValue('D' . $row, 'NIP. 19651015 199103 1 002');
+        $sheet->getStyle('D' . $row)->getFont()->setSize(10);
+        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(16);
+
+        // Set print area dan orientation
+        $sheet->getPageSetup()->setPrintArea('A1:E' . ($row + 2));
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
+        $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+
+        // Generate filename
+        $fileName = 'Surat_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Tanpa_Nomor') . '_' . date('Y-m-d') . '.xlsx';
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
+        $writer->save($tempFile);
+
+        return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
+    }
+
+    /**
+     * Export Lembar Disposisi ke Excel dengan layout yang lebih compact dan rapi untuk cetak
+     */
+    public function exportSuratDisExcel($id)
+    {
+        $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set lebar kolom yang lebih compact untuk cetak
+        $sheet->getColumnDimension('A')->setWidth(6);   // Logo area
+        $sheet->getColumnDimension('B')->setWidth(16);  // Label kiri
+        $sheet->getColumnDimension('C')->setWidth(18);  // Data kiri
+        $sheet->getColumnDimension('D')->setWidth(16);  // Label kanan
+        $sheet->getColumnDimension('E')->setWidth(18);  // Data kanan
+        $sheet->getColumnDimension('F')->setWidth(18);  // Tanda tangan
+
+        // Set margin untuk print yang lebih ketat
+        $sheet->getPageMargins()->setTop(0.5);
+        $sheet->getPageMargins()->setLeft(0.5);
+        $sheet->getPageMargins()->setRight(0.5);
+        $sheet->getPageMargins()->setBottom(0.5);
+
+        // Set tinggi baris header yang lebih compact
+        $sheet->getRowDimension(1)->setRowHeight(18);
+        $sheet->getRowDimension(2)->setRowHeight(16);
+        $sheet->getRowDimension(3)->setRowHeight(14);
+        $sheet->getRowDimension(4)->setRowHeight(14);
+
+        // Header kop surat
+        $sheet->setCellValue('B1', 'PEMERINTAH PROVINSI JAWA TIMUR');
+        $sheet->mergeCells('B1:F1');
+        $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(13);
+        $sheet->getStyle('B1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        $sheet->setCellValue('B2', 'SEKRETARIAT DAERAH');
+        $sheet->mergeCells('B2:F2');
+        $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(11);
+        $sheet->getStyle('B2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        $sheet->setCellValue('B3', 'Jl. Pahlawan No. 110, Surabaya 60176');
+        $sheet->mergeCells('B3:F3');
+        $sheet->getStyle('B3')->getFont()->setSize(9);
+        $sheet->getStyle('B3')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        $sheet->setCellValue('B4', 'Telp. (031) 3524001 - 11, Pswt 1467-1465-1489');
+        $sheet->mergeCells('B4:F4');
+        $sheet->getStyle('B4')->getFont()->setSize(9);
+        $sheet->getStyle('B4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+        // Tambahkan logo Jawa Timur yang lebih kecil
+        $logoPath = public_path('assets/images/logo/logo_jatim.png');
+        if (file_exists($logoPath)) {
+            try {
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName('Logo Jawa Timur');
+                $drawing->setDescription('Logo Pemprov Jatim');
+                $drawing->setPath($logoPath);
+                $drawing->setHeight(60);
+                $drawing->setWidth(48);
+                $drawing->setCoordinates('A1');
+                $drawing->setOffsetX(15);
+                $drawing->setOffsetY(5);
+                $drawing->setWorksheet($sheet);
+            } catch (\Exception $e) {
+                // Fallback text logo
+                $sheet->setCellValue('A1', 'LOGO');
+                $sheet->setCellValue('A2', 'JATIM');
+                $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(7);
+                $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            }
+        }
+
+        // Garis bawah header
+        $sheet->getRowDimension(5)->setRowHeight(4);
+        $sheet->getStyle('A5:F5')->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
 
         // Judul
-        $section->addText(
-            'LEMBAR DISPOSISI',
-            ['bold' => true, 'size' => 16, 'color' => '000000'],
-            ['alignment' => 'center', 'spaceAfter' => 300]
-        );
+        $sheet->setCellValue('A6', 'LEMBAR DISPOSISI');
+        $sheet->mergeCells('A6:F6');
+        $sheet->getStyle('A6')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A6')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension(6)->setRowHeight(20);
 
-        // Main Disposisi Table
-        $table = $section->addTable('MainTable');
+        // Spasi minimal
+        $sheet->getRowDimension(7)->setRowHeight(8);
 
-        // Header row dengan merge
-        $table->addRow();
-        $table->addCell(4000, ['gridSpan' => 2])->addText(
-            'INFORMASI SURAT MASUK',
-            ['bold' => true, 'size' => 12],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
-        $table->addCell(4000, ['gridSpan' => 2])->addText(
-            'INFORMASI PENERIMAAN',
-            ['bold' => true, 'size' => 12],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
+        // Border style untuk tabel
+        $borderStyle = [
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['argb' => '000000'],
+                ],
+            ],
+        ];
 
-        // First row: Surat dari & Klasifikasi
-        $table->addRow();
-        $table->addCell(2000)->addText('Surat dari', ['bold' => false, 'size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText(': ' . ($data->dari ?? '-'), ['size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText('Klasifikasi', ['bold' => false, 'size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText(': ' . ($data->kode_klasifikasi ?? '-'), ['size' => 11], ['spaceAfter' => 0]);
+        // Tabel informasi surat dalam 2 kolom
+        $row = 8;
 
-        // Second row: Tanggal surat & Diterima tanggal
-        $table->addRow();
-        $table->addCell(2000)->addText('Tanggal surat', ['bold' => false, 'size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText(': ' . ($data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : '-'), ['size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText('Diterima tanggal', ['bold' => false, 'size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText(': ' . ($data->tgl_diterima ? date('d/m/Y', strtotime($data->tgl_diterima)) : date('d/m/Y')), ['size' => 11], ['spaceAfter' => 0]);
+        // Header tabel
+        $sheet->setCellValue('A' . $row, 'INFORMASI SURAT MASUK');
+        $sheet->setCellValue('D' . $row, 'INFORMASI PENERIMAAN');
+        $sheet->mergeCells('A' . $row . ':C' . $row);
+        $sheet->mergeCells('D' . $row . ':F' . $row);
+        $sheet->getStyle('A' . $row . ':F' . $row)->applyFromArray($borderStyle);
+        $sheet->getStyle('A' . $row . ':F' . $row)->getFont()->setBold(true)->setSize(10);
+        $sheet->getStyle('A' . $row . ':F' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A' . $row . ':F' . $row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('E8E8E8');
+        $sheet->getRowDimension($row)->setRowHeight(16);
+        $row++;
 
-        // Third row: Nomor & Nomor Agenda
-        $table->addRow();
-        $table->addCell(2000)->addText('Nomor', ['bold' => false, 'size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText(': ' . ($data->nomor_surat ?? '-'), ['size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText('Nomor Agenda', ['bold' => false, 'size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText(': ' . ($data->noagenda ?? '-'), ['size' => 11], ['spaceAfter' => 0]);
+        // Data baris dengan tinggi yang compact
+        $dataRows = [
+            ['Surat dari', $data->dari ?? '-', 'Klasifikasi', $data->kode_klasifikasi ?? '-'],
+            ['Tanggal surat', $data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : '-', 'Tanggal diterima    x', $data->tgl_diterima ? date('d/m/Y', strtotime($data->tgl_diterima)) : date('d/m/Y')],
+            ['Nomor', $data->nomor_surat ?? '-', 'Nomor Agenda', $data->noagenda ?? '-'],
+            ['Hal', $data->hal ?? '-', 'Sifat', $data->sifat ?? '-'],
+            ['Lampiran', $data->jumlah_lampiran ?? '0', '', '']
+        ];
 
-        // Fourth row: Hal & Sifat
-        $table->addRow();
-        $table->addCell(2000)->addText('Hal', ['bold' => false, 'size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText(': ' . ($data->hal ?? '-'), ['size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText('Sifat', ['bold' => false, 'size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText(': ' . ($data->sifat ?? '-'), ['size' => 11], ['spaceAfter' => 0]);
+        foreach ($dataRows as $dataRow) {
+            $sheet->setCellValue('A' . $row, $dataRow[0]);
+            $sheet->setCellValue('C' . $row, $dataRow[1]);
+            $sheet->setCellValue('D' . $row, $dataRow[2]);
+            $sheet->setCellValue('F' . $row, $dataRow[3]);
+            $sheet->getStyle('A' . $row . ':F' . $row)->applyFromArray($borderStyle);
+            $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(9);
+            $sheet->getStyle('C' . $row)->getFont()->setSize(9);
+            $sheet->getStyle('D' . $row)->getFont()->setBold(true)->setSize(9);
+            $sheet->getStyle('F' . $row)->getFont()->setSize(9);
 
-        // Fifth row: Lampiran & Kosong  
-        $table->addRow();
-        $table->addCell(2000)->addText('Lampiran', ['bold' => false, 'size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText(': ' . ($data->jumlah_lampiran ?? '-'), ['size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText('', ['size' => 11], ['spaceAfter' => 0]);
-        $table->addCell(2000)->addText('', ['size' => 11], ['spaceAfter' => 0]);
+            // Set alignment untuk data agar sejajar
+            $sheet->getStyle('C' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+            $sheet->getStyle('F' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
-        $section->addTextBreak(1);
-
-        // Header Diteruskan Kepada
-        $section->addText(
-            'DITERUSKAN KEPADA:',
-            ['bold' => true, 'size' => 12],
-            ['spaceAfter' => 100]
-        );
-
-        // Daftar penerima disposisi
-        $daftarTable = $section->addTable([
-            'borderSize' => 6,
-            'borderColor' => '000000',
-            'cellMargin' => 100,
-        ]);
-
-        for ($i = 1; $i <= 8; $i++) {
-            $daftarTable->addRow();
-            $daftarTable->addCell(500)->addText($i . '.', ['size' => 11], ['spaceAfter' => 0]);
-            $daftarTable->addCell(8500)->addText('', ['size' => 11], ['spaceAfter' => 0]);
+            // Wrap text untuk "Hal" yang mungkin panjang
+            if ($dataRow[0] == 'Hal') {
+                $sheet->getStyle('C' . $row)->getAlignment()->setWrapText(true);
+                $sheet->getRowDimension($row)->setRowHeight(18);
+            } else {
+                $sheet->getRowDimension($row)->setRowHeight(14);
+            }
+            $row++;
         }
 
-        $section->addTextBreak(1);
+        $row++; // Spasi
 
-        // ISI DISPOSISI section
-        $section->addText(
-            'ISI DISPOSISI / INSTRUKSI:',
-            ['bold' => true, 'size' => 12],
-            ['spaceAfter' => 100]
-        );
+        // Diteruskan kepada - lebih compact
+        $sheet->setCellValue('A' . $row, 'DITERUSKAN KEPADA:');
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(10);
+        $sheet->getRowDimension($row)->setRowHeight(14);
+        $row++;
 
-        // ISI DISPOSISI Table dengan tinggi yang cukup
-        $isiDisposisiTable = $section->addTable([
-            'borderSize' => 8,
-            'borderColor' => '000000',
-            'cellMargin' => 150,
-        ]);
+        // List penerima (6 baris untuk menghemat ruang)
+        for ($i = 1; $i <= 6; $i++) {
+            $sheet->setCellValue('A' . $row, $i . '.');
+            $sheet->setCellValue('B' . $row, '');
+            $sheet->mergeCells('B' . $row . ':F' . $row);
+            $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $sheet->getStyle('A' . $row)->getFont()->setSize(9);
+            $sheet->getRowDimension($row)->setRowHeight(16);
+            $row++;
+        }
 
-        $isiDisposisiTable->addRow(\PhpOffice\PhpWord\Shared\Converter::cmToTwip(6)); // 6cm height
-        $isiCell = $isiDisposisiTable->addCell(10000);
-        $isiCell->addText('', ['size' => 12], ['spaceAfter' => 0]);
+        $row++; // Spasi minimal
 
-        $section->addTextBreak(2);
+        // ISI DISPOSISI
+        $sheet->setCellValue('A' . $row, 'ISI DISPOSISI / INSTRUKSI:');
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true)->setSize(10);
+        $sheet->getRowDimension($row)->setRowHeight(14);
+        $row++;
 
-        // Footer dengan tanda tangan
-        $footerTable = $section->addTable([
-            'borderSize' => 0,
-            'alignment' => \PhpOffice\PhpWord\SimpleType\JcTable::END,
-        ]);
-        $footerTable->addRow();
-        $footerTable->addCell(4000); // Empty left cell
-        $footerCell = $footerTable->addCell(5000);
+        // Area untuk isi disposisi (4 baris untuk menghemat ruang)
+        for ($i = 0; $i < 4; $i++) {
+            $sheet->setCellValue('A' . $row, '');
+            $sheet->mergeCells('A' . $row . ':F' . $row);
+            $sheet->getStyle('A' . $row . ':F' . $row)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $sheet->getRowDimension($row)->setRowHeight(20);
+            $row++;
+        }
 
-        $footerCell->addText(
-            'Surabaya, ' . date('d F Y'),
-            ['size' => 12],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
-        $footerCell->addText(
-            'a.n. GUBERNUR JAWA TIMUR',
-            ['bold' => true, 'size' => 12],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
-        $footerCell->addText(
-            'SEKRETARIS DAERAH',
-            ['size' => 12, 'bold' => true],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
+        // Tanda tangan - compact
+        $row += 2;
+        $sheet->setCellValue('E' . $row, 'Surabaya, ' . date('d F Y'));
+        $sheet->getStyle('E' . $row)->getFont()->setSize(10);
+        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(14);
+        $row++;
 
-        $footerCell->addTextBreak(3);
+        $sheet->setCellValue('E' . $row, 'a.n. GUBERNUR JAWA TIMUR');
+        $sheet->getStyle('E' . $row)->getFont()->setSize(10);
+        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(14);
+        $row++;
 
-        $footerCell->addText(
-            'Dr. H. HERU TJAHJONO, S.IP., M.Si.',
-            ['bold' => true, 'underline' => 'single', 'size' => 12],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
-        $footerCell->addText(
-            'NIP. 19651015 199103 1 002',
-            ['size' => 11],
-            ['alignment' => 'center', 'spaceAfter' => 0]
-        );
+        $sheet->setCellValue('E' . $row, 'SEKRETARIS DAERAH');
+        $sheet->getStyle('E' . $row)->getFont()->setBold(true)->setSize(10);
+        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(14);
+        $row += 3;
 
-        // Generate filename yang aman
-        $fileName = 'Disposisi_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Tanpa_Nomor') . '_' . date('Y-m-d') . '.docx';
+        $sheet->setCellValue('E' . $row, 'Dr. H. HERU TJAHJONO, S.IP., M.Si.');
+        $sheet->getStyle('E' . $row)->getFont()->setBold(true)->setSize(10);
+        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('E' . $row)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $sheet->getRowDimension($row)->setRowHeight(16);
+        $row++;
 
-        $writer = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        $sheet->setCellValue('E' . $row, 'NIP. 19651015 199103 1 002');
+        $sheet->getStyle('E' . $row)->getFont()->setSize(9);
+        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getRowDimension($row)->setRowHeight(12);
+
+        // Set print area yang tepat dan orientation
+        $sheet->getPageSetup()->setPrintArea('A1:F' . ($row + 1));
+        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
+        $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
+
+        // Set scale untuk memastikan muat dalam 1 halaman
+        $sheet->getPageSetup()->setScale(85);
+
+        // Set print options
+        $sheet->getPageSetup()->setFitToPage(true);
+        $sheet->getPageSetup()->setFitToWidth(1);
+        $sheet->getPageSetup()->setFitToHeight(1);
+
+        // Generate filename
+        $fileName = 'Disposisi_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Tanpa_Nomor') . '_' . date('Y-m-d') . '.xlsx';
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $tempFile = tempnam(sys_get_temp_dir(), $fileName);
         $writer->save($tempFile);
 

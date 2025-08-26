@@ -91,7 +91,7 @@
         .detail-table tr:hover {
             background-color: #f5f5f5;
         }
-        
+
         /* Custom button styling for better visibility */
         .btn-save-scan {
             background-color: #fff3cd !important;
@@ -99,13 +99,13 @@
             color: #212529 !important;
             font-weight: 500;
         }
-        
+
         .btn-save-scan:hover {
             background-color: #e9ecef !important;
             border-color: #6c757d !important;
             color: #495057 !important;
         }
-        
+
         .btn-save-scan:focus,
         .btn-save-scan:active {
             background-color: #e9ecef !important;
@@ -113,7 +113,7 @@
             color: #495057 !important;
             box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
         }
-        
+
         /* Badge styling for kepada field */
         .badge-kepada {
             font-size: 0.75rem;
@@ -122,7 +122,7 @@
             color: white !important;
             border-radius: 0.375rem;
         }
-        
+
         .badge-klasifikasi {
             font-size: 0.75rem;
             padding: 0.35em 0.65em;
@@ -176,30 +176,31 @@
             // Set timeout untuk deteksi software scanner - berikan waktu lebih lama untuk response
             var scanTimeout = setTimeout(function() {
                 var loadingElement = document.getElementById('scanLoading');
-                
+
                 // Jika timeout terpicu DAN masih loading DAN belum ada response sama sekali
-                if (window.scanAttemptStarted && !window.scannerDetected && !window.scanSuccessful && 
+                if (window.scanAttemptStarted && !window.scannerDetected && !window.scanSuccessful &&
                     loadingElement && loadingElement.style.display === 'flex') {
-                    
-                    log("❌ TIMEOUT: Scanner software TIDAK terdeteksi dalam 30 detik - Software belum terinstall!", true);
-                    
+
+                    log("❌ TIMEOUT: Scanner software TIDAK terdeteksi dalam 30 detik - Software belum terinstall!",
+                        true);
+
                     // Pastikan loading disembunyikan
                     loadingElement.style.display = 'none';
-                    
+
                     // Reset flags
                     window.scanAttemptStarted = false;
                     window.scannerDetected = false;
                     window.scanSuccessful = false;
-                    
+
                     // Clear timeout
                     if (window.currentScanTimeout) {
                         clearTimeout(window.currentScanTimeout);
                         window.currentScanTimeout = null;
                     }
-                    
+
                     // TAMPILKAN MODAL karena software tidak terinstall
                     showScannerInstallModal();
-                    
+
                 } else {
                     // Jika sudah ada response dari scanner atau loading sudah hilang, jangan tampilkan modal
                     log("Timeout reached but scanner already responded or loading finished - no modal needed");
@@ -211,14 +212,14 @@
 
             scanRequest.source_name = sourceName;
             log("Memulai scan dengan source = " + scanRequest.source_name + " ...");
-            
+
             try {
                 // Coba panggil scanner.scan - JANGAN set scannerDetected di sini
                 scanner.scan(handleScanResult, scanRequest);
-                
+
                 // Hanya log bahwa scanner.js berhasil dipanggil, bukan berarti software terdeteksi
                 log("Scanner.js method called, waiting for response...");
-                
+
             } catch (error) {
                 // Jika error saat memanggil scanner.scan, berarti software tidak ada
                 log("ERROR: Scanner software tidak ditemukan atau error loading - " + error, true);
@@ -251,7 +252,8 @@
                 loadingElement.style.display = 'none';
             }
 
-            log("✅ Scanner software detected - response received: successful=" + successful + ", message=" + (mesg || 'none'));
+            log("✅ Scanner software detected - response received: successful=" + successful + ", message=" + (mesg ||
+                'none'));
 
             // Cek user cancel PERTAMA - ini bukan error software
             if (mesg != null && mesg.toLowerCase().indexOf('user cancel') >= 0) {
@@ -263,11 +265,11 @@
             if (successful && response != null) {
                 try {
                     var responseAsJson = JSON.parse(response);
-                    
+
                     // Jika ada response JSON valid, berarti scanner terhubung
                     if (responseAsJson != null) {
                         log("Scanner software detected and working properly");
-                        
+
                         // Cek apakah ada gambar atau tidak
                         if (responseAsJson.image_count && responseAsJson.image_count > 0) {
                             log("SUCCESS: " + responseAsJson.image_count + " images captured");
@@ -292,7 +294,7 @@
             // Jika tidak successful dan ada error message
             if (!successful && mesg) {
                 log("Scanner software detected but scan failed: " + mesg, true);
-                
+
                 // Jika masih 'default', coba 'select' sebagai fallback
                 if (scanRequest.source_name == 'default') {
                     log("Retrying with source 'select'...");
@@ -319,11 +321,11 @@
         /** Processes the scan result */
         function displayImagesOnPage(successful, mesg, response) {
             var loading = document.getElementById('scanLoading');
-            
+
             // Set flag sukses SEGERA - scanner software berfungsi
             window.scanSuccessful = true;
             window.scannerDetected = true;
-            
+
             if (!successful) { // On error
                 console.error('Display images failed: ' + mesg);
                 if (loading) loading.style.display = 'none';
@@ -345,16 +347,17 @@
             if (sliderContainer) {
                 sliderContainer.innerHTML = '';
             }
-            
+
             var scannedImages = scanner.getScannedImages(response, true, false);
             var hasImages = false;
-            
-            for (var i = 0; (scannedImages instanceof Array) && i < scannedImages.length; i++) {
+
+            for (var i = 0;
+                (scannedImages instanceof Array) && i < scannedImages.length; i++) {
                 var scannedImage = scannedImages[i];
                 processScannedImage(scannedImage);
                 hasImages = true;
             }
-            
+
             // Inisialisasi slider setelah gambar ditambahkan
             if (hasImages) {
                 initImageSlider();
@@ -362,13 +365,13 @@
             } else {
                 log("Scanner berhasil terhubung tapi tidak ada gambar yang di-scan");
             }
-            
+
             if (loading) loading.style.display = 'none';
-            
+
             // PENTING: Pastikan flag sukses untuk mencegah modal timeout
             window.scanSuccessful = true;
             window.scannerDetected = true;
-            
+
             return hasImages;
         }
 
@@ -379,13 +382,13 @@
         function processScannedImage(scannedImage) {
             // PENTING: Mark scan as successful SEGERA untuk mencegah modal muncul
             window.scanSuccessful = true;
-            
+
             // Clear timeout jika ada untuk mencegah modal timeout
             if (window.currentScanTimeout) {
                 clearTimeout(window.currentScanTimeout);
                 window.currentScanTimeout = null;
             }
-            
+
             imagesScanned.push(scannedImage);
             var elementImg = scanner.createDomElementFromModel({
                 'name': 'img',
@@ -430,7 +433,7 @@
             if (scanBtn) scanBtn.remove();
             var loading = document.getElementById('scanLoading');
             if (loading) loading.style.display = 'none';
-            
+
             log("Gambar berhasil diproses dan ditambahkan ke slider");
         }
 
@@ -464,7 +467,7 @@
         function showScannerInstallModal() {
             // Log untuk debugging yang lebih jelas
             log("🚨 MENAMPILKAN MODAL: Scanner software TIDAK terdeteksi/terinstall!", true);
-            
+
             var modal = document.getElementById('scannerInstallModal');
             if (modal) {
                 try {
@@ -492,15 +495,21 @@
                     console.error('Error showing modal:', e);
                     log("Error showing modal, using alert fallback: " + e, true);
                     // Fallback dengan alert jika modal error
-                    if (confirm('❌ Scanner Software Tidak Terdeteksi!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software scanner terlebih dahulu.\n\n📥 Klik OK untuk download software scanner.')) {
-                        window.open('https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing', '_blank');
+                    if (confirm(
+                            '❌ Scanner Software Tidak Terdeteksi!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software scanner terlebih dahulu.\n\n📥 Klik OK untuk download software scanner.'
+                        )) {
+                        window.open('https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing',
+                            '_blank');
                     }
                 }
             } else {
                 // Fallback dengan alert jika modal tidak ada
                 log("Modal element not found, using alert fallback", true);
-                if (confirm('❌ Scanner Software Tidak Terdeteksi!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software scanner terlebih dahulu.\n\n📥 Klik OK untuk download software scanner.')) {
-                    window.open('https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing', '_blank');
+                if (confirm(
+                        '❌ Scanner Software Tidak Terdeteksi!\n\nUntuk menggunakan fitur scan, Anda perlu menginstall software scanner terlebih dahulu.\n\n📥 Klik OK untuk download software scanner.'
+                    )) {
+                    window.open('https://drive.google.com/file/d/1XK2jaOzOMG7w8hrhtPxqrNoxliu80lPE/view?usp=sharing',
+                        '_blank');
                 }
             }
         }
@@ -554,11 +563,13 @@
                                     <tr>
                                         <th scope="col" class="px-3 py-2">Kepada:</th>
                                         <td class="align-middle px-3 py-2" colspan="2">
-                                            @if($data->kepada)
+                                            @if ($data->kepada)
                                                 {{ $data->kepada }}
                                             @elseif($data->tujuanSurat && count($data->tujuanSurat) > 0)
-                                                @foreach($data->tujuanSurat as $tujuan)
-                                                    {{ $tujuan->user->FullName ?? '-' }}@if(!$loop->last), @endif
+                                                @foreach ($data->tujuanSurat as $tujuan)
+                                                    {{ $tujuan->user->FullName ?? '-' }}@if (!$loop->last)
+                                                        ,
+                                                    @endif
                                                 @endforeach
                                             @else
                                                 -
@@ -568,7 +579,8 @@
                                     <tr>
                                         <td colspan="3" class="p-0">
                                             <div class="collapse mt-2" id="detailCollapse" style="display:none;">
-                                <table class="table table-sm table-borderless mb-0 detail-table" style="margin-bottom:0;">
+                                                <table class="table table-sm table-borderless mb-0 detail-table"
+                                                    style="margin-bottom:0;">
                                                     <tr>
                                                         <th class="px-3 py-1" style="width:140px;">No. Surat</th>
                                                         <td class="px-3 py-1">{{ $data->nomor_surat }}</td>
@@ -584,11 +596,13 @@
                                                     <tr>
                                                         <th class="px-3 py-1">Kepada</th>
                                                         <td class="px-3 py-1">
-                                                            @if($data->kepada)
+                                                            @if ($data->kepada)
                                                                 {{ $data->kepada }}
                                                             @elseif($data->tujuanSurat && count($data->tujuanSurat) > 0)
-                                                                @foreach($data->tujuanSurat as $tujuan)
-                                                                    {{ $tujuan->user->FullName ?? '-' }}@if(!$loop->last), @endif
+                                                                @foreach ($data->tujuanSurat as $tujuan)
+                                                                    {{ $tujuan->user->FullName ?? '-' }}@if (!$loop->last)
+                                                                        ,
+                                                                    @endif
                                                                 @endforeach
                                                             @else
                                                                 -
@@ -625,33 +639,41 @@
                                                     <tr>
                                                         <th class="px-3 py-1">Klasifikasi</th>
                                                         <td class="px-3 py-1">
-                                                            @if($data->klasifikasi)
+                                                            @if ($data->klasifikasi)
                                                                 {{ $data->klasifikasi->klasifikasi }}
-                                                                <small class="text-muted">({{ $data->klasifikasi->kodeklasifikasi }})</small>
+                                                                <small
+                                                                    class="text-muted">({{ $data->klasifikasi->kodeklasifikasi }})</small>
                                                             @elseif($data->kode_klasifikasi)
                                                                 @php
                                                                     // Coba cari klasifikasi berdasarkan kode atau ID
                                                                     $klasifikasi = null;
-                                                                    
+
                                                                     // Coba cari berdasarkan kode klasifikasi
-                                                                    $klasifikasiByKode = App\Models\MasterKlasifikasi::where('kodeklasifikasi', $data->kode_klasifikasi)->first();
+                                                                    $klasifikasiByKode = App\Models\MasterKlasifikasi::where(
+                                                                        'kodeklasifikasi',
+                                                                        $data->kode_klasifikasi,
+                                                                    )->first();
                                                                     if ($klasifikasiByKode) {
                                                                         $klasifikasi = $klasifikasiByKode;
                                                                     } else {
                                                                         // Jika tidak ditemukan berdasarkan kode, coba cari berdasarkan ID (ULID)
-                                                                        $klasifikasiById = App\Models\MasterKlasifikasi::find($data->kode_klasifikasi);
+                                                                        $klasifikasiById = App\Models\MasterKlasifikasi::find(
+                                                                            $data->kode_klasifikasi,
+                                                                        );
                                                                         if ($klasifikasiById) {
                                                                             $klasifikasi = $klasifikasiById;
                                                                         }
                                                                     }
                                                                 @endphp
-                                                                
-                                                                @if($klasifikasi)
+
+                                                                @if ($klasifikasi)
                                                                     {{ $klasifikasi->klasifikasi }}
-                                                                    <small class="text-muted">({{ $klasifikasi->kodeklasifikasi }})</small>
+                                                                    <small
+                                                                        class="text-muted">({{ $klasifikasi->kodeklasifikasi }})</small>
                                                                 @else
                                                                     {{ $data->kode_klasifikasi }}
-                                                                    <small class="text-muted">(Data klasifikasi tidak ditemukan)</small>
+                                                                    <small class="text-muted">(Data klasifikasi tidak
+                                                                        ditemukan)</small>
                                                                 @endif
                                                             @else
                                                                 -
@@ -670,59 +692,61 @@
                                                     <tr>
                                                         <th class="px-3 py-1">Unit Pengentri</th>
                                                         <td class="px-3 py-1">
-                                                            @if($data->createdBy)
+                                                            @if ($data->createdBy)
                                                                 {{ $data->createdBy->fullname }}
-                                                                @if($data->createdBy->Jabatan)
-                                                                    <small class="text-muted d-block">{{ $data->createdBy->Jabatan }}</small>
+                                                                @if ($data->createdBy->Jabatan)
+                                                                    <small
+                                                                        class="text-muted d-block">{{ $data->createdBy->Jabatan }}</small>
                                                                 @endif
                                                             @else
                                                                 {{ $data->created_by ? 'ID: ' . $data->created_by : '-' }}
                                                             @endif
                                                         </td>
                                                     </tr>
-                                                    @if($data->jumlah_lampiran)
-                                                    <tr>
-                                                        <th class="px-3 py-1">Jumlah Lampiran</th>
-                                                        <td class="px-3 py-1">
-                                                            {{ $data->jumlah_lampiran }}
-                                                        </td>
-                                                    </tr>
+                                                    @if ($data->jumlah_lampiran)
+                                                        <tr>
+                                                            <th class="px-3 py-1">Jumlah Lampiran</th>
+                                                            <td class="px-3 py-1">
+                                                                {{ $data->jumlah_lampiran }}
+                                                            </td>
+                                                        </tr>
                                                     @endif
                                                     <tr>
                                                         <th class="px-3 py-1">Lampiran</th>
                                                         <td class="px-3 py-1">
-                                                            @if($data->lampiran)
+                                                            @if ($data->lampiran)
                                                                 <div class="text-wrap">{{ $data->lampiran }}</div>
                                                             @else
                                                                 -
                                                             @endif
                                                         </td>
                                                     </tr>
-                                                    @if($data->isi)
-                                                    <tr>
-                                                        <th class="px-3 py-1">Isi Surat</th>
-                                                        <td class="px-3 py-1">
-                                                            <div style="max-height: 150px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5;">
-                                                                {!! nl2br(e($data->isi)) !!}
-                                                            </div>
-                                                        </td>
-                                                    </tr>
+                                                    @if ($data->isi)
+                                                        <tr>
+                                                            <th class="px-3 py-1">Isi Surat</th>
+                                                            <td class="px-3 py-1">
+                                                                <div
+                                                                    style="max-height: 150px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5;">
+                                                                    {!! nl2br(e($data->isi)) !!}
+                                                                </div>
+                                                            </td>
+                                                        </tr>
                                                     @endif
-                                                    @if($data->tgl_diarahkan)
-                                                    <tr>
-                                                        <th class="px-3 py-1">Tanggal Diarahkan</th>
-                                                        <td class="px-3 py-1">
-                                                            {{ date('d-m-Y', strtotime($data->tgl_diarahkan)) }}
-                                                        </td>
-                                                    </tr>
+                                                    @if ($data->tgl_diarahkan)
+                                                        <tr>
+                                                            <th class="px-3 py-1">Tanggal Diarahkan</th>
+                                                            <td class="px-3 py-1">
+                                                                {{ date('d-m-Y', strtotime($data->tgl_diarahkan)) }}
+                                                            </td>
+                                                        </tr>
                                                     @endif
-                                                    @if($data->terdisposisi)
-                                                    <tr>
-                                                        <th class="px-3 py-1">Status Disposisi</th>
-                                                        <td class="px-3 py-1">
-                                                            Sudah Didisposisi
-                                                        </td>
-                                                    </tr>
+                                                    @if ($data->terdisposisi)
+                                                        <tr>
+                                                            <th class="px-3 py-1">Status Disposisi</th>
+                                                            <td class="px-3 py-1">
+                                                                Sudah Didisposisi
+                                                            </td>
+                                                        </tr>
                                                     @endif
                                                 </table>
                                             </div>
@@ -756,21 +780,29 @@
                                             <i class="fa fa-save me-1"></i>Simpan File Scan
                                         </button>
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('entrisurat.exportWord', $data->id) }}"
+                                            <!-- Button untuk Tanda Terima dengan modal -->
+                                            <button type="button"
                                                 class="btn btn-info btn-sm d-lg-inline-flex align-items-center b-r-22"
-                                                target="_blank">
+                                                data-bs-toggle="modal" data-bs-target="#exportModal"
+                                                data-export-type="tanda-terima">
                                                 <i class="fa fa-receipt me-1"></i>Cetak Tanda Terima
-                                            </a>
-                                            <a href="{{ route('entrisurat.exportSuratWord', $data->id) }}"
+                                            </button>
+
+                                            <!-- Button untuk Cetak dengan modal -->
+                                            <button type="button"
                                                 class="btn btn-success btn-sm d-lg-inline-flex align-items-center b-r-22"
-                                                target="_blank">
+                                                data-bs-toggle="modal" data-bs-target="#exportModal"
+                                                data-export-type="surat">
                                                 <i class="fa fa-print me-1"></i>Cetak
-                                            </a>
-                                            <a href="{{ route('entrisurat.exportSuratDisWord', $data->id) }}"
+                                            </button>
+
+                                            <!-- Button untuk Cetak Disposisi dengan modal -->
+                                            <button type="button"
                                                 class="btn btn-primary btn-sm d-lg-inline-flex align-items-center b-r-22"
-                                                target="_blank">
+                                                data-bs-toggle="modal" data-bs-target="#exportModal"
+                                                data-export-type="disposisi">
                                                 <i class="fa fa-file-text me-1"></i>Cetak Disposisi
-                                            </a>
+                                            </button>
                                         </div>
                                     </div>
                                     <div class="app-form">
@@ -856,6 +888,50 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal untuk pilihan format export -->
+        <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="exportModalLabel">
+                            <i class="fas fa-download me-2"></i>Pilih Format Export
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="mb-4" id="exportDescription">Pilih format file yang ingin Anda download:</p>
+
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <button type="button"
+                                    class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4 export-format-btn"
+                                    data-format="word" style="min-height: 120px;">
+                                    <i class="fas fa-file-word fa-3x mb-3 text-primary"></i>
+                                    <strong>Microsoft Word</strong>
+                                    <small class="text-muted mt-1">Format .docx</small>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button"
+                                    class="btn btn-outline-success w-100 h-100 d-flex flex-column align-items-center justify-content-center p-4 export-format-btn"
+                                    data-format="excel" style="min-height: 120px;">
+                                    <i class="fas fa-file-excel fa-3x mb-3 text-success"></i>
+                                    <strong>Microsoft Excel</strong>
+                                    <small class="text-muted mt-1">Format .xlsx</small>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-4 mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <small>File akan otomatis terdownload setelah Anda memilih format.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 @endsection
 
@@ -876,6 +952,94 @@
             });
         });
     </script>
+
+    <!-- Script untuk menangani export modal -->
+    <script>
+        $(document).ready(function() {
+            let currentExportType = '';
+
+            // Ketika tombol export diklik
+            $('button[data-export-type]').on('click', function() {
+                currentExportType = $(this).data('export-type');
+
+                // Update judul modal berdasarkan tipe export
+                let title = '';
+                let description = '';
+
+                switch (currentExportType) {
+                    case 'tanda-terima':
+                        title = '<i class="fas fa-receipt me-2"></i>Export Tanda Terima Surat';
+                        description = 'Pilih format file untuk Tanda Terima Surat:';
+                        break;
+                    case 'surat':
+                        title = '<i class="fas fa-print me-2"></i>Export Surat';
+                        description = 'Pilih format file untuk Surat:';
+                        break;
+                    case 'disposisi':
+                        title = '<i class="fas fa-file-text me-2"></i>Export Lembar Disposisi';
+                        description = 'Pilih format file untuk Lembar Disposisi:';
+                        break;
+                }
+
+                $('#exportModalLabel').html(title);
+                $('#exportDescription').text(description);
+            });
+
+            // Ketika format dipilih
+            $('.export-format-btn').on('click', function() {
+                const format = $(this).data('format');
+                let url = '';
+
+                // Tentukan URL berdasarkan tipe export dan format
+                const dataId = '{{ $data->id }}';
+
+                if (currentExportType === 'tanda-terima') {
+                    if (format === 'word') {
+                        url = '{{ route('entrisurat.exportWord', ':id') }}'.replace(':id', dataId);
+                    } else if (format === 'excel') {
+                        url = '{{ route('entrisurat.exportExcel', ':id') }}'.replace(':id', dataId);
+                    }
+                } else if (currentExportType === 'surat') {
+                    if (format === 'word') {
+                        url = '{{ route('entrisurat.exportSuratWord', ':id') }}'.replace(':id', dataId);
+                    } else if (format === 'excel') {
+                        url = '{{ route('entrisurat.exportSuratExcel', ':id') }}'.replace(':id', dataId);
+                    }
+                } else if (currentExportType === 'disposisi') {
+                    if (format === 'word') {
+                        url = '{{ route('entrisurat.exportSuratDisWord', ':id') }}'.replace(':id', dataId);
+                    } else if (format === 'excel') {
+                        url = '{{ route('entrisurat.exportSuratDisExcel', ':id') }}'.replace(':id',
+                        dataId);
+                    }
+                }
+
+                // Buka URL di tab baru untuk download
+                if (url) {
+                    window.open(url, '_blank');
+
+                    // Tutup modal setelah 1 detik
+                    setTimeout(function() {
+                        $('#exportModal').modal('hide');
+                    }, 1000);
+                }
+            });
+
+            // Efek hover untuk tombol format
+            $('.export-format-btn').hover(
+                function() {
+                    $(this).removeClass('btn-outline-primary btn-outline-success')
+                        .addClass($(this).data('format') === 'word' ? 'btn-primary' : 'btn-success');
+                },
+                function() {
+                    $(this).removeClass('btn-primary btn-success')
+                        .addClass($(this).data('format') === 'word' ? 'btn-outline-primary' :
+                            'btn-outline-success');
+                }
+            );
+        });
+    </script>
+
     <script>
         $(document).on('click', '.btn-close-scan-file', function(e) {
             e.preventDefault();
