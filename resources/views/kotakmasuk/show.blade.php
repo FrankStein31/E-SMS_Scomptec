@@ -161,23 +161,41 @@
                                                 Tindakan
                                             </th>
                                             <td>
-                                                <div class="d-flex align-items-center">
-                                                    <i class="fas {{ $indicator['icon'] }} text-{{ $indicator['color'] }} me-2" style="font-size: 1.2em;"></i>
-                                                    @if($tujuanUser && $tujuanUser->dibaca == 1)
-                                                        <span class="text-{{ $indicator['color'] }} fw-bold">{{ $indicator['text'] }}</span>
-                                                    @else
-                                                        <span class="badge bg-{{ $indicator['color'] }} badge-lg">{{ $indicator['text'] }}</span>
-                                                    @endif
-                                                    @if($indicator['level'] == 'high' && (!$tujuanUser || $tujuanUser->dibaca == 0))
-                                                        <small class="text-muted ms-2">
-                                                            <i class="fas fa-clock me-1"></i>
-                                                            Memerlukan tindakan segera
-                                                        </small>
-                                                    @elseif($indicator['level'] == 'medium' && (!$tujuanUser || $tujuanUser->dibaca == 0))
-                                                        <small class="text-muted ms-2">
-                                                            <i class="fas fa-clock me-1"></i>
-                                                            Memerlukan perhatian
-                                                        </small>
+                                                <div class="d-flex align-items-start flex-column">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <i class="fas {{ $indicator['icon'] }} text-{{ $indicator['color'] }} me-2" style="font-size: 1.2em;"></i>
+                                                        @if($tujuanUser && $tujuanUser->dibaca == 1)
+                                                            <span class="text-{{ $indicator['color'] }} fw-bold">Tindakan yang Diperlukan</span>
+                                                        @else
+                                                            <span class="badge bg-{{ $indicator['color'] }} badge-lg">Tindakan yang Diperlukan</span>
+                                                        @endif
+                                                        @if($indicator['level'] == 'high' && (!$tujuanUser || $tujuanUser->dibaca == 0))
+                                                            <small class="text-muted ms-2">
+                                                                <i class="fas fa-clock me-1"></i>
+                                                                Memerlukan tindakan segera
+                                                            </small>
+                                                        @elseif($indicator['level'] == 'medium' && (!$tujuanUser || $tujuanUser->dibaca == 0))
+                                                            <small class="text-muted ms-2">
+                                                                <i class="fas fa-clock me-1"></i>
+                                                                Memerlukan perhatian
+                                                            </small>
+                                                        @endif
+                                                    </div>
+                                                    
+                                                    @if(isset($indicator['tindakans']) && count($indicator['tindakans']) > 0)
+                                                        <div class="tindakan-list">
+                                                            @foreach($indicator['tindakans'] as $index => $tindakan)
+                                                                @if($tujuanUser && $tujuanUser->dibaca == 1)
+                                                                    <span class="badge bg-outline-{{ $indicator['color'] }} text-{{ $indicator['color'] }} me-1 mb-1 border border-{{ $indicator['color'] }}">
+                                                                        {{ $tindakan }}
+                                                                    </span>
+                                                                @else
+                                                                    <span class="badge bg-{{ $indicator['color'] }} me-1 mb-1">
+                                                                        {{ $tindakan }}
+                                                                    </span>
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
                                                     @endif
                                                 </div>
                                             </td>
@@ -268,7 +286,7 @@
                                                             <strong>Catatan:</strong>
                                                         </div>
                                                         <div class="col-sm-9">
-                                                            <div class="border p-2 rounded bg-light">
+                                                            <div class="catatan-content">
                                                                 {!! $userDisposisi->content !!}
                                                             </div>
                                                         </div>
@@ -470,6 +488,74 @@
             font-size: 0.8em;
             padding: 0.4em 0.6em;
         }
+    }
+
+    /* Tindakan list styling */
+    .tindakan-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+
+    .tindakan-list .badge {
+        font-size: 0.85em;
+        padding: 0.5em 0.75em;
+        font-weight: 500;
+    }
+
+    /* Outline badge styling for read state */
+    .badge.bg-outline-danger {
+        background-color: transparent !important;
+        color: #dc3545 !important;
+        border: 1px solid #dc3545 !important;
+    }
+
+    .badge.bg-outline-warning {
+        background-color: transparent !important;
+        color: #fd7e14 !important;
+        border: 1px solid #fd7e14 !important;
+    }
+
+    .badge.bg-outline-info {
+        background-color: transparent !important;
+        color: #0dcaf0 !important;
+        border: 1px solid #0dcaf0 !important;
+    }
+
+    /* Tindakan container */
+    .d-flex.align-items-start.flex-column {
+        width: 100%;
+    }
+
+    /* Better spacing for tindakan section */
+    .tindakan-list .badge:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: all 0.2s ease;
+    }
+
+    /* Catatan content styling */
+    .catatan-content {
+        color: #212529;
+        font-size: 0.95em;
+        line-height: 1.5;
+        padding: 0;
+        margin: 0;
+    }
+
+    .catatan-content p {
+        margin-bottom: 0.5rem;
+        color: #212529;
+    }
+
+    .catatan-content p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Remove any default styling from rich text editor content */
+    .catatan-content * {
+        background-color: transparent !important;
+        background: none !important;
     }
 </style>
 @endpush

@@ -34,11 +34,23 @@ class KotakMasukDataTable extends DataTable
 
                 $iconClass = 'fas ' . $indicator['icon'];
                 $badgeClass = 'bg-' . $indicator['color'];
+            $tindakans = $indicator['tindakans'] ?? [];
 
-                return '<div class="d-flex align-items-center tindakan-tooltip" data-tooltip="' . $indicator['text'] . '">
-                    <i class="' . $iconClass . ' text-' . $indicator['color'] . ' me-2"></i>
-                    <span class="badge ' . $badgeClass . ' badge-sm">' . $indicator['text'] . '</span>
-                </div>';
+            if (count($tindakans) > 1) {
+                // Multiple tindakan - show primary with count
+                return '<div class="d-flex align-items-center tindakan-multiple" data-bs-toggle="tooltip" 
+                                data-bs-placement="top" title="' . htmlspecialchars($indicator['text']) . '">
+                        <i class="' . $iconClass . ' text-' . $indicator['color'] . ' me-2"></i>
+                        <span class="badge ' . $badgeClass . ' badge-sm me-1">' . $indicator['primary_action'] . '</span>
+                        <span class="badge bg-secondary badge-sm">+' . (count($tindakans) - 1) . '</span>
+                    </div>';
+            } else {
+                // Single tindakan
+                return '<div class="d-flex align-items-center">
+                        <i class="' . $iconClass . ' text-' . $indicator['color'] . ' me-2"></i>
+                        <span class="badge ' . $badgeClass . ' badge-sm">' . $indicator['primary_action'] . '</span>
+                    </div>';
+            }
             })
             ->addColumn('unit_pengentri', function($row) {
                 return $row->createdBy->fullname;
@@ -57,10 +69,13 @@ class KotakMasukDataTable extends DataTable
                         return '<span class="badge bg-secondary">'.$row->sifat.'</span>';
                 }
             })
+            ->addColumn('jenis_name', function($row) {
+                return $row->jenis ? $row->jenis->name : '<span class="text-muted">-</span>';
+            })
             ->addColumn('tgl_surat_formatted', function($row) {
                 return date('d/m/Y', strtotime($row->tgl_surat));
             })
-            ->rawColumns(['status', 'unit_pengentri', 'sifat', 'tindakan_indicator'])
+            ->rawColumns(['status', 'unit_pengentri', 'sifat', 'jenis_name', 'tindakan_indicator'])
             ->setRowId('id')
             ->setRowClass(function ($row) {
                 $userId = Auth::user()->id;

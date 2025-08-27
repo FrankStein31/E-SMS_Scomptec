@@ -128,35 +128,56 @@ class EntrySuratIsi extends Model
         $highPriorityActions = ['Segera Dibalas', 'Tindak Lanjuti'];
         $mediumPriorityActions = ['Supaya Diwakili', 'Perhatikan', 'Dikoordinasikan'];
 
+        $allTindakans = $disposisi->tindakans->pluck('tindakan')->toArray();
+
+        // Check for high priority actions first
+        $highPriorityFound = false;
         foreach ($disposisi->tindakans as $tindakan) {
             if (in_array($tindakan->tindakan, $highPriorityActions)) {
-                return [
-                    'level' => 'high',
-                    'icon' => 'fa-exclamation-triangle',
-                    'color' => 'danger',
-                    'text' => $tindakan->tindakan
-                ];
+                $highPriorityFound = true;
+                break;
             }
         }
 
+        if ($highPriorityFound) {
+            return [
+                'level' => 'high',
+                'icon' => 'fa-exclamation-triangle',
+                'color' => 'danger',
+                'text' => implode(', ', $allTindakans),
+                'tindakans' => $allTindakans,
+                'primary_action' => $allTindakans[0] ?? ''
+            ];
+        }
+
+        // Check for medium priority actions
+        $mediumPriorityFound = false;
         foreach ($disposisi->tindakans as $tindakan) {
             if (in_array($tindakan->tindakan, $mediumPriorityActions)) {
-                return [
-                    'level' => 'medium',
-                    'icon' => 'fa-exclamation-circle',
-                    'color' => 'warning',
-                    'text' => $tindakan->tindakan
-                ];
+                $mediumPriorityFound = true;
+                break;
             }
+        }
+
+        if ($mediumPriorityFound) {
+            return [
+                'level' => 'medium',
+                'icon' => 'fa-exclamation-circle',
+                'color' => 'warning',
+                'text' => implode(', ', $allTindakans),
+                'tindakans' => $allTindakans,
+                'primary_action' => $allTindakans[0] ?? ''
+            ];
         }
 
         // Low priority or info actions
-        $firstAction = $disposisi->tindakans->first();
         return [
             'level' => 'low',
             'icon' => 'fa-info-circle',
             'color' => 'info',
-            'text' => $firstAction->tindakan
+            'text' => implode(', ', $allTindakans),
+            'tindakans' => $allTindakans,
+            'primary_action' => $allTindakans[0] ?? ''
         ];
     }
 }

@@ -41,26 +41,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <!-- Priority Legend -->
-                            <div class="priority-legend">
-                                <h6>Keterangan Indikator Tindakan:</h6>
-                                <div class="d-flex flex-wrap">
-                                    <div class="legend-item">
-                                        <div class="legend-color legend-high"></div>
-                                        <span class="small">Prioritas Tinggi (Segera Dibalas, Tindak Lanjuti)</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color legend-medium"></div>
-                                        <span class="small">Prioritas Sedang (Supaya Diwakili, Perhatikan, Dikoordinasikan)</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color legend-low"></div>
-                                        <span class="small">Prioritas Rendah (Sekedar Info, Arsipkan, dll)</span>
-                                    </div>
-                                </div>
-                            </div>
-                            
                             <div class="table-responsive">
                                 {!! $dataTable->table(['id' => 'kotakmasuk-table']) !!}
                             </div>
@@ -80,6 +60,12 @@
     
     <script>
         $(document).ready(function() {
+            // Initialize Bootstrap tooltips
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
             // Handle row click untuk navigasi ke detail
             $('#kotakmasuk-table tbody').on('click', 'tr', function() {
                 var data = $('#kotakmasuk-table').DataTable().row(this).data();
@@ -91,6 +77,18 @@
             // Add hover cursor pointer style
             $('#kotakmasuk-table tbody').on('mouseenter', 'tr', function() {
                 $(this).css('cursor', 'pointer');
+            });
+
+            // Re-initialize tooltips after DataTable draw
+            $('#kotakmasuk-table').on('draw.dt', function() {
+                // Destroy existing tooltips
+                $('[data-bs-toggle="tooltip"]').tooltip('dispose');
+                
+                // Reinitialize tooltips
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
             });
         });
     </script>
@@ -191,5 +189,40 @@
     .legend-high { background-color: #dc3545; }
     .legend-medium { background-color: #ffc107; }
     .legend-low { background-color: #17a2b8; }
+
+    /* Multiple tindakan styling */
+    .tindakan-multiple {
+        cursor: help;
+    }
+
+    .tindakan-multiple .badge {
+        font-size: 0.75em;
+        padding: 0.25em 0.5em;
+    }
+
+    .tindakan-multiple .badge.bg-secondary {
+        font-size: 0.7em;
+        padding: 0.2em 0.4em;
+    }
+
+    /* Better tooltip styling */
+    .tooltip {
+        font-size: 0.875rem;
+    }
+
+    .tooltip-inner {
+        max-width: 300px;
+        text-align: left;
+        background-color: #333;
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    /* Enhanced badge styling */
+    .badge-sm {
+        font-size: 0.75em;
+        padding: 0.35em 0.65em;
+        font-weight: 500;
+    }
 </style>
 @endpush
