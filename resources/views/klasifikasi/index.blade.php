@@ -4,6 +4,9 @@
     <main>
         <div class="container-fluid klasifikasi-container">
             <div class="row">
+                <div id="alert-container">
+                    @include('layout.alert')
+                </div>
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
@@ -30,7 +33,7 @@
                                             @endforeach
                                         </select>
                                     </form>
-                                    <a class="btn btn-primary btn-sm b-r-22" id="btnTambah">
+                                    <a class="btn btn-primary btn-sm b-r-22 btn-add-primary" id="btnTambah">
                                         <i class="iconoir-plus"></i> Tambah Klasifikasi
                                     </a>
                                 </div>
@@ -214,7 +217,13 @@
                     alert('Tidak ada data yang dipilih!');
                     return;
                 }
-                deleteKlasifikasi(id);
+                if (confirm(
+                        'Apakah Anda yakin ingin menghapus data ini? Data yang sudah dihapus tidak dapat dikembalikan.'
+                        )) {
+                    deleteKlasifikasi(id);
+                } else {
+                    deselectRow();
+                }
             });
             $('#btnTambah').click(function() {
                 showAddModal();
@@ -281,6 +290,7 @@
 
         function showAddModal() {
             try {
+                clearAlerts(); // Clear any existing alerts
                 $('#formKlasifikasi')[0].reset();
                 $('#modalTitle').text('Tambah Klasifikasi');
                 $('#klasifikasi_id').val('');
@@ -291,6 +301,8 @@
         }
 
         function editKlasifikasi(id) {
+            clearAlerts();
+
             $.get('/klasifikasi/' + id)
                 .done(function(res) {
                     if (res.success) {
@@ -298,12 +310,26 @@
                         $('#modalKlasifikasi').modal('show');
                         deselectRow();
                     } else {
-                        alert('Data tidak ditemukan!');
+                        $("#alert-container").html(`
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="fas fa-search me-2"></i>
+                        Data tidak ditemukan!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `);
                     }
                 })
                 .fail(function(xhr) {
                     console.error('Edit request failed:', xhr);
-                    alert('Gagal mengambil data!');
+
+                    $("#alert-container").html(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Gagal mengambil data!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `);
+
                     deselectRow();
                 });
         }
@@ -329,23 +355,53 @@
                     _token: '{{ csrf_token() }}'
                 },
                 success: function(res) {
-                    handleDeleteSuccess(res);
+                    if (res.html) {
+                        $("#alert-container").html(res.html);
+                        if (typeof window.autoDismissNewAlerts === 'function') {
+                            window.autoDismissNewAlerts();
+                        }
+                    }
+
+                    if (res.success) {
+                        $('#modalKlasifikasi').modal('hide');
+                        reloadTable();
+                        deselectRow();
+                    }
                 },
                 error: function(xhr) {
-                    handleAjaxError(xhr, 'Gagal hapus data!');
+                    let errorMessage = 'Gagal hapus data!';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+
+                    $("#alert-container").html(`
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${errorMessage}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `);
+                    if (typeof window.autoDismissNewAlerts === 'function') {
+                        window.autoDismissNewAlerts();
+                    }
+
                     deselectRow();
                 }
             });
         }
 
+        function clearAlerts() {
+            $("#alert-container").empty();
+        }
+
         function handleDeleteSuccess(res) {
+            if (res.html) {
+                $("#alert-container").html(res.html);
+            }
+
             if (res.success) {
                 $('#modalKlasifikasi').modal('hide');
                 reloadTable();
-                alert('Data berhasil dihapus!');
                 deselectRow();
-            } else if (res.message) {
-                alert(res.message);
             }
         }
 
@@ -360,23 +416,54 @@
                     type: 'POST',
                     data: $.param(formData),
                     success: function(res) {
-                        if (res.success) {
-                            $('#modalKlasifikasi').data('saved', true);
+                        if (res.html) {
+                            $("#alert-container").html(res.html);
+                            if (typeof window.autoDismissNewAlerts === 'function') {
+                                window.autoDismissNewAlerts();
+                            }
                         }
-                        handleSaveSuccess(res);
+
+                        if (res.success) {
+                            $('#modalKlasifikasi').modal('hide');
+                            $('#modalKlasifikasi').data('saved', true);
+                            if ($.fn.DataTable.isDataTable('#masterklasifikasi-table')) {
+                                $('#masterklasifikasi-table').DataTable().ajax.reload(null, false);
+                            }
+                        }
                     },
                     error: function(xhr) {
-                        handleAjaxError(xhr, 'Gagal simpan data!');
+                        let errorMessage = 'Gagal simpan data!';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        }
+
+                        $("#alert-container").html(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${errorMessage}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `);
+                        if (typeof window.autoDismissNewAlerts === 'function') {
+                            window.autoDismissNewAlerts();
+                        }
+
                         deselectRow();
                     }
                 });
             } catch (error) {
                 console.error('Form submit error:', error);
-                alert('Terjadi kesalahan saat menyimpan data!');
+                $("#alert-container").html(`
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                Terjadi kesalahan saat menyimpan data!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
+                if (typeof window.autoDismissNewAlerts === 'function') {
+                    window.autoDismissNewAlerts();
+                }
                 deselectRow();
             }
         }
-
         function prepareFormData(id) {
             let formData = $('#formKlasifikasi').serializeArray();
             formData.push({
@@ -391,26 +478,30 @@
         }
 
         function handleSaveSuccess(res) {
+            if (res.html) {
+                $("#alert-container").html(res.html);
+            }
+
             if (res.success) {
                 $('#modalKlasifikasi').modal('hide');
                 reloadTable();
-                alert('Data berhasil disimpan!');
                 deselectRow();
             }
         }
 
         function handleAjaxError(xhr, defaultMessage) {
             console.error('AJAX request failed:', xhr);
-            let message = defaultMessage;
 
-            if (xhr.responseJSON && xhr.responseJSON.message) {
-                message = xhr.responseJSON.message;
-            } else if (xhr.responseJSON && xhr.responseJSON.errors) {
-                const errors = xhr.responseJSON.errors;
-                message = Object.values(errors).flat()[0];
+            if (xhr.responseJSON && xhr.responseJSON.html) {
+                $("#alert-container").html(xhr.responseJSON.html);
+            } else {
+                $("#alert-container").html(`
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ${xhr.responseJSON?.message ?? defaultMessage}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `);
             }
-
-            alert(message);
         }
 
         function reloadTable() {
