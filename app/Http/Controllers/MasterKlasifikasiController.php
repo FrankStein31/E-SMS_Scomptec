@@ -14,7 +14,7 @@ class MasterKlasifikasiController extends Controller
         if ($request->ajax()) {
             return $dataTable->ajax();
         }
-        
+
         $kodeUtama = MasterKlasifikasi::select('kodeklasifikasi', 'klasifikasi')
             ->orderBy('kodeklasifikasi')
             ->get()
@@ -24,7 +24,7 @@ class MasterKlasifikasiController extends Controller
             ->map(function($group) {
                 return $group->first();
             });
-            
+
         return $dataTable->render('klasifikasi.index', compact('kodeUtama'));
     }
 
@@ -39,26 +39,44 @@ class MasterKlasifikasiController extends Controller
             'retensi' => 'nullable|integer',
             'parent' => 'nullable|string',
         ]);
-        // Cek duplikat manual biar bisa kasih respon custom
+
         if (MasterKlasifikasi::where('kodeklasifikasi', $request->kodeklasifikasi)->exists()) {
-            return response()->json(['success' => false, 'message' => 'Kode klasifikasi sudah ada, tidak boleh duplikat.'], 422);
+
+            session()->flash('danger', 'Kode klasifikasi sudah ada, tidak boleh duplikat.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode klasifikasi sudah ada, tidak boleh duplikat.',
+                'html' => view('layout.alert')->render()
+            ], 422);
         }
+
         $data = $request->except(['_token','id','_method']);
         $data['id'] = (string) Str::ulid();
         $klasifikasi = MasterKlasifikasi::create($data);
-        return response()->json(['success' => true, 'data' => $klasifikasi]);
+        session()->flash('success', 'Klasifikasi berhasil ditambahkan.');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Klasifikasi berhasil ditambahkan.',
+            'html' => view('layout.alert')->render(),
+            'data' => $klasifikasi
+        ]);
     }
 
     public function update(Request $request, $id)
     {
         $klasifikasi = MasterKlasifikasi::findOrFail($id);
-
-        // Cek jika kodeklasifikasi diubah dan sudah ada child, tolak
         $kodeBaru = $request->kodeklasifikasi;
         $kodeLama = $klasifikasi->kodeklasifikasi;
         $adaChild = MasterKlasifikasi::where('kodeklasifikasi', 'like', $kodeLama . '.%')->exists();
+
         if ($kodeBaru !== $kodeLama && $adaChild) {
-            return response()->json(['success' => false, 'message' => 'Tidak bisa mengubah kode klasifikasi parent yang punya child.'], 422);
+            session()->flash('danger', 'Tidak bisa mengubah kode klasifikasi parent yang punya child.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak bisa mengubah kode klasifikasi parent yang punya child.',
+                'html' => view('layout.alert')->render()
+            ], 422);
         }
 
         $request->validate([
@@ -70,25 +88,53 @@ class MasterKlasifikasiController extends Controller
             'retensi' => 'nullable|integer',
             'parent' => 'nullable|string',
         ]);
-        // Cek duplikat manual kecuali untuk dirinya sendiri
+
         if (MasterKlasifikasi::where('kodeklasifikasi', $request->kodeklasifikasi)->where('id', '!=', $id)->exists()) {
-            return response()->json(['success' => false, 'message' => 'Kode klasifikasi sudah ada, tidak boleh duplikat.'], 422);
+            session()->flash('danger', 'Kode klasifikasi sudah ada, tidak boleh duplikat.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode klasifikasi sudah ada, tidak boleh duplikat.',
+                'html' => view('layout.alert')->render()
+            ], 422);
         }
+
         $klasifikasi->update($request->except(['_token','id','_method']));
-        return response()->json(['success' => true, 'data' => $klasifikasi]);
+
+        session()->flash('success', 'Klasifikasi berhasil diubah.');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Klasifikasi berhasil diubah.',
+            'html' => view('layout.alert')->render(),
+            'data' => $klasifikasi
+        ]);
     }
 
     public function destroy($id)
     {
         $klasifikasi = MasterKlasifikasi::findOrFail($id);
-        // Cek apakah ada child
+
         $kode = $klasifikasi->kodeklasifikasi;
         $adaChild = MasterKlasifikasi::where('kodeklasifikasi', 'like', $kode . '.%')->exists();
+
         if ($adaChild) {
-            return response()->json(['success' => false, 'message' => 'Tidak bisa menghapus parent yang masih punya child. Hapus child-nya dulu.'], 422);
+            session()->flash('danger', 'Tidak bisa menghapus parent yang masih punya child. Hapus child-nya dulu.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak bisa menghapus parent yang masih punya child. Hapus child-nya dulu.',
+                'html' => view('layout.alert')->render()
+            ], 422);
         }
+
         $klasifikasi->delete();
-        return response()->json(['success' => true]);
+
+        session()->flash('success', 'Klasifikasi berhasil dihapus.');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Klasifikasi berhasil dihapus.',
+            'html' => view('layout.alert')->render()
+        ]);
     }
 
     public function show($id)
