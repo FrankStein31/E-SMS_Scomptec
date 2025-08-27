@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use App\DataTables\EntrySuratIsiDataTable;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
@@ -580,184 +581,74 @@ class EntriSuratController extends Controller
     {
         $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
 
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        // Cari template dengan ekstensi .xls atau .xlsx
+        $candidates = [
+            public_path('doc_cetak' . DIRECTORY_SEPARATOR . 'Tanda Terima.xls'),
+            public_path('doc_cetak' . DIRECTORY_SEPARATOR . 'Tanda Terima.xlsx'),
+        ];
+        $templatePath = null;
+        foreach ($candidates as $candidate) {
+            if (file_exists($candidate)) {
+                $templatePath = $candidate;
+                break;
+            }
+        }
+        if (!$templatePath) {
+            return redirect()->back()->with('danger', 'Template Excel tidak ditemukan di: public/doc_cetak (Tanda Terima.xls atau Tanda Terima.xlsx)');
+        }
+
+        // Load template agar format/lay out terjaga
+        try {
+            $detectedType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($templatePath);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('danger', 'Gagal mengenali tipe template: ' . $e->getMessage());
+        }
+
+        try {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($templatePath); // auto-detect
+        } catch (\Exception $e) {
+            return redirect()->back()->with('danger', 'Gagal memuat template: ' . $e->getMessage());
+        }
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Set lebar kolom sesuai template
-        $sheet->getColumnDimension('A')->setWidth(8);   // Logo area
-        $sheet->getColumnDimension('B')->setWidth(35);  // Label field yang lebih lebar
-        $sheet->getColumnDimension('C')->setWidth(3);   // Titik dua
-        $sheet->getColumnDimension('D')->setWidth(40);  // Data area yang lebar
-        $sheet->getColumnDimension('E')->setWidth(20);  // Area kosong/tanda tangan
+        // Siapkan nilai yang akan diinject ke template (gunakan placeholder di template)
+        $replacements = [
+            '{DARI}' => (string)($data->dari ?? '-'),
+            '{TANGGAL_SURAT_DMY}' => $data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : '-',
+            '{NOMOR_SURAT}' => (string)($data->nomor_surat ?? '-'),
+            '{PERIHAL}' => (string)($data->hal ?? '-'),
+            '{DITERIMA_TANGGAL_DMY}' => $data->tgl_diterima ? date('d-m-Y', strtotime($data->tgl_diterima)) : date('d-m-Y'),
+            '{DITERIMA_JAM}' => $data->created_at ? date('H:i:s', strtotime($data->created_at)) : date('H:i:s'),
+            '{SURABAYA_TANGGAL_DMY}' => $data->tgl_diterima ? date('d/m/Y', strtotime($data->tgl_diterima)) : date('d/m/Y'),
+            '{PENERIMA_NAMA}' => (string)($data->createdBy->fullname ?? 'Operator'),
+            '{PENERIMA_NIP}' => '',
+        ];
 
-        // Set margin untuk print A4
-        $sheet->getPageMargins()->setTop(0.75);
-        $sheet->getPageMargins()->setLeft(0.7);
-        $sheet->getPageMargins()->setRight(0.7);
-        $sheet->getPageMargins()->setBottom(0.75);
-
-        // Set tinggi baris header
-        $sheet->getRowDimension(1)->setRowHeight(20);
-        $sheet->getRowDimension(2)->setRowHeight(18);
-        $sheet->getRowDimension(3)->setRowHeight(16);
-        $sheet->getRowDimension(4)->setRowHeight(16);
-
-        // Header kop surat
-        $sheet->setCellValue('B1', 'PEMERINTAH PROVINSI JAWA TIMUR');
-        $sheet->mergeCells('B1:E1');
-        $sheet->getStyle('B1')->getFont()->setBold(true)->setSize(14);
-        $sheet->getStyle('B1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-        $sheet->setCellValue('B2', 'SEKRETARIAT DAERAH');
-        $sheet->mergeCells('B2:E2');
-        $sheet->getStyle('B2')->getFont()->setBold(true)->setSize(12);
-        $sheet->getStyle('B2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-        $sheet->setCellValue('B3', 'Jl. Pahlawan 110, Surabaya, Jawa Timur');
-        $sheet->mergeCells('B3:E3');
-        $sheet->getStyle('B3')->getFont()->setSize(10);
-        $sheet->getStyle('B3')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-        $sheet->setCellValue('B4', 'Telp (031) 3524001 - 11, Pswt 1467-1465-1489');
-        $sheet->mergeCells('B4:E4');
-        $sheet->getStyle('B4')->getFont()->setSize(10);
-        $sheet->getStyle('B4')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-
-        // Tambahkan logo Jawa Timur
-        $logoPath = public_path('assets/images/logo/logo_jatim.png');
-        if (file_exists($logoPath)) {
-            try {
-                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-                $drawing->setName('Logo Jawa Timur');
-                $drawing->setDescription('Logo Pemprov Jatim');
-                $drawing->setPath($logoPath);
-                $drawing->setHeight(70);
-                $drawing->setWidth(55);
-                $drawing->setCoordinates('A1');
-                $drawing->setOffsetX(20);
-                $drawing->setOffsetY(5);
-                $drawing->setWorksheet($sheet);
-            } catch (\Exception $e) {
-                // Fallback text logo
-                $sheet->setCellValue('A1', 'LOGO');
-                $sheet->setCellValue('A2', 'JATIM');
-                $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(8);
-                $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        // Ganti placeholder pada seluruh sel string dalam sheet aktif
+        $highestRow = $sheet->getHighestRow();
+        $highestColumn = $sheet->getHighestColumn();
+        $highestColumnIndex = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::columnIndexFromString($highestColumn);
+        for ($row = 1; $row <= $highestRow; $row++) {
+            for ($col = 1; $col <= $highestColumnIndex; $col++) {
+                $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($col);
+                $cell = $sheet->getCell($colLetter . $row);
+                $value = $cell->getValue();
+                if (is_string($value) && $value !== '') {
+                    $newValue = strtr($value, $replacements);
+                    if ($newValue !== $value) {
+                        $cell->setValueExplicit($newValue, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    }
+                }
             }
         }
 
-        // Garis bawah header
-        $sheet->getRowDimension(5)->setRowHeight(5);
-        $sheet->getStyle('A5:E5')->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK);
+        // Nama file keluaran mengikuti tipe template (xls jika template xls, selain itu xlsx)
+        $writerType = ($detectedType === 'Xls') ? 'Xls' : 'Xlsx';
+        $ext = strtolower($writerType) === 'xls' ? 'xls' : 'xlsx';
+        $fileName = 'Tanda_Terima_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Surat') . '_' . date('Y-m-d') . '.' . $ext;
 
-        // Spasi
-        $sheet->getRowDimension(6)->setRowHeight(20);
-
-        // Judul dokumen
-        $sheet->setCellValue('A7', 'TANDA PENERIMAAN SURAT');
-        $sheet->mergeCells('A7:E7');
-        $sheet->getStyle('A7')->getFont()->setBold(true)->setSize(14);
-        $sheet->getStyle('A7')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension(7)->setRowHeight(25);
-
-        // Spasi setelah judul
-        $sheet->getRowDimension(8)->setRowHeight(20);
-
-        // Data tanda terima sesuai template - mulai dari baris 9
-        $row = 9;
-
-        // Telah Terima Surat dari
-        $sheet->setCellValue('A' . $row, 'Telah Terima Surat dari');
-        $sheet->setCellValue('C' . $row, ':');
-        $sheet->setCellValue('D' . $row, $data->dari ?? '-');
-        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
-        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
-        $sheet->getRowDimension($row)->setRowHeight(18);
-        $row++;
-
-        // Tanggal
-        $sheet->setCellValue('A' . $row, 'Tanggal');
-        $sheet->setCellValue('C' . $row, ':');
-        $sheet->setCellValue('D' . $row, $data->tgl_surat ? date('d/m/Y', strtotime($data->tgl_surat)) : '-');
-        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
-        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
-        $sheet->getRowDimension($row)->setRowHeight(18);
-        $row++;
-
-        // Nomor Surat
-        $sheet->setCellValue('A' . $row, 'Nomor Surat');
-        $sheet->setCellValue('C' . $row, ':');
-        $sheet->setCellValue('D' . $row, $data->nomor_surat ?? '-');
-        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
-        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
-        $sheet->getRowDimension($row)->setRowHeight(18);
-        $row++;
-
-        // Perihal
-        $sheet->setCellValue('A' . $row, 'Perihal');
-        $sheet->setCellValue('C' . $row, ':');
-        $sheet->setCellValue('D' . $row, $data->hal ?? '-');
-        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
-        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
-        $sheet->getStyle('D' . $row)->getAlignment()->setWrapText(true);
-        $sheet->getRowDimension($row)->setRowHeight(22);
-        $row++;
-
-        // Diterima
-        $sheet->setCellValue('A' . $row, 'Diterima');
-        $sheet->setCellValue('C' . $row, ':');
-        $sheet->setCellValue('D' . $row, $data->tgl_diterima ? date('d-m-Y', strtotime($data->tgl_diterima)) : date('d-m-Y'));
-        $sheet->getStyle('A' . $row)->getFont()->setSize(11);
-        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
-        $sheet->getRowDimension($row)->setRowHeight(18);
-
-        // Spasi sebelum tanda tangan
-        $row += 6;
-
-        // Area tanda tangan sesuai template - di sebelah kanan
-        $sheet->setCellValue('D' . $row, 'SURABAYA, ' . ($data->tgl_diterima ? date('d/m/Y', strtotime($data->tgl_diterima)) : date('d/m/Y')));
-        $sheet->getStyle('D' . $row)->getFont()->setSize(11);
-        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension($row)->setRowHeight(18);
-        $row++;
-
-        $sheet->setCellValue('D' . $row, 'PENERIMA');
-        $sheet->getStyle('D' . $row)->getFont()->setBold(true)->setSize(11);
-        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension($row)->setRowHeight(18);
-        $row++;
-
-        // Label "Operator" di sebelah kanan sesuai template
-        $sheet->setCellValue('E' . $row, 'Operator');
-        $sheet->getStyle('E' . $row)->getFont()->setSize(10);
-        $sheet->getStyle('E' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension($row)->setRowHeight(16);
-        $row += 4;
-
-        // Nama penandatangan dengan garis bawah
-        $sheet->setCellValue('D' . $row, $data->createdBy->fullname ?? 'Operator');
-        $sheet->getStyle('D' . $row)->getFont()->setBold(true)->setSize(11);
-        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('D' . $row)->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-        $sheet->getRowDimension($row)->setRowHeight(20);
-        $row++;
-
-        // NIP
-        $sheet->setCellValue('D' . $row, 'NIP');
-        $sheet->getStyle('D' . $row)->getFont()->setSize(10);
-        $sheet->getStyle('D' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getRowDimension($row)->setRowHeight(16);
-
-        // Set print area dan orientation
-        $sheet->getPageSetup()->setPrintArea('A1:E' . ($row + 2));
-        $sheet->getPageSetup()->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_PORTRAIT);
-        $sheet->getPageSetup()->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A4);
-
-        // Generate filename
-        $fileName = 'Tanda_Terima_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $data->hal ?? 'Surat') . '_' . date('Y-m-d') . '.xlsx';
-
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-        $tempFile = tempnam(sys_get_temp_dir(), $fileName);
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, $writerType);
+        $tempFile = tempnam(sys_get_temp_dir(), 'tt_');
         $writer->save($tempFile);
 
         return response()->download($tempFile, $fileName)->deleteFileAfterSend(true);
@@ -824,7 +715,7 @@ class EntriSuratController extends Controller
                 $drawing->setHeight(70);
                 $drawing->setWidth(55);
                 $drawing->setCoordinates('A1');
-                $drawing->setOffsetX(20);
+                $drawing->setOffsetX(65); // Dipindah ke kanan sesuai dengan exportTandaTerimaExcel
                 $drawing->setOffsetY(5);
                 $drawing->setWorksheet($sheet);
             } catch (\Exception $e) {
@@ -972,7 +863,7 @@ class EntriSuratController extends Controller
      */
     public function exportSuratDisExcel($id)
     {
-        $data = EntrySuratIsi::with(['createdBy'])->findOrFail($id);
+        $data = EntrySuratIsi::with(['createdBy', 'disposisis'])->findOrFail($id);
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -1089,18 +980,123 @@ class EntriSuratController extends Controller
         $sheet->getRowDimension($row)->setRowHeight(20);
         $row++;
 
-        // List penerima dengan border yang rapi (6 baris)
-        for ($i = 1; $i <= 5; $i++) {
-            $sheet->setCellValue('A' . $row, $i . '.');
-            $sheet->setCellValue('B' . $row, '');
+        // Ambil data disposisi untuk mengisi "Diteruskan kepada"
+        // Debug: Log untuk melihat apakah ada data disposisi
+        Log::info('Checking disposisi data for entry surat ID: ' . $id);
+
+        $disposisiList = \App\Models\DisposisiBaru::where('entrysurat_id', $id)
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        Log::info('Found ' . $disposisiList->count() . ' disposisi records');
+
+        // Jika tidak ada data disposisi, coba ambil dari EntrySuratTujuan
+        $kepadaEntries = [];
+
+        if ($disposisiList->count() > 0) {
+            // Gunakan data dari disposisi
+            foreach ($disposisiList as $disposisi) {
+                Log::info('Processing disposisi kepada: ' . $disposisi->kepada);
+
+                $kepadaArr = array_filter(array_unique(explode(',', $disposisi->kepada)));
+                foreach ($kepadaArr as $userId) {
+                    $userId = trim($userId);
+                    if (empty($userId)) continue;
+
+                    $user = \App\Models\User::find($userId);
+                    if ($user) {
+                        // Tampilkan hanya nama satker jika tersedia, fallback ke nama user
+                        $satkerName = null;
+                        if ($user->masterSatker && !empty($user->masterSatker->satker)) {
+                            $satkerName = $user->masterSatker->satker;
+                        } elseif ($user->satker && !empty($user->satker->satker)) {
+                            $satkerName = $user->satker->satker;
+                        }
+                        $entryText = $satkerName ?: $user->fullname;
+                        $kepadaEntries[] = $entryText;
+
+                        Log::info('Added user: ' . $user->fullname . ' with satker: ' . ($user->masterSatker ? $user->masterSatker->satker : 'none'));
+                    } else {
+                        // Jika bukan ID numerik, anggap ini label/nama satker yang sudah siap tampil
+                        if (!ctype_digit($userId)) {
+                            $kepadaEntries[] = $userId;
+                        }
+                        Log::warning('User not found for ID: ' . $userId);
+                    }
+                }
+            }
+        } else {
+            // Fallback: gunakan data dari EntrySuratTujuan atau kepada field
+            Log::info('No disposisi found, trying fallback methods');
+
+            // Coba dari tujuan surat
+            $tujuanList = \App\Models\EntrySuratTujuan::where('entrysurat_id', $id)->get();
+            if ($tujuanList->count() > 0) {
+                Log::info('Found ' . $tujuanList->count() . ' tujuan records');
+                foreach ($tujuanList as $tujuan) {
+                    $user = \App\Models\User::find($tujuan->userid_tujuan);
+                    if ($user) {
+                        // Tampilkan hanya nama satker jika tersedia, fallback ke nama user
+                        $satkerName = null;
+                        if ($user->masterSatker && !empty($user->masterSatker->satker)) {
+                            $satkerName = $user->masterSatker->satker;
+                        } elseif ($user->satker && !empty($user->satker->satker)) {
+                            $satkerName = $user->satker->satker;
+                        }
+                        $entryText = $satkerName ?: $user->fullname;
+                        $kepadaEntries[] = $entryText;
+                    }
+                }
+            } else {
+                // Terakhir, coba dari field kepada di entry surat
+                if (!empty($data->kepada)) {
+                    Log::info('Trying kepada field: ' . $data->kepada);
+                    // Asumsi kepada berisi nama-nama yang dipisah koma
+                    $kepadaNames = array_filter(array_map('trim', explode(',', $data->kepada)));
+                    foreach ($kepadaNames as $name) {
+                        $kepadaEntries[] = $name;
+                    }
+                }
+            }
+        }
+
+        // Filter duplikat dan kosong
+        $kepadaEntries = array_values(array_filter(array_unique($kepadaEntries)));
+        Log::info('Final kepada entries count: ' . count($kepadaEntries));
+
+        // Jika masih tidak ada data, tampilkan minimal 5 baris kosong
+        if (empty($kepadaEntries)) {
+            $kepadaEntries = array_fill(0, 5, '');
+        } else {
+            // Pastikan minimal 5 baris, tambah baris kosong jika perlu
+            while (count($kepadaEntries) < 5) {
+                $kepadaEntries[] = '';
+            }
+        }
+
+        // Tampilkan maksimal 5 penerima
+        for ($i = 0; $i < 5; $i++) {
+            $sheet->setCellValue('A' . $row, ($i + 1) . '.');
+            $sheet->setCellValue('B' . $row, $kepadaEntries[$i] ?? '');
             $sheet->mergeCells('B' . $row . ':D' . $row);
 
             // Apply border untuk semua sel
             $sheet->getStyle('A' . $row . ':D' . $row)->applyFromArray($borderStyle);
 
             $sheet->getStyle('A' . $row)->getFont()->setSize(11);
-            $sheet->getStyle('A' . $row)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-            $sheet->getRowDimension($row)->setRowHeight(28);
+            $sheet->getStyle('A' . $row)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP);
+
+            // Style untuk data kepada
+            $sheet->getStyle('B' . $row)->getFont()->setSize(11);
+            $sheet->getStyle('B' . $row)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP);
+            $sheet->getStyle('B' . $row)->getAlignment()->setWrapText(true);
+
+            // Set tinggi baris berdasarkan konten
+            if (!empty($kepadaEntries[$i]) && strpos($kepadaEntries[$i], "\n") !== false) {
+                $sheet->getRowDimension($row)->setRowHeight(45); // Tinggi untuk 3 baris teks
+            } else {
+                $sheet->getRowDimension($row)->setRowHeight(28);
+            }
             $row++;
         }
 
