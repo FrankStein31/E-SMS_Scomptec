@@ -121,7 +121,7 @@ class KotakMasukController extends Controller
 
             DB::commit();
             \Log::info('DisposisiBaru berhasil disimpan', ['entrysurat_id' => $request->entrysurat_id]);
-            return redirect()->route('disposisi.index')->with('success', 'Disposisi berhasil dibuat.');
+            return redirect()->route('disposisi.riwayat', $request->entrysurat_id)->with('success', 'Disposisi berhasil dibuat.');
         } catch (\Throwable $th) {
             DB::rollBack();
             \Log::error('Gagal Membuat Disposisi', ['error' => $th->getMessage()]);

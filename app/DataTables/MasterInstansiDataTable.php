@@ -22,6 +22,7 @@ class MasterInstansiDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->addIndexColumn() // Menambahkan kolom nomor urut otomatis
             ->setRowId('id');
     }
 
@@ -43,9 +44,9 @@ class MasterInstansiDataTable extends DataTable
         return $this->builder()
             ->setTableId('masterinstansi-table')
             ->columns($this->getColumns())
-            // ->minifiedAjax()
+            ->minifiedAjax()
             ->orderBy(0, 'asc')
-            ->dom('rt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
+            ->dom('<"row justify-content-end"<"col-auto"f>>rt<"row justify-content-between"<"col-auto"p><"col-auto"i>>')
             ->parameters([
                 'scrollY' => '60vh',
                 'scrollX' => true,
@@ -54,6 +55,7 @@ class MasterInstansiDataTable extends DataTable
                 'paging' => true,
                 'pageLength' => 25,
                 'lengthChange' => false,
+                'searchDelay' => 1000, // Delay 1 detik sebelum search
                 'language' => [
                     'paginate' => [
                         'previous' => 'Sebelumnya',
@@ -62,20 +64,12 @@ class MasterInstansiDataTable extends DataTable
                     'info' => 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
                     'infoEmpty' => 'Menampilkan 0 sampai 0 dari 0 data',
                     'infoFiltered' => '(difilter dari _MAX_ total data)',
-                    'zeroRecords' => 'Tidak ada data yang ditemukan'
+                    'zeroRecords' => 'Tidak ada data yang ditemukan',
+                    'search' => 'Cari:',
+                    'searchPlaceholder' => 'Ketik untuk mencari...'
                 ]
             ])
             ->addTableClass('table-striped table-bordered table-hover');
-        // ->selectStyleSingle()
-        //     ->buttons([
-        //         Button::make('excel'),
-        //         Button::make('csv'),
-        //         Button::make('pdf'),
-        //         Button::make('print'),
-        //         Button::make('reset'),
-        //         Button::make('reload')
-        //     ])
-        // ;
     }
 
     /**
@@ -84,11 +78,17 @@ class MasterInstansiDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('instansi'),
-            Column::make('kepala'),
-            Column::make('alamat'),
-            Column::make('kota'),
-            Column::make('telp'),
+            Column::computed('DT_RowIndex')
+                ->title('No.')
+                ->searchable(false)
+                ->orderable(false)
+                ->width(60)
+                ->addClass('text-center'),
+            Column::make('instansi')->title('Instansi'),
+            Column::make('kepala')->title('Kepala'),
+            Column::make('alamat')->title('Alamat'),
+            Column::make('kota')->title('Kota'),
+            Column::make('telp')->title('Telepon'),
         ];
     }
 

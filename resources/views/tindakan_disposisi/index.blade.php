@@ -44,9 +44,9 @@
                             <label>Tindakan</label>
                             <input type="text" name="tindakan" class="form-control" required>
                         </div>
-                        <div class="mb-2">
+                        <div class="mb-2" style="display: none;">
                             <label>Satker ID</label>
-                            <input type="text" name="satkerid" class="form-control" required>
+                            <input type="text" name="satkerid" class="form-control" value="-" required>
                         </div>
                     </div>
                     <div class="modal-footer">

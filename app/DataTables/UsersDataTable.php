@@ -23,8 +23,11 @@ class UsersDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->addIndexColumn()
-            ->addColumn('satker_name', function ($row) {
-                return $row->satker ? $row->satker->satker : '-';
+            ->addColumn('satker_info', function ($row) {
+                if ($row->satker) {
+                    return $row->satkerid . ' - ' . $row->satker->satker;
+                }
+                return $row->satkerid ? $row->satkerid . ' - (Unit tidak ditemukan)' : '-';
             })
             ->setRowId('id');
     }
@@ -42,7 +45,7 @@ class UsersDataTable extends DataTable
         if ($jabatan) {
             $query->where('jabatan', $jabatan);
         }
-        return $query->orderBy('username');
+        return $query->orderBy('satkerid');
     }
 
     /**
@@ -92,7 +95,7 @@ class UsersDataTable extends DataTable
             Column::make('nip')->title('NIP'),
             Column::make('pangkat')->title('Pangkat'),
             Column::make('jabatan')->title('Jabatan'),
-            Column::make('satker_name')->title('Unit Kerja'),
+            Column::make('satker_info')->title('Unit Kerja')->orderable(false),
             Column::make('email')->title('Email'),
         ];
     }

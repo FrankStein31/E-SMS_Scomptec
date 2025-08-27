@@ -68,31 +68,36 @@
                                 <label>Klasifikasi</label>
                                 <textarea name="klasifikasi" class="form-control" required></textarea>
                             </div>
-                            <div class="row">
+                            <div class="row" style="display: none;">
                                 <div class="col">
                                     <label>Retensi Aktif</label>
-                                    <input type="number" name="retensi_aktif" class="form-control" required>
+                                    <input type="number" name="retensi_aktif" class="form-control" value=0 required>
                                 </div>
                                 <div class="col">
                                     <label>Retensi Inaktif</label>
-                                    <input type="number" name="retensi_inaktif" class="form-control" required>
+                                    <input type="number" name="retensi_inaktif" class="form-control" value=0 required>
                                 </div>
                             </div>
-                            <div class="mb-2 mt-2">
+                            <div class="mb-2 mt-2" style="display: none;">
                                 <label>Keterangan</label>
                                 <select name="keterangan" class="form-control" required>
-                                    <option value="1">Dinilai Kembali</option>
+                                    <option value="1" selected>Dinilai Kembali</option>
                                     <option value="2">Musnah</option>
                                     <option value="3">Permanen</option>
                                 </select>
                             </div>
-                            <div class="mb-2">
+                            <div class="mb-2" style="display: none;">
                                 <label>Retensi</label>
-                                <input type="number" name="retensi" class="form-control">
+                                <input type="number" name="retensi" class="form-control" value="">
                             </div>
                             <div class="mb-2">
                                 <label>Parent</label>
-                                <input type="text" name="parent" class="form-control">
+                                <select name="parent" id="selectParent" class="form-control">
+                                    <option value="">-- Pilih Parent (Opsional) --</option>
+                                    @foreach ($kodeUtama as $kode => $row)
+                                        <option value="{{ $kode }}">{{ $kode }} - {{ $row->klasifikasi }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -145,6 +150,14 @@
                     placeholder: 'Pilih Kode',
                     allowClear: true,
                     dropdownParent: $('.card-header')
+                });
+
+                // Initialize Select2 for parent dropdown in modal
+                $('#selectParent').select2({
+                    width: '100%',
+                    placeholder: 'Pilih Parent (Opsional)',
+                    allowClear: true,
+                    dropdownParent: $('#modalKlasifikasi')
                 });
             } catch (error) {
                 console.warn('Select2 initialization failed:', error);
@@ -294,6 +307,10 @@
                 $('#formKlasifikasi')[0].reset();
                 $('#modalTitle').text('Tambah Klasifikasi');
                 $('#klasifikasi_id').val('');
+                
+                // Reset Select2 parent dropdown
+                $('#selectParent').val(null).trigger('change');
+                
                 $('#modalKlasifikasi').modal('show');
             } catch (error) {
                 console.error('Add modal error:', error);
@@ -343,7 +360,9 @@
             $('[name=retensi_inaktif]').val(data.retensi_inaktif);
             $('[name=keterangan]').val(data.keterangan);
             $('[name=retensi]').val(data.retensi);
-            $('[name=parent]').val(data.parent);
+            
+            // Set Select2 parent value
+            $('#selectParent').val(data.parent).trigger('change');
         }
 
         function deleteKlasifikasi(id) {
@@ -530,6 +549,37 @@
 
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 28px;
+        }
+
+        /* Select2 in Modal */
+        .modal .select2-container--default .select2-selection--single {
+            height: 38px;
+            padding: 6px 12px;
+            font-size: 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #ced4da;
+        }
+
+        .modal .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 24px;
+            padding-left: 0;
+            padding-right: 20px;
+        }
+
+        .modal .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px;
+            right: 6px;
+        }
+
+        /* Select2 dropdown styling */
+        .select2-dropdown {
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #007bff;
+            color: white;
         }
 
         /* Container Styling */

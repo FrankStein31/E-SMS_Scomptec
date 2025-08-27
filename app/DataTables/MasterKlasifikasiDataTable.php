@@ -27,6 +27,17 @@ class MasterKlasifikasiDataTable extends DataTable
                 if($row->keterangan == 2) return 'Musnah';
                 return 'Permanen';
             })
+            ->addColumn('parent_info', function($row) {
+                if($row->parent) {
+                    // Cari parent berdasarkan kode klasifikasi
+                    $parent = \App\Models\MasterKlasifikasi::where('kodeklasifikasi', $row->parent)->first();
+                    if($parent) {
+                        return $row->parent . ' (' . $parent->klasifikasi . ')';
+                    }
+                    return $row->parent;
+                }
+                return '-';
+            })
             ->addColumn('action', function($row) {
                 return '<button class="btn btn-warning btn-sm btnEdit" data-id="'.$row->id.'">Edit</button> '
                     . '<button class="btn btn-danger btn-sm btnHapus" data-id="'.$row->id.'">Hapus</button>';
@@ -74,6 +85,7 @@ class MasterKlasifikasiDataTable extends DataTable
                         'lengthChange' => false,
                         'responsive' => true,
                         'autoWidth' => false,
+                        'searchDelay' => 1000, // Delay 1 detik sebelum search
                         'language' => [
                             'paginate' => [
                                 'previous' => 'Sebelumnya',
@@ -83,6 +95,8 @@ class MasterKlasifikasiDataTable extends DataTable
                             'infoEmpty' => 'Menampilkan 0 sampai 0 dari 0 data',
                             'infoFiltered' => '(difilter dari _MAX_ total data)',
                             'zeroRecords' => 'Tidak ada data yang ditemukan',
+                            'search' => 'Cari:',
+                            'searchPlaceholder' => 'Ketik untuk mencari...',
                             'url' => asset('assets/datatables/id.json')
                         ]
                     ])->addTableClass('table-striped table-bordered table-hover');
@@ -95,13 +109,13 @@ class MasterKlasifikasiDataTable extends DataTable
     {
         return [
             // Column::make('id'),
-            Column::make('kodeklasifikasi'),
-            Column::make('klasifikasi'),
-            Column::make('retensi_aktif'),
-            Column::make('retensi_inaktif'),
-            Column::make('keterangan'),
-            Column::make('retensi'),
-            Column::make('parent'),
+            Column::make('kodeklasifikasi')->title('Kode Klasifikasi'),
+            Column::make('klasifikasi')->title('Nama Klasifikasi'),
+            Column::make('retensi_aktif')->visible(false),
+            Column::make('retensi_inaktif')->visible(false),
+            Column::make('keterangan')->visible(false),
+            Column::make('retensi')->visible(false),
+            Column::computed('parent_info')->title('Parent')->searchable(false)->orderable(false),
             // Column::computed('action')
             //       ->exportable(false)
             //       ->printable(false)
