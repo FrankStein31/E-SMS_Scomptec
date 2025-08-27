@@ -5,6 +5,8 @@
     <!-- Tambahkan CSS untuk loading dan slider -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+    <!-- GLightbox CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css">
     <style>
         /* Loading spinner */
         .scan-loading {
@@ -390,13 +392,25 @@
             }
 
             imagesScanned.push(scannedImage);
+            
+            // Buat link dengan GLightbox untuk gambar hasil scan
+            var linkElement = document.createElement('a');
+            linkElement.href = scannedImage.src;
+            linkElement.className = 'glightbox';
+            linkElement.setAttribute('data-gallery', 'scan-gallery');
+            linkElement.setAttribute('data-title', 'File Scan Baru');
+            // linkElement.setAttribute('data-description', 'Hasil scan terbaru');
+            
             var elementImg = scanner.createDomElementFromModel({
                 'name': 'img',
                 'attributes': {
                     'class': 'scanned',
-                    'src': scannedImage.src
+                    'src': scannedImage.src,
+                    'style': 'cursor: pointer; max-height: 200px; width: auto;'
                 }
             });
+
+            linkElement.appendChild(elementImg);
 
             // Tambahkan tombol X (hapus) di pojok kanan atas
             var closeBtn = document.createElement('button');
@@ -416,6 +430,12 @@
                         var inputImg = document.getElementById('images_input');
                         if (inputImg) inputImg.value = '';
                     }
+                    // Reinitialize GLightbox setelah menghapus gambar
+                    if (typeof GLightbox !== 'undefined') {
+                        setTimeout(function() {
+                            initGLightbox();
+                        }, 100);
+                    }
                 }
             };
 
@@ -423,7 +443,7 @@
             var sliderContainer = document.getElementById('scannedImagesSlider');
             var slideDiv = document.createElement('div');
             slideDiv.style.position = 'relative';
-            slideDiv.appendChild(elementImg);
+            slideDiv.appendChild(linkElement);
             slideDiv.appendChild(closeBtn);
             if (sliderContainer) sliderContainer.appendChild(slideDiv);
 
@@ -434,7 +454,15 @@
             var loading = document.getElementById('scanLoading');
             if (loading) loading.style.display = 'none';
 
-            log("Gambar berhasil diproses dan ditambahkan ke slider");
+            // Reinitialize GLightbox untuk gambar baru
+            if (typeof GLightbox !== 'undefined') {
+                // Destroy existing instance dan buat yang baru
+                setTimeout(function() {
+                    initGLightbox();
+                }, 100);
+            }
+
+            log("Gambar berhasil diproses dan ditambahkan ke slider dengan GLightbox");
         }
 
         /** Initialize image slider */
@@ -826,8 +854,14 @@
                                                 <div class="scanned-images-slider">
                                                     @foreach ($data->FileScan as $scan)
                                                         <div style="position:relative;">
-                                                            <img src="{{ asset('uploads/' . $scan->nama_file) }}"
-                                                                alt="">
+                                                            <a href="{{ asset('uploads/' . $scan->nama_file) }}" 
+                                                               class="glightbox" 
+                                                               data-gallery="existing-scan-gallery"
+                                                               data-title="File Scan - {{ $scan->nama_file }}">
+                                                                <img src="{{ asset('uploads/' . $scan->nama_file) }}"
+                                                                     alt="File Scan"
+                                                                     style="cursor: pointer; max-height: 200px; width: auto; display: block; margin: 0 auto;">
+                                                            </a>
                                                             <button class="btn btn-sm btn-danger btn-close-scan-file"
                                                                 style="position:absolute;top:5px;right:5px;z-index:10;"
                                                                 data-id="{{ $scan->id }}">&times;</button>
@@ -939,6 +973,8 @@
     <!-- Tambahkan jQuery dan Slick slider JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <!-- GLightbox JS -->
+    <script src="https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js"></script>
     <script>
         // Inisialisasi slider untuk gambar yang sudah ada
         $(document).ready(function() {
@@ -950,7 +986,65 @@
                 adaptiveHeight: true,
                 arrows: true
             });
+
+            // Tunggu sebentar untuk memastikan DOM dan Slick sudah siap
+            setTimeout(function() {
+                console.log('Initializing GLightbox...');
+                initGLightbox();
+            }, 500);
         });
+
+        // Fungsi untuk inisialisasi GLightbox
+        function initGLightbox() {
+            if (typeof GLightbox !== 'undefined') {
+                // Destroy existing instances first
+                const existingLightboxes = document.querySelectorAll('.glightbox');
+                
+                const lightbox = GLightbox({
+                    touchNavigation: true,
+                    loop: true,
+                    autoplayVideos: false,
+                    closeOnOutsideClick: true,
+                    keyboardNavigation: true,
+                    descPosition: 'bottom',
+                    width: '90vw',
+                    height: '90vh',
+                    videosWidth: '90vw',
+                    selector: '.glightbox', // Pastikan selector benar
+                    skin: 'clean',
+                    moreText: 'Lihat lebih banyak',
+                    moreLength: 60,
+                    slideEffect: 'slide',
+                    openEffect: 'zoom',
+                    closeEffect: 'zoom',
+                    onOpen: function() {
+                        console.log('GLightbox opened');
+                    },
+                    beforeSlideChange: function(slide, data) {
+                        console.log('GLightbox: Before slide change');
+                    },
+                    afterSlideChange: function(slide, data) {
+                        console.log('GLightbox: After slide change');
+                    }
+                });
+                
+                console.log('GLightbox initialized successfully with', existingLightboxes.length, 'images');
+                
+                // Test click handler - tambahkan manual click handler jika perlu
+                existingLightboxes.forEach((el, index) => {
+                    console.log('GLightbox element', index, ':', el.href);
+                    // Manual click handler sebagai fallback
+                    el.addEventListener('click', function(e) {
+                        console.log('Manual click triggered for:', this.href);
+                    });
+                });
+                
+                return lightbox;
+            } else {
+                console.error('GLightbox not loaded');
+                return null;
+            }
+        }
     </script>
 
     <!-- Script untuk menangani export modal -->
@@ -1041,7 +1135,7 @@
     </script>
 
     <script>
-        $(document).on('click', '.btn-close-scan-file', function(e) {
+                $(document).on('click', '.btn-close-scan-file', function(e) {
             e.preventDefault();
             if (confirm('Yakin hapus file scan ini?')) {
                 var id = $(this).data('id');
@@ -1050,19 +1144,21 @@
                     url: '/entrisurat/scan/' + id + '/delete',
                     type: 'POST',
                     data: {
-                        _token: '{{ csrf_token() }}',
-                        _method: 'DELETE'
+                        _method: 'DELETE',
+                        _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(res) {
+                        btn.closest('div').remove();
+                        // Reinitialize GLightbox setelah menghapus
+                        setTimeout(function() {
+                            initGLightbox();
+                        }, 100);
                         if (res.success) {
-                            // Setelah hapus, reload halaman dan kirim pesan sukses
-                            location.reload();
-                        } else {
-                            alert(res.message || 'Gagal hapus file scan!');
+                            alert('File scan berhasil dihapus');
                         }
                     },
                     error: function() {
-                        alert('Gagal hapus file scan!');
+                        alert('Gagal menghapus file scan');
                     }
                 });
             }
