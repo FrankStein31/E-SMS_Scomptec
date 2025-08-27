@@ -33,7 +33,7 @@
                                             @endforeach
                                         </select>
                                     </form>
-                                    <a class="btn btn-primary btn-sm b-r-22" id="btnTambah">
+                                    <a class="btn btn-primary btn-sm b-r-22 btn-add-primary" id="btnTambah">
                                         <i class="iconoir-plus"></i> Tambah Klasifikasi
                                     </a>
                                 </div>
