@@ -28,6 +28,22 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+
+Route::post('entrisurat/post/file/scan/{entri_surat_id}', [EntriSuratController::class, "scanfile"])->name('entrisurat.post.file.scan');
+Route::delete('/entrisurat/scan/{id}/delete', [EntriSuratController::class, 'deleteScan'])->name('entrisurat.scan.delete');
+
+// Word exports
+Route::get('entrisurat/{id}/export-word', [EntriSuratController::class, 'exportTandaTerimaWord'])->name('entrisurat.exportWord');
+Route::get('entrisurat/{id}/export-surat-word', [EntriSuratController::class, 'exportSuratWord'])->name('entrisurat.exportSuratWord');
+Route::get('entrisurat/{id}/export-surat-dis-word', [EntriSuratController::class, 'exportSuratDisWord'])->name('entrisurat.exportSuratDisWord');
+
+// Excel exports
+Route::get('entrisurat/{id}/export-excel', [EntriSuratController::class, 'exportTandaTerimaExcel'])->name('entrisurat.exportExcel');
+Route::get('entrisurat/{id}/export-surat-excel', [EntriSuratController::class, 'exportSuratExcel'])->name('entrisurat.exportSuratExcel');
+Route::get('entrisurat/{id}/export-surat-dis-excel', [EntriSuratController::class, 'exportSuratDisExcel'])->name('entrisurat.exportSuratDisExcel');
+
+Route::resource('entrisurat', EntriSuratController::class);
+
 // Routes with double submission prevention
 Route::middleware('prevent.double.submission')->group(function () {
 
@@ -36,6 +52,7 @@ Route::middleware('prevent.double.submission')->group(function () {
         Route::post('entrisurat/post/file/scan/{entri_surat_id}', [EntriSuratController::class, "scanfile"])->name('entrisurat.post.file.scan');
         Route::delete('/entrisurat/scan/{id}/delete', [EntriSuratController::class, 'deleteScan'])->name('entrisurat.scan.delete');
         Route::resource('entrisurat', EntriSuratController::class)->except(['index', 'show']);
+
 
         Route::resource('buatsurat', BuatSuratController::class)->except(['index', 'show']);
 
