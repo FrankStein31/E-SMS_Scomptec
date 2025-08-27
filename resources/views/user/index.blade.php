@@ -144,7 +144,99 @@
                     <!-- Default Card end -->
                 </div>
 
-                <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel"
+                <!-- Modal Tambah User -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <!-- Form di luar modal-content agar tombol submit terdeteksi -->
+                        <form action="{{ route('user.store') }}" method="POST">
+                            @csrf
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah User</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Username:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="username" class="form-control" value=""
+                                                required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Password:</label>
+                                        <div class="col-sm-9">
+                                            <input type="password" name="password" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Nama
+                                            Lengkap:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="fullname" class="form-control"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">NIP:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="nip" class="form-control"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Pangkat:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="pangkat" class="form-control"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Jabatan:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" name="jabatan" class="form-control"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Unit
+                                            Kerja:</label>
+                                        <div class="col-sm-9">
+                                            <select name="satkerid" class="form-select select2">
+                                                <option value="">Pilih Unit
+                                                    Kerja</option>
+                                                @foreach ($masterSatkers as $item)
+                                                    <option value="{{ $item->id }}">
+                                                        {{ $item->satker }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-2 align-items-center">
+                                        <label class="col-sm-3 col-form-label">Email:</label>
+                                        <div class="col-sm-9">
+                                            <input type="email" name="email" class="form-control"
+                                                value="" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-primary" data-prevent-double>Simpan</button>
+                                </div>
+                            </div> <!-- /.modal-content -->
+                        </form>
+                    </div> <!-- /.modal-dialog -->
+                </div>
+
+                <!-- Modal Edit User -->
+                <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2"
                     aria-hidden="true">
                     <div class="modal-dialog modal-lg">
                         <!-- Form di luar modal-content agar tombol submit terdeteksi -->
@@ -153,7 +245,7 @@
                             @method('PUT')
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Edit User</h1>
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel2">Edit User</h1>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                         aria-label="Close"></button>
                                 </div>
@@ -230,7 +322,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                    <button type="submit" class="btn btn-primary" data-prevent-double>Simpan</button>
                                 </div>
                             </div> <!-- /.modal-content -->
                         </form>
@@ -442,6 +534,19 @@
             // Initialize with delays to ensure proper loading
             setTimeout(initializeTableInteractions, 1000);
             setTimeout(initializeTableInteractions, 3000);
+
+            // Event handler untuk tombol tambah user
+            $(document).on('click', '#btnTambah', function() {
+                try {
+                    console.log('Tambah user button clicked');
+                    // Reset form
+                    $('#exampleModal form')[0].reset();
+                    // Show modal
+                    $('#exampleModal').modal('show');
+                } catch (error) {
+                    console.error('Add button error:', error);
+                }
+            });
 
             // Action button handlers
             $(document).on('click', '#editBtn', function() {

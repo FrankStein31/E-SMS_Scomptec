@@ -38,27 +38,40 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'username'   => 'required|string|unique:users,username',
-            'password'   => 'required|string|min:6',
-            'fullname'   => 'required|string',
-            'nip'        => 'nullable|string',
-            'pangkat'    => 'nullable|string',
-            'jabatan'    => 'nullable|string',
-            'satkerid'   => 'required|exists:master_satkers,id',
-            'email'      => 'nullable|email|unique:users,email',
-        ]);
-        $user = new User();
-        $user->username   = $validated['username'];
-        $user->password   = Hash::make($validated['password']);
-        $user->fullname   = $validated['fullname'];
-        $user->nip        = $validated['nip'] ?? null;
-        $user->pangkat    = $validated['pangkat'] ?? null;
-        $user->jabatan    = $validated['jabatan'] ?? null;
-        $user->satkerid   = $validated['satkerid'];
-        $user->email      = $validated['email'] ?? null;
-        $user->save();
-        return response()->json(['success' => true, 'data' => $user]);
+        try {
+            $validated = $request->validate([
+                'username'   => 'required|string|unique:users,username',
+                'password'   => 'required|string|min:6',
+                'fullname'   => 'required|string',
+                'nip'        => 'nullable|string',
+                'pangkat'    => 'nullable|string',
+                'jabatan'    => 'nullable|string',
+                'satkerid'   => 'required|exists:master_satkers,id',
+                'email'      => 'nullable|email|unique:users,email',
+            ]);
+
+            $user = new User();
+            $user->username   = $validated['username'];
+            $user->password   = Hash::make($validated['password']);
+            $user->fullname   = $validated['fullname'];
+            $user->nip        = $validated['nip'] ?? null;
+            $user->pangkat    = $validated['pangkat'] ?? null;
+            $user->jabatan    = $validated['jabatan'] ?? null;
+            $user->satkerid   = $validated['satkerid'];
+            $user->email      = $validated['email'] ?? null;
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => $user,
+                'message' => 'User berhasil ditambahkan!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -82,28 +95,43 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'username' => 'required|string|max:255|unique:users,username,' . $id,
-            'fullname' => 'required|string|max:255',
-            'nip' => 'nullable|string|max:50',
-            'pangkat' => 'nullable|string|max:100',
-            'jabatan' => 'nullable|string|max:100',
-            'satkerid' => 'required|exists:master_satkers,id',
-            'email' => 'nullable|email|max:255|unique:users,email,' . $id,
-        ]);
-        $user = User::findOrFail($id);
-        $user->username = $request->username;
-        $user->fullname = $request->fullname;
-        $user->nip = $request->nip;
-        $user->pangkat = $request->pangkat;
-        $user->jabatan = $request->jabatan;
-        $user->satkerid = $request->satkerid;
-        $user->email = $request->email;
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+        try {
+            $request->validate([
+                'username' => 'required|string|max:255|unique:users,username,' . $id,
+                'fullname' => 'required|string|max:255',
+                'nip' => 'nullable|string|max:50',
+                'pangkat' => 'nullable|string|max:100',
+                'jabatan' => 'nullable|string|max:100',
+                'satkerid' => 'required|exists:master_satkers,id',
+                'email' => 'nullable|email|max:255|unique:users,email,' . $id,
+            ]);
+
+            $user = User::findOrFail($id);
+            $user->username = $request->username;
+            $user->fullname = $request->fullname;
+            $user->nip = $request->nip;
+            $user->pangkat = $request->pangkat;
+            $user->jabatan = $request->jabatan;
+            $user->satkerid = $request->satkerid;
+            $user->email = $request->email;
+
+            if ($request->filled('password')) {
+                $user->password = Hash::make($request->password);
+            }
+
+            $user->save();
+
+            return response()->json([
+                'success' => true,
+                'data' => $user,
+                'message' => 'User berhasil diupdate!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
         }
-        $user->save();
-        return response()->json(['success' => true, 'data' => $user]);
     }
 
     /**

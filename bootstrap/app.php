@@ -11,7 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+    $middleware->alias([
+        'prevent.double.submission' => \App\Http\Middleware\PreventDoubleSubmission::class,
+    ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
