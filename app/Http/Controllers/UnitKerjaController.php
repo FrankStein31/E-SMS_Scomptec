@@ -6,6 +6,7 @@ use App\DataTables\MasterSatkerDataTable;
 use Illuminate\Http\Request;
 use App\Models\MasterSatker;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 use function Termwind\render;
 
@@ -50,7 +51,7 @@ class UnitKerjaController extends Controller
             'kodesatker' => $request->kodesatker,
             'satker' => $request->satker,
             'eselon' => 0,
-            'userid' => auth()->user()->id,
+            'userid' => Auth::id(),
         ]);
 
         return redirect()->route('unitkerja.index')->with('success', 'Unit kerja berhasil ditambahkan.');
@@ -117,5 +118,43 @@ class UnitKerjaController extends Controller
         $unit->forceDelete();
 
         return redirect()->route('unitkerja.index')->with('success', 'Unit kerja berhasil dihapus.');
+    }
+
+    /**
+     * Get detail data untuk modal (anak dan user)
+     */
+    public function getDetailData($id)
+    {
+        try {
+            $unit = MasterSatker::findOrFail($id);
+
+            // Ambil data anak
+            $children = MasterSatker::where('kodesatker', 'like', $unit->kodesatker . '%')
+                ->whereRaw('LENGTH(kodesatker) > ?', [strlen($unit->kodesatker)])
+                ->select('id', 'satker', 'kodesatker')
+                ->orderBy('kodesatker')
+                ->get();
+
+            // Ambil data user
+            $users = \App\Models\User::where('satkerid', $unit->satkerid)
+                ->select('id', 'fullname', 'nip', 'jabatan', 'pangkat')
+                ->orderBy('fullname')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'unit_name' => $unit->satker,
+                    'unit_code' => $unit->kodesatker,
+                    'children' => $children,
+                    'users' => $users
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data detail'
+            ], 500);
+        }
     }
 }
