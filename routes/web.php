@@ -119,28 +119,28 @@ Route::middleware('prevent.double.submission')->group(function () {
     Route::resource('draft-surat', DraftSuratController::class)->only(['index', 'show']);
     Route::get('draft-surat/create', [DraftSuratController::class, 'create'])->name('draft_surat.create');
     Route::get('/draft-surat', [DraftSuratController::class, 'index'])->name('draft_surat.index');
-Route::get('draft-surat/{id}', [DraftSuratController::class, 'show'])->name('draft_surat.show');
+    Route::get('draft-surat/{id}', [DraftSuratController::class, 'show'])->name('draft_surat.show');
     Route::get('draft-surat/{id}/edit', [DraftSuratController::class, 'edit'])->name('draft_surat.edit');
 
-Route::middleware('auth')->group(function () {
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-});
+    Route::middleware('auth')->group(function () {
+            Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    });
 
     Route::get('/suratkeluar', [SuratKeluarController::class, 'index'])->name('suratkeluar.index');
     Route::get('/suratkeluar/create', [SuratKeluarController::class, 'create'])->name('suratkeluar.create');
-Route::get('/suratkeluar/cetak', [SuratKeluarController::class, 'cetak'])->name('suratkeluar.cetak');
+    Route::get('/suratkeluar/cetak', [SuratKeluarController::class, 'cetak'])->name('suratkeluar.cetak');
     Route::resource('/surat-keluar', SuratKeluarController::class)->only(['index', 'show']);
 
     Route::get('/suratterkirim', [SuratTerkirimController::class, 'index'])->name('suratterkirim.index');
-Route::get('/surat-terkirim/{id}', [SuratTerkirimController::class, 'show'])->name('suratterkirim.show');
-Route::get('/surat-terkirim/{id}/cetak', [SuratTerkirimController::class, 'cetak'])->name('suratterkirim.cetak');
+    Route::get('/surat-terkirim/{id}', [SuratTerkirimController::class, 'show'])->name('suratterkirim.show');
+    Route::get('/surat-terkirim/{id}/cetak', [SuratTerkirimController::class, 'cetak'])->name('suratterkirim.cetak');
     Route::get('suratterkirim/{id}/cetak', [SuratTerkirimController::class, 'cetak'])->name('suratterkirim.cetak');
-Route::get('/surat-terkirim/data', [SuratTerkirimController::class, 'getData'])->name('suratterkirim.getdata');
+    Route::get('/surat-terkirim/data', [SuratTerkirimController::class, 'getData'])->name('suratterkirim.getdata');
     Route::resource('suratterkirim', SuratTerkirimController::class)->only(['index', 'show']);
 
     Route::get('/disposisi', [DisposisiController::class, 'index'])->name('disposisi.index');
-Route::get('/disposisi/{id}', [DisposisiController::class, 'show'])->name('disposisi.show');
-Route::get('/disposisi/riwayat/{id}', [App\Http\Controllers\DisposisiController::class, 'riwayatSurat'])->name('disposisi.riwayat');
+    Route::get('/disposisi/{id}', [DisposisiController::class, 'show'])->name('disposisi.show');
+    Route::get('/disposisi/riwayat/{id}', [App\Http\Controllers\DisposisiController::class, 'riwayatSurat'])->name('disposisi.riwayat');
     Route::resource('disposisi', DisposisiController::class)->only(['index', 'show']);
 
     Route::get('/report/cetak', [ReportSuratController::class, 'cetak'])->name('report.cetak');

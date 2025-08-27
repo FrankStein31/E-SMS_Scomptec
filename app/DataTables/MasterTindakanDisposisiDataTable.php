@@ -77,7 +77,7 @@ class MasterTindakanDisposisiDataTable extends DataTable
         return [
             Column::make('DT_RowIndex')->title('No')->orderable(false)->searchable(false)->width('50px'),
             Column::make('tindakan')->title('Tindakan'),
-            Column::make('satkerid')->title('Satker ID'),
+            Column::make('satkerid')->title('Satker ID') ->visible(false),
         ];
     }
 

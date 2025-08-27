@@ -75,7 +75,7 @@ class MasterSatkerDataTable extends DataTable
                     $text = 'Unit Induk Utama';
                 } elseif ($childCount > 0) {
                     $badgeClass = 'bg-warning text-dark';
-                    $text = 'Memiliki ' . $childCount . ' anak';
+                    $text = 'Memiliki ' . $childCount . ' cabang';
                     $clickable = true;
                 } elseif ($userCount > 0) {
                     $badgeClass = 'bg-info';
@@ -124,7 +124,7 @@ class MasterSatkerDataTable extends DataTable
      */
     public function query(MasterSatker $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->orderBy('kodesatker');
     }
 
     /**
