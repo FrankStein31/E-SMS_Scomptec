@@ -22,6 +22,7 @@ class MasterKlasifikasiDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->addIndexColumn() // Menambahkan kolom nomor urut otomatis
             ->addColumn('keterangan', function($row) {
                 if($row->keterangan == 1) return 'Dinilai Kembali';
                 if($row->keterangan == 2) return 'Musnah';
@@ -108,7 +109,7 @@ class MasterKlasifikasiDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            // Column::make('id'),
+            Column::computed('DT_RowIndex')->title('No')->searchable(false)->orderable(false)->width(50)->addClass('text-center'),
             Column::make('kodeklasifikasi')->title('Kode Klasifikasi'),
             Column::make('klasifikasi')->title('Nama Klasifikasi'),
             Column::make('retensi_aktif')->visible(false),

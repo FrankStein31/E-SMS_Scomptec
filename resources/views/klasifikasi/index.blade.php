@@ -708,6 +708,14 @@
             vertical-align: middle;
         }
 
+        /* Nomor urut styling */
+        #masterklasifikasi-table tbody td:first-child,
+        #masterklasifikasi-table thead th:first-child {
+            width: 60px;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+
         #masterklasifikasi-table tbody tr {
             cursor: pointer;
             transition: background-color 0.2s ease;

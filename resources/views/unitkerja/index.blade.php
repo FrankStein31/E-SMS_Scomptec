@@ -127,7 +127,7 @@ show @extends('layout.main')
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <h6><strong>Unit Kerja Anak</strong></h6>
+                            <h6><strong id="childrenTitle">Unit Kerja Anak</strong></h6>
                             <div id="childrenList">
                                 <div class="text-muted">Memuat data...</div>
                             </div>
@@ -695,6 +695,51 @@ show @extends('layout.main')
             }, 1500);
 
             // Initialize row click selection and top action buttons
+            function determineUnitType(unitCode, unitName) {
+                // Konversi ke string dan trim untuk memastikan
+                unitCode = String(unitCode || '').trim();
+                unitName = String(unitName || '').toLowerCase();
+                
+                // Berdasarkan panjang kode satker dan nama unit
+                var codeLength = unitCode.length;
+                
+                // Cek berdasarkan nama unit untuk kasus spesifik
+                if (unitName.includes('kantor') || unitName.includes('ktr') || 
+                    unitName.includes('pusat') || unitName.includes('pst')) {
+                    return 'Unit/Kantor';
+                }
+                
+                if (unitName.includes('divisi') || unitName.includes('div')) {
+                    return 'Sub Divisi';
+                }
+                
+                if (unitName.includes('seksi') || unitName.includes('sks')) {
+                    return 'Sub Seksi';
+                }
+                
+                if (unitName.includes('bagian') || unitName.includes('bag')) {
+                    return 'Sub Bagian';
+                }
+                
+                if (unitName.includes('cabang') || unitName.includes('cab')) {
+                    return 'Unit Kerja';
+                }
+                
+                // Berdasarkan panjang kode (hierarki)
+                if (codeLength <= 2) {
+                    return 'Unit Utama'; // Level paling atas
+                }
+                else if (codeLength <= 4) {
+                    return 'Unit Cabang'; // Level menengah
+                }
+                else if (codeLength <= 6) {
+                    return 'Sub Unit'; // Level bawah
+                }
+                else {
+                    return 'Unit Kerja'; // Default untuk level paling bawah
+                }
+            }
+
             function initializeRowSelection() {
                 try {
                     var tableSelector = '#mastersatker-table tbody tr';
@@ -858,6 +903,10 @@ show @extends('layout.main')
                             // Update modal title
                             $('#detailModalLabel').text('Detail Unit Kerja: ' + data.unit_name);
                             
+                            // Tentukan jenis unit kerja berdasarkan kode dan hierarki
+                            var unitType = determineUnitType(data.unit_code, data.unit_name);
+                            $('#childrenTitle').text(unitType + ' di Bawahnya');
+                            
                             // Render children data
                             var childrenHtml = '';
                             if (data.children && data.children.length > 0) {
@@ -872,7 +921,8 @@ show @extends('layout.main')
                                 });
                                 childrenHtml += '</div>';
                             } else {
-                                childrenHtml = '<div class="text-muted">Tidak ada unit kerja anak</div>';
+                                var noDataText = 'Tidak ada ' + unitType.toLowerCase() + ' di bawahnya';
+                                childrenHtml = '<div class="text-muted">' + noDataText + '</div>';
                             }
                             $('#childrenList').html(childrenHtml);
                             
