@@ -62,6 +62,16 @@ class PreventDoubleSubmission {
             const self = this;
             
             $.ajax = function(options) {
+                // Skip protection for DataTables AJAX requests
+                if (self.isDataTablesRequest(options)) {
+                    return originalAjax.call(this, options);
+                }
+                
+                // Skip protection for GET requests (read-only operations)
+                if (options.type && options.type.toUpperCase() === 'GET') {
+                    return originalAjax.call(this, options);
+                }
+                
                 // Create unique identifier for this request
                 const requestId = self.generateRequestId(options);
                 
@@ -217,6 +227,40 @@ class PreventDoubleSubmission {
             return activeElement;
         }
         return null;
+    }
+
+    isDataTablesRequest(options) {
+        // Check if this is a DataTables AJAX request
+        const url = options.url || '';
+        const data = options.data || {};
+        
+        // Check for DataTables parameters
+        if (typeof data === 'object' && (
+            data.hasOwnProperty('draw') ||
+            data.hasOwnProperty('start') ||
+            data.hasOwnProperty('length') ||
+            data.hasOwnProperty('search') ||
+            data.hasOwnProperty('order')
+        )) {
+            return true;
+        }
+        
+        // Check for DataTables URL patterns
+        if (url.includes('datatables') || url.includes('ajax')) {
+            return true;
+        }
+        
+        // Check if request originated from DataTables search
+        if (typeof data === 'string' && (
+            data.includes('draw=') ||
+            data.includes('start=') ||
+            data.includes('length=') ||
+            data.includes('search%5Bvalue%5D=')
+        )) {
+            return true;
+        }
+        
+        return false;
     }
 
     showWarning(message) {
