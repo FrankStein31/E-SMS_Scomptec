@@ -125,7 +125,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="row mb-3">
+                            <!-- <div class="row mb-3">
                                 <div class="col-md-4">
                                     <label class="input-group-text" for="group">User Group</label>
                                     <select id="filterJabatan" class="form-select form-select-sm">
@@ -135,7 +135,7 @@
                                         @endforeach
                                     </select>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="table-responsive">
                                 {{ $dataTable->table(['id' => 'tabelUser']) }}
                             </div>

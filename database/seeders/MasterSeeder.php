@@ -29,6 +29,17 @@ class MasterSeeder extends Seeder
             }
         });
 
+        // Insert manual data untuk jenis surat
+        echo "Inserting manual jenis surat data...\n";
+        DB::table('master_jenis_surats')->insert([
+            'id' => '01k37zc4d27vccnr0zsygv05z5',
+            'last_id' => 0,
+            'name' => '-',
+            'created_at' => '2025-08-22 12:11:12',
+            'updated_at' => '2025-08-22 12:11:21',
+            'deleted_at' => null,
+        ]);
+
         // Import Master Klasifikasi
         echo "Importing Master Klasifikasi...\n";
         DB::connection('mysql2')->table('master_klasifikasi')->orderBy('kodeklasifikasi')->chunk(1000, function ($records) {
