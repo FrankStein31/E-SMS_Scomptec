@@ -1064,14 +1064,23 @@
                     case 'tanda-terima':
                         title = '<i class="fas fa-receipt me-2"></i>Export Tanda Terima Surat';
                         description = 'Pilih format file untuk Tanda Terima Surat:';
+                        // Tampilkan kedua tombol untuk tanda terima dengan layout yang rapi
+                        $('.export-format-btn[data-format="word"]').parent().show().removeClass('col-12').addClass('col-6');
+                        $('.export-format-btn[data-format="excel"]').parent().show().removeClass('col-12').addClass('col-6');
                         break;
                     case 'surat':
                         title = '<i class="fas fa-print me-2"></i>Export Surat';
-                        description = 'Pilih format file untuk Surat:';
+                        // description = 'Pilih format file untuk Surat:';
+                        // Sembunyikan tombol Word untuk surat - hanya Excel
+                        $('.export-format-btn[data-format="word"]').parent().hide();
+                        $('.export-format-btn[data-format="excel"]').parent().removeClass('col-6').addClass('col-12');
                         break;
                     case 'disposisi':
                         title = '<i class="fas fa-file-text me-2"></i>Export Lembar Disposisi';
-                        description = 'Pilih format file untuk Lembar Disposisi:';
+                        // description = 'Pilih format file untuk Lembar Disposisi:';
+                        // Sembunyikan tombol Word untuk disposisi - hanya Excel
+                        $('.export-format-btn[data-format="word"]').parent().hide();
+                        $('.export-format-btn[data-format="excel"]').parent().removeClass('col-6').addClass('col-12');
                         break;
                 }
 
@@ -1094,15 +1103,19 @@
                         url = '{{ route('entrisurat.exportExcel', ':id') }}'.replace(':id', dataId);
                     }
                 } else if (currentExportType === 'surat') {
-                    if (format === 'word') {
-                        url = '{{ route('entrisurat.exportSuratWord', ':id') }}'.replace(':id', dataId);
-                    } else if (format === 'excel') {
+                    // Hanya Excel untuk surat - Word di-comment
+                    // if (format === 'word') {
+                    //     url = '{{ route('entrisurat.exportSuratWord', ':id') }}'.replace(':id', dataId);
+                    // } else 
+                    if (format === 'excel') {
                         url = '{{ route('entrisurat.exportSuratExcel', ':id') }}'.replace(':id', dataId);
                     }
                 } else if (currentExportType === 'disposisi') {
-                    if (format === 'word') {
-                        url = '{{ route('entrisurat.exportSuratDisWord', ':id') }}'.replace(':id', dataId);
-                    } else if (format === 'excel') {
+                    // Hanya Excel untuk disposisi - Word di-comment
+                    // if (format === 'word') {
+                    //     url = '{{ route('entrisurat.exportSuratDisWord', ':id') }}'.replace(':id', dataId);
+                    // } else 
+                    if (format === 'excel') {
                         url = '{{ route('entrisurat.exportSuratDisExcel', ':id') }}'.replace(':id',
                         dataId);
                     }
