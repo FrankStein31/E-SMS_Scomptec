@@ -914,7 +914,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nanti Saja</button>
-                        <a href="{{ asset('scanner/scomptec_scanner_L220_WW_WIN_4014_41_S.exe') }}"
+                        <a href="{{ asset('scanner/scanner.zip') }}"
                             download class="btn btn-primary">
                             <i class="fas fa-download me-2"></i>Download Software Scanner
                         </a>
